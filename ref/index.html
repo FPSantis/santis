@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Santis Engenharia Digital | Performance & Blindagem</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;800&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="assets/css/main.css">
+    <link rel="stylesheet" href="assets/css/hero.css">
+    <link rel="stylesheet" href="assets/css/radar.css">
+    <link rel="stylesheet" href="assets/css/bento.css">
+    <link rel="stylesheet" href="assets/css/portfolio.css">
+    <link rel="stylesheet" href="assets/css/radar-news.css">
+</head>
+
+<body class="bg-[#050A18] text-white font-sans antialiased">
+
+    <!-- Scanline Effect Overlay -->
+    <div class="fixed inset-0 bg-scanline opacity-[0.03] pointer-events-none z-[999]"></div>
+
+    <!-- Section 1: Header -->
+    <header
+        class="fixed top-0 w-full z-[100] transition-all duration-500 border-b border-white/5 bg-[#050A18]/60 backdrop-blur-xl">
+        <div class="container mx-auto px-6 py-5 flex justify-between items-center">
+            <div class="logo group">
+                <img src="assets/img/logo-santis.svg" alt="Santis Engenharia Digital"
+                    class="h-8 transition group-hover:scale-105">
+            </div>
+            <div class="hidden md:flex gap-12 Montserrat">
+                <a href="#services" class="nav-link-premium text-gray-400 hover:text-[#00F2FF]">Engenharia</a>
+                <a href="#santis-control" class="nav-link-premium text-gray-400 hover:text-[#00F2FF]">Santis Control</a>
+                <a href="#portfolio" class="nav-link-premium text-gray-400 hover:text-[#00F2FF]">Portfólio</a>
+                <a href="#blog" class="nav-link-premium text-gray-400 hover:text-[#00F2FF]">Radar</a>
+            </div>
+            <div class="flex items-center gap-6">
+                <a href="https://wa.me/seunumero" class="btn-outline-pill text-white Montserrat">Contact us</a>
+                <button class="md:hidden flex flex-col gap-1.5 p-2">
+                    <span class="w-6 h-0.5 bg-white"></span>
+                    <span class="w-4 h-0.5 bg-[#00F2FF] self-end"></span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- =============================================
+         SECTION 2: HERO
+         ============================================= -->
+    <section id="hero" class="relative min-h-screen flex flex-col justify-center overflow-hidden pt-20">
+        <!-- High-Tech Background Elements -->
+        <div class="absolute inset-0 bg-circuit-traces z-0 opacity-20"></div>
+        <div class="absolute top-1/4 -right-1/4 w-[600px] h-[600px] bg-[#8A2BE2]/5 blur-[150px] rounded-full z-0"></div>
+
+        <div class="container mx-auto px-6 grid lg:grid-cols-12 gap-12 items-center relative z-10 flex-grow py-20">
+            <!-- Left Content (7 columns) -->
+            <div class="lg:col-span-7 reveal">
+                <h1 class="text-5xl md:text-7xl font-black leading-tight mb-10 uppercase tracking-tighter Montserrat">
+                    Seu mundo digital <br> merece <span
+                        class="text-transparent bg-clip-text bg-gradient-to-r from-[#00F2FF] via-[#8A2BE2] to-[#00F2FF] animate-gradient">performance
+                        <br>& blindagem.</span>
+                </h1>
+
+                <div class="space-y-12">
+                    <!-- Primary CTA -->
+                    <div>
+                        <a href="https://wa.me/seunumero" class="btn-pill-gradient">
+                            Iniciar Protocolo de Defesa
+                        </a>
+                    </div>
+
+                    <!-- Precision Scanner -->
+                    <div class="space-y-4">
+                        <p class="text-[10px] font-bold uppercase tracking-[0.4em] text-[#9CA3AF] ml-4 italic">Data
+                            breach scan _</p>
+                        <div class="precision-scanner-bar">
+                            <input type="text" placeholder="Enter your data..."
+                                class="precision-scanner-input Montserrat">
+                            <button class="precision-scanner-btn">SCAN</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Content (5 columns = ~45%) -->
+            <div class="lg:col-span-5 relative flex justify-center lg:justify-end reveal"
+                style="transition-delay: 200ms;">
+                <div class="relative w-full max-w-[500px] hero-protagonist-container group">
+                    <!-- Vibrant Purple Glow behind photo -->
+                    <div
+                        class="absolute inset-0 bg-[#8A2BE2]/20 blur-[120px] rounded-full scale-125 opacity-60 group-hover:opacity-100 transition duration-1000">
+                    </div>
+
+                    <div
+                        class="relative z-10 rounded-[48px] overflow-hidden border border-white/10 backdrop-blur-3xl shadow-2xl transition-all duration-700 group-hover:-translate-y-4 rim-light-purple h-full">
+                        <img src="assets/img/hero-santis.png" alt="Fernando Santis"
+                            class="w-full h-full object-cover grayscale-0 group-hover:scale-105 transition-transform duration-1000">
+                        <div
+                            class="absolute inset-0 bg-gradient-to-t from-[#050A18] via-transparent to-transparent opacity-60">
+                        </div>
+
+                        <div class="absolute bottom-8 left-8 right-8">
+                            <div class="glass-card p-6 rounded-3xl border-white/5">
+                                <span
+                                    class="block font-mono text-[9px] text-[#00F2FF]/60 uppercase tracking-widest mb-1">Lead
+                                    Engineer_</span>
+                                <h2 class="text-2xl font-bold Montserrat tracking-tight">Fernando Santis</h2>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Navigation Cards Bottom -->
+        <div class="container mx-auto px-6 pb-20 relative z-10 reveal" style="transition-delay: 400ms;">
+            <div class="master-hero-cards">
+                <a href="#services" class="master-hero-card">
+                    <div class="master-hero-icon">
+                        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path
+                                d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"
+                                stroke-width="1.5" />
+                        </svg>
+                    </div>
+                    <div>
+                        <h4 class="text-sm font-bold Montserrat uppercase tracking-widest">Web Design Seguro</h4>
+                        <p class="text-[9px] text-[#00F2FF] font-bold uppercase tracking-widest mt-1">Explorar
+                            Protocolo_</p>
+                    </div>
+                </a>
+                <a href="#services" class="master-hero-card">
+                    <div class="master-hero-icon">
+                        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path
+                                d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
+                                stroke-width="1.5" />
+                        </svg>
+                    </div>
+                    <div>
+                        <h4 class="text-sm font-bold Montserrat uppercase tracking-widest">Otimização Windows</h4>
+                        <p class="text-[9px] text-[#00F2FF] font-bold uppercase tracking-widest mt-1">Explorar
+                            Protocolo_</p>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- =============================================
+         SECTION 3: RADAR SCANNER
+         ============================================= -->
+    <section id="radar-scanner" class="py-24 bg-black/20">
+    </section>
+
+    <!-- =============================================
+         SECTION 4: BENTO GRID (SERVIÇOS)
+         ============================================= -->
+    <section id="services" class="py-32 container mx-auto px-6">
+        <div class="mb-16">
+            <h2 class="text-4xl font-black Montserrat uppercase tracking-tighter mb-4">Engenharia de <span
+                    class="text-[#00F2FF]">Resultados.</span></h2>
+            <p class="text-gray-500 font-medium max-w-2xl">Soluções modulares projetadas para escala, performance e
+                blindagem total de ativos digitais.</p>
+        </div>
+
+        <div class="bento-grid">
+            <!-- Card A: Sites -->
+            <div
+                class="bento-card glass-card p-10 col-span-12 md:col-span-12 lg:col-span-7 bg-gradient-to-br from-[#00F2FF]/5 to-transparent border-[#00F2FF]/10">
+                <div class="flex flex-col h-full">
+                    <div class="card-icon glow-cyan mb-8">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1"
+                            stroke="currentColor" class="w-10 h-10">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                d="M12 21a9.004 9.004 0 0 0 8.716-6.747M12 21a9.004 9.004 0 0 1-8.716-6.747M12 21c2.485 0 4.5-4.03 4.5-9S14.485 3 12 3m0 18c-2.485 0-4.5-4.03-4.5-9S9.515 3 12 3m0 0a8.997 8.997 0 0 1 7.843 4.582M12 3a8.997 8.997 0 0 0-7.843 4.582m15.686 0A11.953 11.953 0 0 1 12 10.5c-2.998 0-5.74-1.1-7.843-2.918m15.686 0A8.959 8.959 0 0 1 21 12c0 .778-.099 1.533-.284 2.253m0 0A17.919 17.919 0 0 1 12 16.5c-3.162 0-6.133-.815-8.716-2.247m0 0A9.015 9.015 0 0 1 3 12c0-1.605.42-3.113 1.157-4.418" />
+                        </svg>
+                    </div>
+                    <div>
+                        <h3 class="text-3xl font-black mb-6 Montserrat uppercase tracking-tight">Arquitetura Web de Alta
+                            Disponibilidade</h3>
+                        <p class="text-gray-400 font-light mb-8 text-lg leading-relaxed">
+                            Desenvolvemos Landing Pages e ecossistemas digitais <span
+                                class="text-white font-medium">Mobile-First</span> com foco agressivo em conversão e
+                            conformidade nativa com a LGPD. Sua infraestrutura blindada com painel administrativo
+                            proprietário.
+                        </p>
+                    </div>
+                    <div
+                        class="mt-auto flex flex-wrap gap-4 items-center text-[9px] font-black uppercase tracking-[2px] text-[#00F2FF]">
+                        <span class="px-3 py-1 rounded-full border border-[#00F2FF]/20">Performance Tier 1</span>
+                        <span class="px-3 py-1 rounded-full border border-[#00F2FF]/20">Blindagem SSL/TLS 1.3</span>
+                        <span class="px-3 py-1 rounded-full border border-[#00F2FF]/20">Escalabilidade AWS</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card B: Windows -->
+            <div
+                class="bento-card glass-card p-10 col-span-12 md:col-span-12 lg:col-span-5 bg-gradient-to-br from-[#8A2BE2]/5 to-transparent border-[#8A2BE2]/10">
+                <div class="flex flex-col h-full">
+                    <div class="card-icon glow-purple text-[#8A2BE2] mb-8">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1"
+                            stroke="currentColor" class="w-10 h-10">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                d="M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 22.5 12 13.5H3.75z" />
+                        </svg>
+                    </div>
+                    <div>
+                        <h3 class="text-2xl font-black mb-6 Montserrat uppercase tracking-tight">Otimização de Sistemas
+                            & Performance</h3>
+                        <p class="text-gray-400 font-light mb-8 text-lg leading-relaxed">
+                            Conceito <span class="text-white font-medium italic">PC Doctor</span>: Remoção cirúrgica de
+                            telemetria, bloatwares e vulnerabilidades. Devolvemos a fluidez original do seu hardware
+                            através de engenharia de software aplicada.
+                        </p>
+                    </div>
+                    <div class="mt-auto text-[10px] font-bold text-[#8A2BE2] uppercase tracking-widest italic">
+                        "Tecnologia a serviço da produtividade."
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- =============================================
+         SECTION 5: SANTIS CONTROL
+         ============================================= -->
+    <section id="santis-control" class="py-32 bg-black/40 relative overflow-hidden">
+        <div class="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-white/5 to-transparent">
+        </div>
+        <div class="container mx-auto px-6">
+            <div class="grid md:grid-cols-2 gap-24 items-center">
+                <div class="relative order-2 md:order-1">
+                    <div class="absolute -inset-10 bg-[#00F2FF]/10 blur-[100px] rounded-full"></div>
+                    <div
+                        class="relative glass-card overflow-hidden border-white/5 shadow-[0_50px_100px_-20px_rgba(0,0,0,0.5)]">
+                        <div class="bg-white/5 border-b border-white/5 px-6 py-3 flex gap-2">
+                            <div class="w-2.5 h-2.5 rounded-full bg-red-500/30"></div>
+                            <div class="w-2.5 h-2.5 rounded-full bg-yellow-500/30"></div>
+                            <div class="w-2.5 h-2.5 rounded-full bg-green-500/30"></div>
+                        </div>
+                        <div class="p-4 bg-[#050A18]">
+                            <img src="https://sneat-html-admin-template.themeselection.com/assets/img/layouts/layout-container-light.png"
+                                alt="Santis Control"
+                                class="w-full h-auto rounded-lg opacity-80 mix-blend-screen grayscale">
+                            <div class="absolute inset-0 flex items-center justify-center">
+                                <span
+                                    class="bg-black/80 backdrop-blur-md border border-[#00F2FF]/30 px-6 py-3 rounded-full text-[10px] font-black uppercase tracking-[3px] text-[#00F2FF]">Santis
+                                    Control v2.4</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="order-1 md:order-2">
+                    <div class="text-[#00F2FF] text-[10px] font-black uppercase tracking-[0.3em] mb-6">Autoridade
+                        Técnica</div>
+                    <h2 class="text-5xl font-black mb-8 Montserrat leading-[1.1] uppercase tracking-tighter">
+                        Controle Total.<br>
+                        <span class="text-[#00F2FF]">Sem Compromissos.</span>
+                    </h2>
+                    <p class="text-gray-400 font-light mb-12 text-xl leading-relaxed">
+                        Nossa arquitetura proprietária <strong>Santis Control</strong> oferece visibilidade absoluta
+                        sobre seus dados, leads e métricas de segurança.
+                    </p>
+
+                    <div class="space-y-8">
+                        <div class="flex items-start gap-6">
+                            <div
+                                class="w-10 h-10 rounded-full bg-[#00F2FF]/5 border border-[#00F2FF]/20 flex items-center justify-center shrink-0">
+                                <span class="text-[#00F2FF] text-xs font-black">01</span>
+                            </div>
+                            <div>
+                                <h4 class="text-white font-bold Montserrat uppercase text-xs tracking-widest mb-2">
+                                    Escrow de Dados Encriptado</h4>
+                                <p class="text-gray-500 text-sm">Leads armazenados com criptografia AES-256 diretamente
+                                    na camada do banco de dados.</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start gap-6">
+                            <div
+                                class="w-10 h-10 rounded-full bg-[#00F2FF]/5 border border-[#00F2FF]/20 flex items-center justify-center shrink-0">
+                                <span class="text-[#00F2FF] text-xs font-black">02</span>
+                            </div>
+                            <div>
+                                <h4 class="text-white font-bold Montserrat uppercase text-xs tracking-widest mb-2">
+                                    Monitoramento de Integridade</h4>
+                                <p class="text-gray-500 text-sm">Alertas em tempo real sobre tentativas de injeção SQL
+                                    ou brute force.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- =============================================
+         SECTION 6: PORTFÓLIO DE DESTAQUE
+         ============================================= -->
+    <section id="portfolio" class="py-32 bg-[#050A18]">
+        <div class="container mx-auto px-6">
+            <div class="flex flex-col md:flex-row justify-between items-end mb-20 gap-8">
+                <div class="max-w-xl">
+                    <div class="text-[#00F2FF] text-[10px] font-black uppercase tracking-[0.3em] mb-4">Portfólio de
+                        Engenharia</div>
+                    <h2 class="text-5xl font-black Montserrat uppercase tracking-tighter mb-6">Projetos <span
+                            class="text-[#00F2FF]">Ativos.</span></h2>
+                    <p class="text-gray-500 font-medium">Ecossistemas digitais em produção, monitorados e otimizados
+                        pelo protocolo Santis.</p>
+                </div>
+                <div class="h-px flex-1 bg-white/5 mx-12 hidden lg:block mb-4"></div>
+                <div class="text-right">
+                    <span class="text-white font-black text-4xl Montserrat tracking-tighter">03</span>
+                    <span class="text-gray-600 block text-[9px] uppercase tracking-widest font-bold mt-1">Cases
+                        Selecionados</span>
+                </div>
+            </div>
+
+            <div class="portfolio-grid">
+                <!-- Injected via JS -->
+            </div>
+
+            <div id="portfolio-details" class="mt-20">
+                <!-- Injected via JS -->
+            </div>
+        </div>
+    </section>
+
+    <!-- =============================================
+         SECTION 7: RADAR SANTIS (BLOG)
+         ============================================= -->
+    <section id="blog" class="py-32 border-t border-white/5 bg-gradient-to-b from-transparent to-[#8A2BE2]/5">
+        <div class="container mx-auto px-6">
+            <div class="flex flex-col md:flex-row justify-between items-center mb-20 gap-8 text-center md:text-left">
+                <div class="max-w-2xl">
+                    <h2 class="text-5xl font-black Montserrat uppercase tracking-tighter mb-6">Radar <span
+                            class="text-[#8A2BE2]">Santis.</span></h2>
+                    <p class="text-gray-400 font-light text-xl">Inteligência de ameaças e alta performance em tempo
+                        real.</p>
+                </div>
+                <a href="#"
+                    class="group flex items-center gap-4 text-xs font-black uppercase tracking-[3px] text-white">
+                    Arquivo de Inteligência
+                    <span class="w-12 h-px bg-[#8A2BE2] group-hover:w-20 transition-all"></span>
+                </a>
+            </div>
+
+            <div class="radar-grid-masonry">
+                <article class="news-card glass-card p-8 group border-white/5">
+                    <div class="flex justify-between items-start mb-8">
+                        <span
+                            class="px-3 py-1 rounded bg-[#8A2BE2]/10 text-[#8A2BE2] text-[9px] font-black uppercase tracking-widest">Segurança</span>
+                        <span class="text-[9px] text-gray-600 font-bold uppercase tracking-widest italic">3 Min
+                            Read</span>
+                    </div>
+                    <h3 class="text-2xl font-black Montserrat mb-6 group-hover:text-[#8A2BE2] transition leading-tight">
+                        Vulnerabilidade zero-day em gateways de pagamento.</h3>
+                    <p class="text-gray-500 font-light mb-8 leading-relaxed">Protocolo de mitigação imediata para
+                        infraestruturas baseadas em Node.js e PHP 8.4.</p>
+                    <div
+                        class="flex items-center gap-3 pt-6 border-t border-white/5 text-[9px] text-gray-600 font-black uppercase tracking-[2px]">
+                        21 FEV 2026 <span class="w-1 h-1 rounded-full bg-white/10"></span> Fernando Santis
+                    </div>
+                </article>
+
+                <article class="news-card glass-card p-8 group border-white/5 mt-8 md:mt-0">
+                    <div class="flex justify-between items-start mb-8">
+                        <span
+                            class="px-3 py-1 rounded bg-[#00F2FF]/10 text-[#00F2FF] text-[9px] font-black uppercase tracking-widest">Performance</span>
+                        <span class="text-[9px] text-gray-600 font-bold uppercase tracking-widest italic">5 Min
+                            Read</span>
+                    </div>
+                    <h3 class="text-2xl font-black Montserrat mb-6 group-hover:text-[#00F2FF] transition leading-tight">
+                        Core Web Vitals em 2026: O fim das Landing Pages lentas.</h3>
+                    <p class="text-gray-500 font-light mb-8 leading-relaxed">Como a compressão de ativos no servidor
+                        pode reduzir o TTI em até 40%.</p>
+                    <div
+                        class="flex items-center gap-3 pt-6 border-t border-white/5 text-[9px] text-gray-600 font-black uppercase tracking-[2px]">
+                        19 FEV 2026 <span class="w-1 h-1 rounded-full bg-white/10"></span> Lab Santis
+                    </div>
+                </article>
+
+                <article class="news-card glass-card p-8 group border-white/5 mt-8 md:mt-0">
+                    <div class="flex justify-between items-start mb-8">
+                        <span
+                            class="px-3 py-1 rounded bg-white/5 text-gray-400 text-[9px] font-black uppercase tracking-widest">Otimização</span>
+                        <span class="text-[9px] text-gray-600 font-bold uppercase tracking-widest italic">4 Min
+                            Read</span>
+                    </div>
+                    <h3 class="text-2xl font-black Montserrat mb-6 group-hover:text-white transition leading-tight">
+                        Telemetria Windows: Blindagem cirúrgica de dados.</h3>
+                    <p class="text-gray-500 font-light mb-8 leading-relaxed">Guia técnico para remover gargalos de I/O
+                        em máquinas de alta performance.</p>
+                    <div
+                        class="flex items-center gap-3 pt-6 border-t border-white/5 text-[9px] text-gray-600 font-black uppercase tracking-[2px]">
+                        15 FEV 2026 <span class="w-1 h-1 rounded-full bg-white/10"></span> Protocolo V2
+                    </div>
+                </article>
+            </div>
+        </div>
+    </section>
+
+    <!-- =============================================
+         SECTION 8: O XEQUE-MATE (URGÊNCIA)
+         ============================================= -->
+    <section id="urgencia" class="py-40 bg-[#050A18] relative overflow-hidden">
+        <!-- Background Accents -->
+        <div
+            class="absolute top-1/2 left-1/4 -translate-y-1/2 w-[500px] h-[500px] bg-[#8A2BE2]/10 blur-[150px] rounded-full">
+        </div>
+        <div
+            class="absolute bottom-1/2 right-1/4 translate-y-1/2 w-[400px] h-[400px] bg-[#00F2FF]/5 blur-[120px] rounded-full">
+        </div>
+
+        <div class="container mx-auto px-6 relative z-10">
+            <div
+                class="max-w-5xl mx-auto glass-card p-16 md:p-24 text-center border-[#8A2BE2]/20 shadow-[0_0_100px_rgba(138,43,226,0.1)]">
+                <div
+                    class="inline-block px-4 py-1 rounded-full bg-red-500/10 text-red-500 text-[10px] font-black uppercase tracking-widest mb-10 border border-red-500/20">
+                    Alerta de Risco LGPD
+                </div>
+                <h3
+                    class="text-4xl md:text-6xl font-black Montserrat mb-10 leading-[1.1] uppercase tracking-tighter italic">
+                    "O seu site protege os dados ou é uma <span
+                        class="text-transparent bg-clip-text bg-gradient-to-r from-red-500 to-[#8A2BE2]">porta aberta
+                        para multas?</span>"
+                </h3>
+                <p class="text-gray-400 font-light text-xl mb-12 leading-relaxed max-w-3xl mx-auto">
+                    A segurança da informação não é um custo, é a blindagem do seu patrimônio digital. No cenário atual,
+                    a <span class="text-white font-medium">invisibilidade técnica</span> é sua maior vulnerabilidade.
+                </p>
+                <div class="flex flex-col md:flex-row justify-center gap-8">
+                    <a href="https://wa.me/seunumero"
+                        class="bg-gradient-to-r from-[#00F2FF] to-[#8A2BE2] text-[#050A18] px-16 py-6 rounded-full font-black text-xs uppercase tracking-[3px] hover:scale-105 transition-all duration-500 shadow-[0_0_40px_rgba(0,242,255,0.3)]">
+                        Solicitar Protocolo Santis
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- =============================================
+         SECTION 9: PARCERIAS
+         ============================================= -->
+    <section id="parcerias" class="py-20 border-y border-white/5 bg-white/[0.01]">
+        <div class="container mx-auto px-6">
+            <div
+                class="flex flex-wrap justify-center items-center gap-12 md:gap-24 opacity-30 grayscale hover:opacity-60 transition duration-1000">
+                <span class="text-xl font-black Montserrat tracking-tighter">HOSTINGER.PRO</span>
+                <span class="text-xl font-black Montserrat tracking-tighter">AWS_ENGINE</span>
+                <span class="text-xl font-black Montserrat tracking-tighter">CLOUDFLARE</span>
+                <span class="text-xl font-black Montserrat tracking-tighter">NORTON_SEC</span>
+                <span class="text-xl font-black Montserrat tracking-tighter">PHP_8.4</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- =============================================
+         SECTION 10: RODAPÉ
+         ============================================= -->
+    <footer class="pt-32 pb-12 bg-[#050A18]">
+        <div class="container mx-auto px-6 text-center md:text-left">
+            <div class="grid md:grid-cols-12 gap-16 mb-24">
+                <div class="md:col-span-4">
+                    <img src="assets/img/logo-santis.svg" alt="Santis"
+                        class="h-8 mb-8 mx-auto md:mx-0 opacity-80 group-hover:opacity-100 transition">
+                    <p class="text-gray-600 text-xs leading-relaxed max-w-xs mx-auto md:mx-0">
+                        Engenharia digital de alta performance. Transformando vulnerabilidades em vantagens competitivas
+                        através de tecnologia de elite.
+                    </p>
+                </div>
+                <div class="md:col-span-8 flex flex-col md:flex-row justify-end gap-12 md:gap-24">
+                    <div class="space-y-4">
+                        <h5 class="text-white text-[10px] font-black uppercase tracking-widest mb-6">Comunicação</h5>
+                        <a href="mailto:contato@santis.eng.br"
+                            class="block text-gray-400 hover:text-[#00F2FF] transition text-sm">contato@santis.eng.br</a>
+                        <span class="block text-gray-600 text-[10px] font-bold uppercase tracking-wider">São Carlos - SP
+                            | Brasil</span>
+                    </div>
+                    <div class="space-y-4 text-center md:text-right">
+                        <h5 class="text-white text-[10px] font-black uppercase tracking-widest mb-6">Redes Ativas</h5>
+                        <div
+                            class="flex justify-center md:justify-end gap-6 text-gray-600 text-[10px] font-bold uppercase tracking-widest">
+                            <a href="#" class="hover:text-white transition">Instagram</a>
+                            <a href="#" class="hover:text-white transition">LinkedIn</a>
+                            <a href="#" class="hover:text-white transition">GitHub</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div
+                class="pt-12 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-8 text-[9px] font-black uppercase tracking-[3px] text-gray-800">
+                <div class="flex items-center gap-2">
+                    Feito com <span class="text-[#8A2BE2] animate-pulse">■</span> por Fernando Santis
+                </div>
+                <div class="text-center md:text-right leading-loose">
+                    © 2026 Santis Engenharia Digital • Todos os direitos reservados.
+                    <span
+                        class="block text-[8px] text-gray-900 mt-1 uppercase tracking-widest italic opacity-20">Premium
+                        Engineering Architecture v2.0</span>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Botão Flutuante (WhatsApp) -->
+    <a href="https://wa.me/seunumero"
+        class="fixed bottom-10 right-10 z-[100] bg-[#00F2FF] text-[#050A18] p-5 rounded-full shadow-[0_20px_40px_rgba(0,242,255,0.3)] hover:scale-110 active:scale-95 transition-all duration-300 btn-whatsapp group"
+        title="Falar com um Engenheiro">
+        <svg class="w-6 h-6 transition-transform group-hover:rotate-12" fill="currentColor" viewBox="0 0 24 24">
+            <path
+                d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118." />
+        </svg>
+    </a>
+
+    <script src="assets/js/main.js"></script>
+    <script src="assets/js/radar.js"></script>
+    <script src="assets/js/portfolio.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,38 @@
+.radar-grid-masonry {
+    display: columns;
+    columns: 1;
+    column-gap: 1.5rem;
+}
+
+@media (min-width: 768px) {
+    .radar-grid-masonry {
+        columns: 2;
+    }
+}
+
+@media (min-width: 1024px) {
+    .radar-grid-masonry {
+        columns: 3;
+    }
+}
+
+.news-card {
+    break-inside: avoid;
+    margin-bottom: 1.5rem;
+    display: block;
+    transition: all 0.3s ease;
+}
+
+.news-card:hover {
+    border-color: rgba(138, 43, 226, 0.4);
+    transform: scale(1.02);
+}
+
+.tag-news {
+    font-size: 10px;
+    padding: 2px 8px;
+    border-radius: 4px;
+    text-transform: uppercase;
+    font-weight: bold;
+    font-family: sans-serif;
+}
