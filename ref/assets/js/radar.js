@@ -21,11 +21,11 @@ radarSection.innerHTML = `
         
         <div class="scanner-input-group">
             <h2 class="text-3xl font-black mb-8 Montserrat uppercase tracking-tight">Análise de <span class="text-[#00F2FF]">Vulnerabilidade</span> IP</h2>
-            <div class="relative glass-card p-2 flex flex-col md:flex-row gap-2 max-w-2xl mx-auto rounded-full">
-                <input type="text" id="scan-input" placeholder="Digite seu e-mail ou domínio para análise..." 
-                    class="flex-1 bg-transparent px-8 py-4 outline-none text-center md:text-left text-sm font-medium">
-                <button id="btn-scan" class="bg-[#00F2FF] text-[#050A18] px-10 py-4 rounded-full font-black text-xs uppercase tracking-widest hover:brightness-110 transition duration-300">
-                    Executar Scan
+            <div class="precision-scanner-bar mx-auto !max-w-2xl !bg-white/5 border-white/5">
+                <input type="text" id="scan-input" placeholder="Digite seu e-mail ou domínio..." 
+                    class="precision-scanner-input !text-sm">
+                <button id="btn-scan" class="precision-scanner-btn">
+                    VERIFICAR AGORA
                 </button>
             </div>
             <div id="scan-result" class="mt-8 min-h-[40px] font-bold text-[10px] uppercase tracking-[2px] text-gray-500 italic"></div>

@@ -60,22 +60,23 @@ h4,
 }
 
 /* Animações Premium */
-.btn-whatsapp {
-    animation: pulse-glow-cyan 3s infinite;
-}
-
-@keyframes pulse-glow-cyan {
+@keyframes pulse-glow-whatsapp {
     0% {
-        box-shadow: 0 0 0 0 rgba(0, 242, 255, 0.4);
+        box-shadow: 0 0 0 0 rgba(37, 211, 102, 0.4);
     }
 
     70% {
-        box-shadow: 0 0 0 15px rgba(0, 242, 255, 0);
+        box-shadow: 0 0 0 15px rgba(37, 211, 102, 0);
     }
 
     100% {
-        box-shadow: 0 0 0 0 rgba(0, 242, 255, 0);
+        box-shadow: 0 0 0 0 rgba(37, 211, 102, 0);
     }
+}
+
+.btn-whatsapp {
+    background-color: #25D366 !important;
+    animation: pulse-glow-whatsapp 3s infinite !important;
 }
 
 @keyframes gradient-move {
@@ -190,16 +191,39 @@ h4,
 
 /* Extreme Precision Scanner (Pill-Shaped) */
 .precision-scanner-bar {
-    background: rgba(0, 0, 0, 0.1);
-    /* 10% Opacity */
+    background: rgba(255, 255, 255, 0.03);
     border-radius: 9999px;
-    /* Pill-shaped */
     padding: 0.4rem;
     display: flex;
+    flex-direction: row;
+    align-items: center;
     gap: 0.5rem;
-    max-width: 500px;
+    max-width: 550px;
     backdrop-filter: blur(20px);
     position: relative;
+}
+
+@media (max-width: 640px) {
+    .precision-scanner-bar {
+        flex-direction: column;
+        border-radius: 1.5rem;
+        padding: 1.5rem;
+    }
+
+    .precision-scanner-bar::before {
+        border-radius: 1.5rem !important;
+    }
+
+    .precision-scanner-input {
+        padding-left: 0;
+        text-align: center;
+        width: 100%;
+        margin-bottom: 1rem;
+    }
+
+    .precision-scanner-btn {
+        width: 100%;
+    }
 }
 
 /* 1px Glow Border for Scanner */
@@ -222,26 +246,31 @@ h4,
     border: none;
     outline: none;
     padding-left: 2rem;
-    color: #9CA3AF;
-    /* Gray medium */
-    font-size: 0.9rem;
+    color: white;
+    font-size: 1.125rem;
     flex: 1;
 }
 
-.precision-scanner-btn {
-    background: #8A2BE2;
-    /* Solid Purple */
+.precision-scanner-input::placeholder {
+    color: rgba(255, 255, 255, 0.4);
+    font-size: 1.125rem;
+}
+
+.precision-scanner-input:focus {
     color: white;
+}
+
+.precision-scanner-btn {
+    background: linear-gradient(90deg, #00F2FF 0%, #8A2BE2 100%);
+    color: #050A18;
     font-weight: 900;
     font-size: 0.75rem;
     padding: 0.9rem 2.8rem;
     border-radius: 9999px;
-    /* Internal Pill */
     text-transform: uppercase;
     letter-spacing: 0.2em;
-    transition: all 0.4s ease;
-    box-shadow: 0 0 20px rgba(138, 43, 226, 0.4);
-    /* Outer Glow */
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 0 20px rgba(0, 242, 255, 0.3);
 }
 
 .precision-scanner-btn:hover {
@@ -254,8 +283,10 @@ h4,
 .master-hero-cards {
     display: flex;
     gap: 1.5rem;
-    width: 60%;
-    /* Occupy left part mainly */
+    width: 100%;
+    max-width: 650px;
+    margin: 0 auto;
+    justify-content: center;
 }
 
 @media (max-width: 1024px) {
@@ -271,17 +302,81 @@ h4,
     align-items: center;
     gap: 1.25rem;
     padding: 1.5rem 2rem;
-    border-radius: 1rem;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    /* 1px Glass border */
+    border-radius: 1.5rem;
+    border: 1px solid rgba(255, 255, 255, 0.05);
     background: rgba(255, 255, 255, 0.02);
-    backdrop-filter: blur(15px);
-    transition: all 0.4s ease;
+    backdrop-filter: blur(20px);
+    transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
     text-decoration: none;
+    position: relative;
+    overflow: hidden;
+}
+
+.card-icon-container {
+    transition: transform 0.5s ease;
+}
+
+.master-hero-card:hover .card-icon-container {
+    transform: scale(1.2) rotate(-5deg);
+}
+
+/* Specific Themes */
+.card-purple:hover {
+    border-color: #8A2BE2;
+    box-shadow: 0 0 30px rgba(138, 43, 226, 0.4);
+    background: rgba(138, 43, 226, 0.05);
+}
+
+.card-cyan:hover {
+    border-color: #00F2FF;
+    box-shadow: 0 0 30px rgba(0, 242, 255, 0.4);
+    background: rgba(0, 242, 255, 0.05);
 }
 
 .master-hero-card:hover {
+    transform: translateY(-10px);
+}
+
+
+/* Corrigir fundo e remover espaços do topo */
+body,
+html {
+    background-color: #050A18;
+    /* */
+    margin: 0;
+    padding: 0;
+}
+
+/* Forçar a Hero a colar no topo */
+#hero {
+    margin-top: 0 !important;
+    padding-top: 0 !important;
+}
+
+/* Efeito Glassmorphism Real */
+.glass-card {
     background: rgba(255, 255, 255, 0.05);
-    border-color: rgba(0, 242, 255, 0.5);
-    transform: translateY(-8px);
+    /* */
+    backdrop-filter: blur(20px);
+    /* */
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    /* */
+    border-radius: 1.5rem;
+}
+
+/* Garantir que a fonte Montserrat seja aplicada */
+.Montserrat {
+    font-family: 'Montserrat', sans-serif;
+    /* */
+}
+
+#hero {
+    /* Fundo Azul Marinho Abissal com gradientes de profundidade */
+    background-color: #050A18 !important;
+    background-image:
+        radial-gradient(circle at 85% 50%, rgba(138, 43, 226, 0.18), transparent 45%),
+        radial-gradient(circle at 15% 50%, rgba(0, 242, 255, 0.08), transparent 40%);
+    position: relative;
+    overflow: hidden;
 }
