@@ -1,36 +1,82 @@
-# 🏛️ Santis Engenharia Digital - Master Brief V2
+# Santis Engenharia Digital: Master Brief V2
+**Inteligência, Tecnologia e Performance**
 
-## 🎯 Posicionamento de Marca
-- **Pilar Central:** Transição do estigma "Hacker/Cyberpunk" para "Engenharia Digital Premium".
-- **Foco:** Luxo técnico, Performance extrema e Blindagem Corporativa (LGPD).
-- **Slogan Sugerido:** "Transformando tecnologia em segurança e resultados."
-
-## 🎨 Identidade Visual (UI/UX)
-- **Cores:** - Fundo: Azul Marinho Abissal (#050A18).
-  - Acentos: Ciano Neon (#00F2FF) e Púrpura Vibrante (#8A2BE2) para glows e bordas finas.
-- **Tipografia:** - Títulos e Menus: Montserrat (Clean e imponente).
-  - Corpo: Sans-serif nativa moderna (evitar JetBrains Mono para fugir do visual de terminal).
-- **Estilo:** Glassmorphism suave (efeito jateado), bordas de 1px e iluminação de fundo para profundidade.
-
-## 🧱 Arquitetura da OnePage (Desktop & Mobile First)
-
-1. **Header:** Menu minimalista com transparência (Glassmorphism). No mobile, ícone hambúrguer com overlay de tela cheia.
-2. **Hero:** Foto executiva (Pose Peter Norton) à direita. Headline editorial à esquerda.
-3. **Radar Scanner:** Ferramenta interativa com animação de radar aeronáutico. Simula diagnóstico de vulnerabilidades e performance.
-4. **Bento Grid (Serviços):** - **Card A (Sites):** Foco em Landing Pages Mobile-First, conversão e conformidade implícita com LGPD.
-   - **Card B (Windows):** Conceito "PC Doctor". Otimização, limpeza e performance sem focar inicialmente em formatação.
-5. **Santis Control:** Prova de autoridade exibindo o mockup do painel administrativo proprietário (Sneat Pro adaptado).
-6. **Portfólio de Destaque:** Grid de 2 colunas (Desktop). Itens expansíveis que revelam detalhes técnicos e status do domínio.
-7. **Radar Santis (Blog):** Layout Masonry com notícias reais de segurança e performance para gerar autoridade de "vigília".
-8. **O Xeque-Mate:** Seção de urgência focada em segurança de dados e riscos de multas da LGPD.
-9. **Parcerias:** Barra discreta com logos monocromáticos (AWS, Cloudflare, Norton, Hostinger).
-10. **Rodapé:** Assinatura "Feito com ♥ por Fernando Santis" em design extremamente clean.
-
-## 🛠️ Especificações Técnicas
-- **Ambiente:** WSL2 + DDEV (PHP 8.4 + MariaDB).
-- **Frontend:** Tailwind CSS (via CDN para preview, compilado para produção).
-- **Backend Final:** PHP 8.4 nativo, Bramus Router, Twig Templates e Dotenv.
-- **Assets:** Imagens padronizadas como `logo-santis.svg` e `hero-santis.png` na pasta `assets/img/`.
+Este documento detalha o ecossistema digital **Santis**, descrevendo cada seção, funcionalidade e a lógica técnica por trás da experiência do usuário. 
 
 ---
-*Documento atualizado em: 21 de Fevereiro de 2026.*
+
+## 🏗️ 1. Arquitetura Técnica & Design
+O site utiliza uma abordagem **Vanilla Modern**: alta performance sem o overhead de frameworks pesados.
+-   **Cores Primárias**: `#050A18` (Navy), `#00F2FF` (Cyan), `#8A2BE2` (Purple).
+-   **Tipografia**: Montserrat (Impacto) e Inter (Leitura).
+-   **Efeitos**: `backdrop-blur` para glassmorphism, animações de gradiente via CSS (`animate-gradient`), e glows interativos.
+
+---
+
+## 🏠 2. Estrutura Detalhada da Home
+
+### A. Seção Hero & Scanner Inicial
+-   **Headline**: Foco em "Performance e Tecnologia" com gradientes animados.
+-   **Input de Varredura**: Campo de busca inicial conectado ao `search-experience.js`.
+-   **Cards de Acesso Rápido**: Links diretos para "Site Seguro" e "Otimização".
+
+### B. Seção Performance (Cuidado Técnico Profissional)
+Focada em otimização de sistemas, dividida em um fluxo de 4 passos:
+1.  **Anamnese & Entrevista**: Identificação de gargalos.
+2.  **Diagnóstico & Proposta**: Relatório detalhado.
+3.  **Execução & Blindagem**: Drivers, Windows Lite e limpeza.
+4.  **Entrega & Backup**: Suporte pós-entrega.
+
+### C. Seção Web Presence (Sites de Credibilidade)
+Focada no desenvolvimento de autoridade digital:
+-   **Tecnologia sob Medida**: Infraestrutura construída do zero.
+-   **Visão do Futuro**: Experiência mobile fluida.
+-   **Gestão Ágil**: Painéis administrativos modernos.
+
+### D. Santis Control (Autoridade Técnica)
+Apresentação do ecossistema proprietário v2.4, baseado em 4 pilares:
+1.  **Gerenciamento Centralizado**: Controle total de dados.
+2.  **Automação & Sincronia**: Publicação multiplataforma.
+3.  **Segurança & LGPD**: Blindagem jurídica e técnica.
+4.  **Interface Ágil**: Responsividade extrema.
+
+---
+
+## 🔍 3. Modal de Verificação (Search Experience)
+Ativado via botão "Verificar Agora", o modal simula um protocolo de varredura real:
+-   **Fases de Scan**: 
+    1. Iniciação de Injeção.
+    2. Acesso à API HaveIBeenPwned.
+    3. Mapeamento de Incidentes.
+    4. Cálculo de Vetor de Risco.
+-   **Resultados Dinâmicos**:
+    -   **Crítico (Found)**: Mostra nível de risco (ex: 75%) e timeline de vazamentos reais.
+    -   **Protegido (Not Found)**: Feedback positivo de segurança.
+-   **CTA de Fechamento**: Direciona o usuário para "Resolver com Especialista" (âncora `#contato`).
+
+---
+
+## 🎨 4. Portfólio de Projetos Dinâmicos
+Grid interativo que mostra a versatilidade da engenharia:
+-   **Status dos Projetos**:
+    -   `ONLINE`: Projetos ativos e em produção.
+    -   `LEGACY`: Projetos históricos que servem como referência técnica.
+-   **Interação de Card**: Efeito de `glow` constante, com `blur` e texto "Acessar Portfólio" no hover.
+-   **Expansão (Overlay)**: Ao clicar, abre um painel detalhado com descrição completa e **Navegação em Carrossel** (Seta pros lados para ver outros projetos sem fechar o modal).
+
+---
+
+## 📡 5. Radar Santis (Blog)
+-   **Categorias**: Segurança e Otimização.
+-   **Cards Inteligentes**: O grid é intercalado com anúncios de serviço (LGPD/Scanner).
+-   **Compartilhamento**: Barra social fixa com Facebook, LinkedIn, WhatsApp e ferramentas (Imprimir/Copiar).
+
+---
+
+## 📩 6. Rodapé & Conversão
+-   **QR Code**: Acesso direto ao WhatsApp oficial.
+-   **Formulário Inteligente**: Capta Nome e Mensagem, enviando direto para o especialista via API do WhatsApp.
+-   **Copyright Dinâmico**: Script que atualiza o ano automaticamente.
+
+---
+*Este documento é a referência oficial da Arquitetura Santis v2.*
