@@ -132,6 +132,21 @@ Para garantir segurança rigorosa:
 
 ---
 
-## 7. Próxima Etapa: O Banco de Dados Dinâmico
+## 7. Privacidade e LGPD (Proteção de PII)
 
-Para suportar essa arquitetura *EAV (Entity-Attribute-Value)* ou *Relacional Dinâmica*, e prever a flexibilidade das fases Monolíticas vs Multi-Tenant, o mapeamento será a espinha dorsal de todo o desenvolvimento subsequente.
+No Brasil centralizamos a Lei Geral de Proteção de Dados (LGPD) como prioritária na arquitetura do SaaS. Como a Santis e seus clientes custodiam dados (Leads, e-mails de verificações, números de WhatsApp), o vazamento de um Dump SQL não pode de maneira nenhuma comprometer o usuário final.
+
+### 7.1 Criptografia Rest-Level de PII (Personally Identifiable Information)
+Toda coluna de banco de dados que contiver informações identificáveis sensíveis de usuários externos (em tabelas como `leads` ou contatos) **DEVE ser criptografada na base de dados (at rest)**.
+- **Campos Alvo:** Nomes, E-mails, Telefones, CPFs, Mensagens Privadas.
+- **Mecanismo (Proposta):** O ORM ou a classe abstrata de Models do CMS interceptará o "Save" e o "Read" destas tabelas. Ao salvar um lead, o nome "João" é criptografado com `openssl_encrypt()` usando uma Chave Mestra forte (única por Tenant no `.env` do servidor). No banco, será gravado um Hash ilegível (`Xv1/9aB...`).
+- **Defesa Contra Vazamentos:** Se um atacante roubar o arquivo `.sql` do banco de dados do Cliente X, ele só verá sequências codificadas. Os dados só remontam ao seu estado real dentro da memória do servidor PHP quando lidos pelo Painel Administrativo, que possui a Chave de Descriptografia na gaveta.
+
+### 7.2 Captura Passiva e Consentimento
+Embora a Fase Inicial preveja que a inserção de Leads no Painel da Santis seja manual (cadastro feito pelo Adm para fins de futuro Marketing), a API do banco e o frontend da Landing Page já devem nascer respeitando checkboxes de "*Aceito as Políticas de Privacidade e envio de dados*" nas chamadas que no futuro poderão ser abertas em formulários ativos.
+
+---
+
+## 8. Próxima Etapa: O Banco de Dados Dinâmico
+
+Para suportar essa arquitetura *EAV (Entity-Attribute-Value)* ou *Relacional Dinâmica*, prever a flexibilidade das fases Monolíticas vs Multi-Tenant, e comportar criptografia inline de PII, o mapeamento será a espinha dorsal de todo o desenvolvimento subsequente.
