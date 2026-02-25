@@ -1,0 +1,46 @@
+{% extends "base.twig" %}
+
+{% block title %}Santis | Inteligência em Radar{% endblock %}
+
+{% block header %}
+    {% include '_partials/post_header.twig' %}
+{% endblock %}
+
+{% block content %}
+    <main id="post-content">
+        <!-- Loading state -->
+        <div id="status-msg" class="h-screen flex items-center justify-center text-gray-500 font-bold uppercase tracking-widest italic">
+            Sincronizando Inteligência...
+        </div>
+    </main>
+{% endblock %}
+
+{% block footer %}
+    {% include 'Contact/Views/contact.twig' %}
+    {% include '_partials/footer.twig' %}
+{% endblock %}
+
+{% block stylesheets %}
+    <style>
+        .post-banner-fade {
+            background: linear-gradient(to bottom, rgba(5, 10, 24, 0.4) 0%, rgba(5, 10, 24, 1) 100%);
+        }
+        @media print {
+            .no-print {
+                display: none !important;
+            }
+            body {
+                background: white;
+                color: black;
+            }
+            .container {
+                max-width: 100% !important;
+            }
+        }
+    </style>
+{% endblock %}
+
+{% block javascripts %}
+    <script src="{{ CDN_URL }}modules/radar/assets/js/blog-data.js"></script>
+    <script src="{{ CDN_URL }}modules/radar/assets/js/single-post.js"></script>
+{% endblock %}

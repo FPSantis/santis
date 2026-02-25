@@ -1,6 +1,31 @@
-/vendor/
+# IDEs / DDEV
+.vscode/
+.idea/
+.ddev/
+
+# Dependencies
+**/vendor/
+**/node_modules/
+
+# Environment Variables
 **/.env
-/.ddev/
-/.vscode/
-/.idea/
+**/.env.local
+
+# Temporary and Reference Files
+tmp/
+
+# Logs and Caches
 *.log
+**/cache/
+**/logs/
+
+# Uploads and Database
+**/public_html/uploads/
+**/storage/
+*.sql
+*.sqlite
+
+# OS Generated
+.DS_Store
+Thumbs.db
+ref/sneat/

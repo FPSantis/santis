@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="pt-br" id="top">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Santis | Inteligência, Tecnologia e Performance{% endblock %}</title>
+    <meta name="description" content="{% block description %}Engenharia digital de alta performance, segurança avançada e inovação tecnológica. Soluções especializadas para elevar sua presença profissional ao próximo nível.{% endblock %}">
+    <meta name="keywords" content="{% block keywords %}engenharia digital, performance, tecnologia, santis, blindagem digital, websites profissionais, otimização de sistemas, tecnologia da informação{% endblock %}">
+    <meta name="author" content="Santis">
+    <link rel="canonical" href="{{ URL_BASE }}">
+
+    <!-- Open Graph / Facebook / WhatsApp -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="{{ URL_BASE }}">
+    <meta property="og:title" content="Santis | Inteligência, Tecnologia e Performance">
+    <meta property="og:description" content="Engenharia digital de alta performance, segurança avançada e inovação tecnológica.">
+    <meta property="og:image" content="{{ URL_BASE }}assets/img/hero-santis.png">
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="{{ URL_BASE }}">
+    <meta property="twitter:title" content="Santis | Inteligência, Tecnologia e Performance">
+    <meta property="twitter:description" content="Engenharia digital de alta performance, segurança avançada e inovação tecnológica.">
+    <meta property="twitter:image" content="{{ URL_BASE }}assets/img/hero-santis.png">
+
+    <!-- Favicon -->
+    <link rel="apple-touch-icon" sizes="180x180" href="{{ URL_BASE }}apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="{{ URL_BASE }}favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="{{ URL_BASE }}favicon-16x16.png">
+    <link rel="manifest" href="{{ URL_BASE }}site.webmanifest">
+    <link rel="shortcut icon" href="{{ URL_BASE }}favicon.ico">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;800&display=swap" rel="stylesheet">
+
+    <!-- Global Styles -->
+    <link rel="stylesheet" href="{{ URL_BASE }}assets/css/main.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+    
+    <!-- Module Specific Styles -->
+    {% block stylesheets %}{% endblock %}
+</head>
+
+<body class="bg-[#050A18] text-white font-sans antialiased">
+    <!-- Scanline Effect Overlay -->
+    <div class="fixed inset-0 bg-scanline opacity-[0.03] pointer-events-none z-[999]"></div>
+
+    {% block header %}{% endblock %}
+
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+
+    {% block footer %}{% endblock %}
+
+    <!-- Botão Flutuante (Back to Top) -->
+    <a href="#top" class="btn-back-to-top" title="Voltar ao Topo">
+        <i class="bi bi-chevron-up"></i>
+    </a>
+
+    <!-- Global Scripts -->
+    <script src="{{ URL_BASE }}assets/js/main.js"></script>
+    
+    <!-- Module Specific Scripts -->
+    {% block javascripts %}{% endblock %}
+</body>
+
+</html>

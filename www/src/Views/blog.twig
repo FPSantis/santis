@@ -1,0 +1,88 @@
+{% extends "base.twig" %}
+
+{% block title %}Santis | Radar de Inteligência{% endblock %}
+
+{% block header %}
+    {% include '_partials/blog_header.twig' %}
+{% endblock %}
+
+{% block content %}
+    <main class="relative z-10">
+        <!-- Cinematic Header Banner -->
+        <div class="relative min-h-[550px] md:h-[65vh] w-full overflow-hidden flex items-end pt-40 pb-20 md:pt-0 md:pb-32">
+            <div class="absolute inset-0 z-[-1]">
+                <!-- Letting fixed background take the lead, banner just adds depth -->
+                <div class="absolute inset-0 post-banner-fade"></div>
+            </div>
+
+            <div class="container mx-auto px-6 relative z-10 text-center max-w-4xl">
+                <div id="blog-pretitle" class="badge-highlight mb-6 pr-10">Radar Online</div>
+                <h1 id="blog-title" class="text-5xl md:text-7xl font-black Montserrat uppercase tracking-tighter text-white leading-[1.2] mb-8 italic">
+                    <span class="inline-block text-transparent bg-clip-text bg-gradient-to-r from-[#00F2FF] via-[#8A2BE2] to-[#00F2FF] animate-gradient px-4 pb-4">Radar Santis</span>
+                </h1>
+                <p id="blog-description" class="text-gray-400 font-light text-xl mb-12 max-w-3xl mx-auto leading-relaxed">
+                    Sincronizados com o pulso tecnológico global. Sua dose em tempo real de inteligência em segurança e performance digital.
+                </p>
+
+                <!-- Category Filters -->
+                <div class="flex justify-center gap-4 flex-wrap">
+                    <a href="blog.html" class="filter-btn px-10 py-4 rounded-full border border-white/10 text-[10px] font-black uppercase tracking-widest" id="filter-all">Todos os Artigos</a>
+                    <a href="blog.html?filter=Segurança" class="filter-btn px-10 py-4 rounded-full border border-white/10 text-[10px] font-black uppercase tracking-widest" id="filter-seguranca">Segurança</a>
+                    <a href="blog.html?filter=Otimização" class="filter-btn px-10 py-4 rounded-full border border-white/10 text-[10px] font-black uppercase tracking-widest" id="filter-otimizacao">Otimização</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="container mx-auto px-6 pt-0 pb-5">
+
+            <!-- Grid -->
+            <div class="radar-grid-fixed" id="radar-grid">
+                <!-- Posts dynamicly loaded here -->
+            </div>
+
+            <!-- Pagination -->
+            <div id="load-more-container" class="mt-24 text-center">
+                <button id="load-more-blog" class="px-12 py-5 bg-white/5 border border-white/10 rounded-full text-[12px] font-black uppercase tracking-[4px] text-white hover:border-[#8A2BE2] hover:bg-[#8A2BE2]/10 transition-all active:scale-95 shadow-2xl">
+                    Carregar Mais Inteligência
+                </button>
+            </div>
+
+            {% include 'Social/Views/share_bar.twig' ignore missing %}
+            
+        </div>
+    </main>
+{% endblock %}
+
+{% block footer %}
+    {% include 'Contact/Views/contact.twig' %}
+    {% include '_partials/footer.twig' %}
+{% endblock %}
+
+{% block stylesheets %}
+    <link rel="stylesheet" href="{{ CDN_URL }}modules/radar/assets/css/radar-news.css">
+    <style>
+        .post-banner-fade {
+            background: linear-gradient(to bottom, rgba(5, 10, 24, 0.4) 0%, rgba(5, 10, 24, 1) 100%);
+        }
+    </style>
+{% endblock %}
+
+{% block javascripts %}
+    <script src="{{ CDN_URL }}modules/radar/assets/js/blog-data.js"></script>
+    <script src="{{ CDN_URL }}modules/radar/assets/js/radar.js"></script>
+    <script>
+        function copyToClipboard() {
+            navigator.clipboard.writeText(window.location.href).then(() => {
+                const tooltip = document.getElementById('copy-tooltip-global');
+                if(tooltip) {
+                    tooltip.classList.remove('opacity-0');
+                    tooltip.classList.add('opacity-100');
+                    setTimeout(() => {
+                        tooltip.classList.remove('opacity-100');
+                        tooltip.classList.add('opacity-0');
+                    }, 2000);
+                }
+            });
+        }
+    </script>
+{% endblock %}
