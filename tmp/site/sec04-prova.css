@@ -1,8 +1,0 @@
-#prova {
-    /* Gradiente radial para criar foco no centro */
-    background: radial-gradient(circle at center, #0A1225 0%, #050A18 100%);
-}
-
-#prova .relative.bg-\[\#0A1225\] {
-    box-shadow: 0 50px 100px -20px rgba(0, 0, 0, 0.5);
-}
