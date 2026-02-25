@@ -29,9 +29,8 @@ $router->get('/api/test', function() {
 });
 
 // Admin Panel Routes Handled by Twig Controller
-$router->get('/', function() {
-    echo "Painel Administrativo da Santis (Em Breve com Sneat Pro).<br><a href='/api/test'>Acesse a API Teste</a>";
-});
+$router->get('/', 'Painel\Http\Controllers\WebController@dashboard');
+$router->get('/login', 'Painel\Http\Controllers\WebController@login');
 
 // Exceções 404
 $router->set404(function() {

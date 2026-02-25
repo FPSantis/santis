@@ -1,0 +1,94 @@
+{% extends "layouts/auth.twig" %}
+
+{% block content %}
+<div class="authentication-wrapper authentication-cover">
+  <div class="authentication-inner row m-0">
+    <!-- Left Text -->
+    <div class="d-none d-lg-flex col-lg-7 col-xl-8 align-items-center p-5">
+      <div class="w-100 d-flex justify-content-center">
+        <img src="{{ ASSETS_URL }}/img/illustrations/boy-with-rocket-light.png" class="img-fluid" alt="Login image" width="700" data-app-dark-img="illustrations/boy-with-rocket-dark.png" data-app-light-img="illustrations/boy-with-rocket-light.png" />
+      </div>
+    </div>
+    <!-- /Left Text -->
+
+    <!-- Login -->
+    <div class="d-flex col-12 col-lg-5 col-xl-4 align-items-center authentication-bg p-sm-12 p-6">
+      <div class="w-px-400 mx-auto mt-sm-12 mt-8">
+        <!-- Logo -->
+        <a href="/" class="app-brand auth-cover-brand gap-2 mb-4 d-flex">
+          <span class="app-brand-logo demo"></span>
+          <span class="app-brand-text demo text-heading fw-bold fs-3">Santis CMS</span>
+        </a>
+        <!-- /Logo -->
+        
+        <h4 class="mb-1">Bem-vindo(a) ao Backend 👋</h4>
+        <p class="mb-6">Por favor, faça login com suas credenciais administrativas.</p>
+
+        <form id="formAuthentication" class="mb-6" action="/" method="GET">
+          <div class="mb-6 form-control-validation">
+            <label for="email" class="form-label">E-mail Corporativo</label>
+            <input type="email" class="form-control" id="email" name="email" placeholder="admin@santis.net.br" autofocus required />
+          </div>
+          <div class="form-password-toggle form-control-validation">
+            <label class="form-label" for="password">Senha Forte</label>
+            <div class="input-group input-group-merge">
+              <input type="password" id="password" class="form-control" name="password" placeholder="············" aria-describedby="password" required />
+              <span class="input-group-text cursor-pointer"><i class="icon-base bx bx-hide"></i></span>
+            </div>
+          </div>
+          <div class="my-7">
+            <div class="d-flex justify-content-between">
+              <div class="form-check mb-0">
+                <input class="form-check-input" type="checkbox" id="remember-me" checked />
+                <label class="form-check-label" for="remember-me">Manter Conectado</label>
+              </div>
+            </div>
+          </div>
+          <button type="submit" class="btn btn-primary d-grid w-100" id="loginBtn">Entrar no Painel</button>
+        </form>
+      </div>
+    </div>
+    <!-- /Login -->
+  </div>
+</div>
+{% endblock %}
+
+{% block page_js %}
+<script>
+document.getElementById('formAuthentication').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const email = document.getElementById('email').value;
+    const password = document.getElementById('password').value;
+    const btn = document.getElementById('loginBtn');
+    
+    btn.innerHTML = 'Validando...';
+    btn.disabled = true;
+
+    // Chamada à nossa API Headless (Construída na Fase 2)
+    fetch('/api/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: email, password: password })
+    })
+    .then(res => res.json())
+    .then(data => {
+        if(data.success) {
+            // Em projetos Headless Modernos, o Token vai pro LocalStorage do Nav e as rotas
+            // de API JWT que interceptam.
+            localStorage.setItem('santis_jwt', data.data.token);
+            window.location.href = '/';
+        } else {
+            alert('Falha no Login da API: ' + data.message);
+            btn.innerHTML = 'Entrar no Painel';
+            btn.disabled = false;
+        }
+    })
+    .catch(err => {
+        alert('Erro no gateway da API.');
+        btn.innerHTML = 'Entrar no Painel';
+        btn.disabled = false;
+    });
+});
+</script>
+{% endblock %}

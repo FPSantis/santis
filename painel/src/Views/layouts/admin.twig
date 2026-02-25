@@ -1,0 +1,94 @@
+<!doctype html>
+
+<html
+  lang="en"
+  class="layout-navbar-fixed layout-menu-fixed layout-compact"
+  dir="ltr"
+  data-skin="default"
+  data-assets-path="{{ ASSETS_URL }}/"
+  data-template="vertical-menu-template"
+  data-bs-theme="light">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0" />
+
+    <title>{{ title | default('Santis CMS PRO') }}</title>
+
+    <link rel="icon" type="image/x-icon" href="{{ ASSETS_URL }}/img/favicon/favicon.ico" />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Public+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&display=swap" rel="stylesheet" />
+
+    <link rel="stylesheet" href="{{ ASSETS_URL }}/vendor/fonts/iconify-icons.css" />
+    <link rel="stylesheet" href="{{ ASSETS_URL }}/vendor/fonts/flag-icons.css" />
+    
+    <link rel="stylesheet" href="{{ ASSETS_URL }}/vendor/css/theme.css">
+
+    <script src="{{ ASSETS_URL }}/vendor/js/helpers.js"></script>
+    <script src="{{ ASSETS_URL }}/vendor/js/template-customizer.js"></script>
+    <script src="{{ ASSETS_URL }}/js/config.js"></script>
+    
+    {% block page_css %}{% endblock %}
+  </head>
+
+  <body>
+    <!-- Layout wrapper -->
+    <div class="layout-wrapper layout-content-navbar">
+      <div class="layout-container">
+        
+        <!-- Menu Sidebar -->
+        {% include "partials/sidebar.twig" %}
+        <!-- / Menu -->
+
+        <!-- Layout container -->
+        <div class="layout-page">
+          
+          <!-- Navbar -->
+          {% include "partials/navbar.twig" %}
+          <!-- / Navbar -->
+
+          <!-- Content wrapper -->
+          <div class="content-wrapper">
+            
+            <!-- Content -->
+            <div class="container-xxl flex-grow-1 container-p-y">
+                {% block content %}{% endblock %}
+            </div>
+            <!-- / Content -->
+
+            <!-- Footer -->
+            {% include "partials/footer.twig" %}
+            <!-- / Footer -->
+
+            <div class="content-backdrop fade"></div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="layout-overlay layout-menu-toggle"></div>
+      <div class="drag-target"></div>
+    </div>
+
+    <!-- Core JS -->
+    <script src="{{ ASSETS_URL }}/vendor/js/theme.js"></script>
+    
+    <!-- API Auth/JWT Sec Layer -->
+    <script>
+      const token = localStorage.getItem('santis_jwt');
+      if (!token) {
+        window.location.href = '/login';
+      }
+      
+      /** 
+       * TODO: Attach Bearer interceptor globally to fetch/axios here.
+       * Ex: fetch = customFetch(url, options) -> envia o Bearer header
+       */
+    </script>
+
+    <!-- Main JS -->
+    <script src="{{ ASSETS_URL }}/js/main.js"></script>
+    
+    {% block page_js %}{% endblock %}
+  </body>
+</html>
