@@ -1,0 +1,35 @@
+# Bloquear listagem de diretório
+Options -Indexes
+
+# Prevenir visualização de arquivos ocultos e do próprio .htaccess
+<FilesMatch "^\.">
+    Order allow,deny
+    Deny from all
+</FilesMatch>
+
+# Configuração de Cache para Mídias (Aumento de Performance)
+<IfModule mod_expires.c>
+    ExpiresActive On
+    
+    # Imagens, Vídeos e Áudio (Cache de 1 Mês)
+    ExpiresByType image/jpg "access plus 1 month"
+    ExpiresByType image/jpeg "access plus 1 month"
+    ExpiresByType image/gif "access plus 1 month"
+    ExpiresByType image/png "access plus 1 month"
+    ExpiresByType image/svg+xml "access plus 1 month"
+    ExpiresByType image/webp "access plus 1 month"
+    ExpiresByType video/mp4 "access plus 1 month"
+    ExpiresByType video/webm "access plus 1 month"
+    ExpiresByType audio/mpeg "access plus 1 month"
+    
+    # Fontes (Cache de 1 Ano - Se houver)
+    ExpiresByType font/woff2 "access plus 1 year"
+    
+    # PDFs e Documentos (Cache de 1 Semana)
+    ExpiresByType application/pdf "access plus 1 week"
+</IfModule>
+
+# Permitir Cross-Origin Resource Sharing (CORS) para que o frontend www possa carregar sem bloqueio
+<IfModule mod_headers.c>
+    Header set Access-Control-Allow-Origin "*"
+</IfModule>
