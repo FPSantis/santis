@@ -22,7 +22,8 @@ A estrutura do desenvolvimento e todas as pequenas tarefas (épicos) estão divi
 - [ ] Criar Dashboard de Entrada (Visão Admin e Visão Geral).
 - [ ] Criar listagens de Arquivos do Módulo CDN.
 - [ ] Interface de controle Global Settings.
-- [ ] Inteface do Webmaster para criação visual de "Tipos" de Conteúdo e "Drivers" de Mensageiros.
+- [ ] Interface do Webmaster para criação visual de "Tipos" de Conteúdo e "Drivers" de Mensageiros.
+- [ ] Ferramenta de Importação/Exportação (JSON) para Tipos de Conteúdo e Configurações (Reuso de templates entre clientes).
 
 ## FASE 4: Integração com Frontend (Santis / Apps)
 - [ ] Configurar Landing Page para fazer GETs de conteúdo dos Tipos Dinâmicos.

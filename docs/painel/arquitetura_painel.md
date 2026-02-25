@@ -11,6 +11,7 @@ Sua responsabilidade é fornecer uma interface de usuário (UI) limpa nas visõe
 A arquitetura de dados não é "Hardcoded" para páginas fixas. Ela atua baseada na construção de "Tipos" (Entity-Attribute-Value).
 
 1. **Webmaster Panel:** Área restrita a desenvolvedores da Santis. Aqui, o Webmaster constrói a estrutura de um cliente, declarando quais "Módulos" (ex: Mensageiros de Form, Analytics) e quais "Tipos de Post" (ex: Blog, Cardápio, Vagas, Portfólio) aquele cliente vai usar. 
+  - **Importação/Exportação (Templates de Arquitetura):** Para evitar retrabalho na criação de tipos comuns (como "Blog" ou "Portfólio"), o painel do Webmaster permite Exportar a configuração de um "Tipo" (campos, regras) em formato padronizado (JSON) e Importá-lo para um cliente novo, criando a tabela/estrutura em segundos.
 2. **Admin/Editor Panel:** O cliente entra no painel e vê apenas a UI gerada dinamicamente para ele alimentar o conteúdo dos `Tipos` habilitados, sem acesso à estrutura de banco.
 
 ## 3. Segurança e Auditoria (Audit Trail)
