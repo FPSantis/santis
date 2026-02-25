@@ -53,4 +53,7 @@ $api->mount('/secure', function() use ($api) {
     $api->get('/entries/(\w+)', 'Painel\Http\Controllers\EntryController@index');
     $api->post('/entries/(\w+)', 'Painel\Http\Controllers\EntryController@store');
 
+    // Integração CDN e Upload de Mídia Físico
+    $api->post('/upload', 'Painel\Http\Controllers\UploadController@store');
+
 });
