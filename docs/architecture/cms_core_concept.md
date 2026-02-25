@@ -86,7 +86,24 @@ Como lidar com uma funcionalidade super exclusiva, como a API do `haveibeenpwned
 
 ---
 
-## 5. Próxima Etapa: O Banco de Dados Dinâmico
+## 5. Escalabilidade SaaS (Blueprints e Encapsulamento)
+
+Pensando em uma adoção "SaaS" onde o sistema roda em múltiplos servidores/clientes, a arquitetura deve prever dois comportamentos vitais a longo prazo.
+
+### 5.1 Importação/Exportação Total (Site Blueprints)
+Além de exportar apenas um "Custom Type", o Webmaster poderá exportar um "Blueprint" completo de um cliente (Ex: "Template Imobiliária").
+- **O que compõe um Blueprint:** A definição de Tipos (Imóveis, Corretores, Contato), Configurações Padrão (Cores genéricas), Arquitetura da CDN vazia (pastas pré-criadas) e a base estática do Frontend (www).
+- Quando um novo cliente entrar, o Webmaster clica em "Gerar do Blueprint". O sistema instantaneamente clona o esquema de pastas na CDN, cria as tabelas do Tenant baseadas no JSON, e acopla a Landing Page padrão. O administrador só precisará trocar cores, logotipos e textos.
+
+### 5.2 Arquitetura de Módulos Independentes (Safe Updates)
+Para poder atualizar todos os clientes simultaneamente (ex: Repositório Base V1.0 para V1.1) através de um comando ou `git pull`, os Módulos (Mensageiros, Tipos de Mídia, Social) devem ser 100% **encapsulados e independentes**.
+- Adicionar um novo Driver de Mensageiro (ex: Slack) jamais deve tocar no script de envio via E-Mail.
+- O novo código do "Driver Slack" é injetado na base de código de todos os clientes em uma atualização.
+- **Segurança por Omissão:** Qualquer funcionalidade nova atrelada a uma atualização de versão deve subir no servidor **Desativada por Padrão**. O cliente não leva sustos. Cabe ao Webmaster entrar no painel daquele cliente específico e habilitar o novo módulo.
+
+---
+
+## 6. Próxima Etapa: O Banco de Dados Dinâmico
 
 Para suportar essa arquitetura *EAV (Entity-Attribute-Value)* ou *Relacional Dinâmica*, as tabelas precisarão prever a separação por `tenant_id` (Cliente) e os mapeamentos dos "Campos Personalizados".
 

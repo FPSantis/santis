@@ -30,6 +30,10 @@ A estrutura do desenvolvimento e todas as pequenas tarefas (épicos) estão divi
 - [ ] Formatar o Asset Manager do CMS para só injetar JS/CSS que a Landing precisar.
 - [ ] Implementar forms de Contato (POST pra API de Mensageiro).
 
+## FASE 5: Escalabilidade SaaS (Blueprints e Updates Base)
+- [ ] Construir o motor de "Blueprint Export/Import" (Exporta Tipos + Scaffold de CDN + Scaffold WWW base).
+- [ ] Modularizar injeções de código para garantir que novas `features/` possam ser mergiadas na `main` no estado "Desativado por Padrão" sem quebrar tenants existentes.
+
 ## Fixo: Rotina Contínua
 - [ ] Atualização constante dos Docs.
 - [ ] Testes Nativos a cada Merge.
