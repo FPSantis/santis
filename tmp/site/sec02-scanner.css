@@ -1,0 +1,23 @@
+/* Efeito de brilho que percorre a borda (opcional) */
+@keyframes scan-glow {
+    0% {
+        transform: translateX(-100%);
+    }
+
+    100% {
+        transform: translateX(100%);
+    }
+}
+
+#scanner-console {
+    scrollbar-width: none;
+    box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.5);
+}
+
+.line-error {
+    color: #ff3e3e;
+}
+
+.line-success {
+    color: #00ffaa;
+}

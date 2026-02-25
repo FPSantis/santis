@@ -1,0 +1,176 @@
+/* santis.css - High-Tech Premium Engineering Foundation */
+
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap');
+
+:root {
+    --bg-deep: #050A18;
+    --accent-purple: #8A2BE2;
+    --accent-cyan: #00F2FF;
+    --text-white: #FFFFFF;
+    --glass-bg: rgba(255, 255, 255, 0.03);
+    --glass-border: rgba(255, 255, 255, 0.08);
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    scroll-behavior: smooth;
+}
+
+body {
+    background-color: var(--bg-deep);
+    color: var(--text-white);
+    font-family: 'Montserrat', sans-serif;
+    overflow-x: hidden;
+    line-height: 1.6;
+}
+
+.font-mont {
+    font-family: 'Montserrat', sans-serif;
+}
+
+.font-mono {
+    font-family: 'JetBrains Mono', monospace;
+}
+
+/* --- GLASSMORPHISM --- */
+.glass-card {
+    background: var(--glass-bg);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid var(--glass-border);
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.glass-card:hover {
+    border-color: rgba(255, 255, 255, 0.15);
+    background: rgba(255, 255, 255, 0.05);
+}
+
+/* --- LOGO NEON --- */
+.logo-neon-dot {
+    box-shadow: 0 0 15px var(--accent-cyan), 0 0 5px var(--accent-cyan);
+}
+
+/* --- ANIMATIONS --- */
+@keyframes gradient-move {
+    0% {
+        background-position: 0% 50%;
+    }
+
+    50% {
+        background-position: 100% 50%;
+    }
+
+    100% {
+        background-position: 0% 50%;
+    }
+}
+
+.animate-gradient {
+    background-size: 200% auto;
+    animation: gradient-move 3s linear infinite;
+}
+
+@keyframes pulse-glow {
+
+    0%,
+    100% {
+        opacity: 0.5;
+        transform: scale(1);
+    }
+
+    50% {
+        opacity: 0.8;
+        transform: scale(1.05);
+    }
+}
+
+.animate-pulse-glow {
+    animation: pulse-glow 3s ease-in-out infinite;
+}
+
+/* --- GLOW EFFECTS --- */
+.glow-purple {
+    background: radial-gradient(circle, var(--accent-purple) 0%, transparent 70%);
+    filter: blur(80px);
+}
+
+.glow-cyan {
+    background: radial-gradient(circle, var(--accent-cyan) 0%, transparent 70%);
+    filter: blur(80px);
+}
+
+/* --- BUTTONS --- */
+.btn-premium-cyan {
+    background: linear-gradient(135deg, var(--accent-cyan) 0%, #0088cc 100%);
+    box-shadow: 0 10px 30px -10px rgba(0, 242, 255, 0.4);
+    transition: all 0.3s ease;
+}
+
+.btn-premium-cyan:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 15px 40px -10px rgba(0, 242, 255, 0.6);
+}
+
+.btn-premium-protocol {
+    background: transparent;
+    border: 1px solid var(--accent-purple);
+    box-shadow: inset 0 0 10px rgba(138, 43, 226, 0.2);
+    transition: all 0.3s ease;
+}
+
+.btn-premium-protocol:hover {
+    background: var(--accent-purple);
+    box-shadow: 0 0 30px rgba(138, 43, 226, 0.4);
+}
+
+/* --- WHATSAPP FLOATING --- */
+.whatsapp-float {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    z-index: 100;
+    width: 60px;
+    height: 60px;
+    background: #25D366;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 10px 40px rgba(37, 211, 102, 0.5);
+    transition: all 0.3s ease;
+}
+
+.whatsapp-float:hover {
+    transform: scale(1.1) rotate(5deg);
+}
+
+/* --- FADE-IN ANIMATION ON SCROLL --- */
+.reveal {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: all 0.8s ease-out;
+}
+
+.reveal.active {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* Custom Letter Spacing for Corporate feel */
+.tracking-premium {
+    letter-spacing: -0.02em;
+}
+
+.tracking-system {
+    letter-spacing: 0.2em;
+}
+
+/* Scanline effect for Hero */
+.bg-scanline {
+    background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+    background-size: 100% 2px, 3px 100%;
+    pointer-events: none;
+}

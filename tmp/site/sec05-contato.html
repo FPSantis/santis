@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Santis - Contact</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="santis.css">
+</head>
+
+<body class="bg-[#050A18] text-white">
+    <!-- SEÇÃO 05: CONTATO -->
+    <section id="contato" class="py-32 px-6 bg-[#050A18] relative overflow-hidden">
+
+        <!-- Luz de fundo sutil -->
+        <div class="absolute -bottom-48 -right-48 w-96 h-96 glow-purple opacity-10 pointer-events-none"></div>
+
+        <div class="max-w-6xl mx-auto flex flex-col md:flex-row gap-24 relative z-10">
+
+            <div class="md:w-5/12 space-y-12">
+                <div class="space-y-6">
+                    <span
+                        class="text-[#8A2BE2] font-mono text-[10px] uppercase tracking-[0.4em] font-medium opacity-70">Pronto
+                        para o Próximo Nível</span>
+                    <h2
+                        class="text-4xl md:text-6xl font-extrabold font-mont leading-tight tracking-tight text-white focus:outline-none">
+                        Fale com um <br><span class="text-[#00F2FF]">Especialista.</span>
+                    </h2>
+                    <p class="text-white/40 font-mont text-lg leading-relaxed font-light">
+                        Estamos prontos para analisar seu cenário e implementar soluções de engenharia que protegem e
+                        aceleram seus ativos digitais.
+                    </p>
+                </div>
+
+                <div class="space-y-8">
+                    <a href="https://wa.me/5511999999999" target="_blank"
+                        class="flex items-center gap-8 p-8 glass-card rounded-[32px] hover:bg-white/[0.04] transition-all duration-500 group shadow-xl">
+                        <div
+                            class="w-16 h-16 bg-[#25D366] rounded-full flex items-center justify-center shadow-[0_0_32px_rgba(37,211,102,0.3)] group-hover:scale-110 transition-transform duration-500">
+                            <svg class="w-10 h-10 text-white" fill="currentColor" viewBox="0 0 24 24">
+                                <path
+                                    d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.417-.003 6.557-5.338 11.892-11.893 11.892-1.997-.001-3.951-.5-5.688-1.448l-6.305 1.652zm6.599-3.376l.354.21c1.405.834 3.031 1.275 4.693 1.276 5.12 0 9.288-4.168 9.29-9.287.001-2.483-.966-4.818-2.723-6.574-1.757-1.758-4.093-2.723-6.578-2.724-5.12 0-9.289 4.168-9.29 9.288-.001 1.745.488 3.447 1.412 4.916l.23.363-.996 3.637 3.73-.978zm10.597-5.513c-.279-.14-.1.653-1.651-.613-.243-.121-.419-.181-.612.11-.193.29-.747.943-.915 1.135-.168.192-.336.216-.615.076-.279-.14-1.18-.434-2.247-1.386-.83-.739-1.389-1.652-1.552-1.931-.163-.279-.017-.43.122-.569.125-.125.279-.325.419-.488.14-.163.186-.279.279-.465.093-.186.047-.35-.023-.488-.07-.139-.612-1.475-.839-2.022-.22-.533-.442-.46-.612-.468h-.522c-.193 0-.507.073-.772.361-.265.289-1.013.991-1.013 2.417s1.036 2.799 1.181 2.993c.145.193 2.035 3.107 4.93 4.357.688.297 1.226.474 1.646.608.693.219 1.324.188 1.823.114.555-.082 1.712-.699 1.954-1.374.242-.675.242-1.254.17-1.374-.073-.12-.266-.193-.545-.333z">
+                                </path>
+                            </svg>
+                        </div>
+                        <div>
+                            <h4 class="font-bold font-mont text-xl text-white tracking-tight">Falar com um
+                                Especialista</h4>
+                            <p class="text-white/30 text-sm font-mont font-light mt-1">Atendimento imediato via
+                                WhatsApp</p>
+                        </div>
+                    </a>
+
+                    <div
+                        class="flex items-center gap-6 text-white/30 font-mono text-[10px] px-4 tracking-[0.2em] uppercase">
+                        <span>contato@santis.net.br</span>
+                        <div class="w-1.5 h-1.5 bg-white/10 rounded-full"></div>
+                        <span>São Paulo, BR</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="md:w-7/12 relative group">
+                <!-- Efeito Glassmorphism Corporativo -->
+                <div class="relative glass-card rounded-[40px] p-10 md:p-14 shadow-[0_32px_64px_-16px_rgba(0,0,0,0.5)]">
+                    <form id="contact-form" class="space-y-10">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-10">
+                            <div class="space-y-4">
+                                <label
+                                    class="font-mont text-[10px] font-bold text-[#00F2FF] uppercase tracking-[0.3em] opacity-80">Seu
+                                    Nome</label>
+                                <input type="text" placeholder="Como devemos te chamar?"
+                                    class="w-full bg-transparent border-b border-white/10 py-4 text-white focus:border-[#00F2FF] outline-none transition-all font-mont placeholder:text-white/15 text-lg">
+                            </div>
+                            <div class="space-y-4">
+                                <label
+                                    class="font-mont text-[10px] font-bold text-[#00F2FF] uppercase tracking-[0.3em] opacity-80">E-mail
+                                    Profissional</label>
+                                <input type="email" placeholder="seu@email.com"
+                                    class="w-full bg-transparent border-b border-white/10 py-4 text-white focus:border-[#00F2FF] outline-none transition-all font-mont placeholder:text-white/15 text-lg">
+                            </div>
+                        </div>
+
+                        <div class="space-y-4">
+                            <label
+                                class="font-mont text-[10px] font-bold text-[#00F2FF] uppercase tracking-[0.3em] opacity-80">Como
+                                podemos ajudar?</label>
+                            <textarea rows="4" placeholder="Descreva brevemente sua necessidade técnica..."
+                                class="w-full bg-transparent border-b border-white/10 py-4 text-white focus:border-[#00F2FF] outline-none transition-all font-mont placeholder:text-white/15 text-lg resize-none"></textarea>
+                        </div>
+
+                        <button type="submit"
+                            class="w-full btn-premium-cyan py-6 rounded-2xl font-bold font-mont text-white shadow-2xl flex items-center justify-center gap-4 group/btn active:scale-95">
+                            <span class="uppercase tracking-widest text-sm">Enviar Solicitação</span>
+                            <svg class="w-5 h-5 group-hover/btn:translate-x-2 transition-transform" fill="none"
+                                stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
+                            </svg>
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <script src="sec05-contato.js"></script>
+</body>
+
+</html>

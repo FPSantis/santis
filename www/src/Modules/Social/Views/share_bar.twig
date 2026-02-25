@@ -1,0 +1,53 @@
+<!-- Global Share Bar -->
+<div class="mt-20 pt-0 border-t border-white/5 no-print">
+    <div class="flex flex-col md:flex-row justify-between items-center gap-12 max-w-5xl mx-auto">
+        <div>
+            <h4 class="text-white font-black Montserrat uppercase tracking-[4px] text-sm mb-2">Compartilhar</h4>
+            <p class="text-gray-600 text-[10px] uppercase tracking-widest font-black italic">Escrito com
+                <span class="text-[#8A2BE2] animate-pulse italic"><i class="bi bi-heart-fill"></i></span>
+                por Fernando Santis
+            </p>
+        </div>
+        <div class="flex flex-wrap justify-center gap-4 max-w-[220px] md:max-w-none">
+            <!-- Facebook -->
+            <button onclick="shareFacebook()"
+                class="w-14 h-14 flex items-center justify-center rounded-2xl bg-white/5 border border-white/10 text-white hover:bg-[#1877F2] hover:text-white transition-all text-xl"
+                title="Facebook">
+                <i class="bi bi-facebook"></i>
+            </button>
+            <!-- LinkedIn -->
+            <button
+                onclick="window.open('https://www.linkedin.com/sharing/share-offsite/?url=' + encodeURIComponent(window.location.href), '_blank')"
+                class="w-14 h-14 flex items-center justify-center rounded-2xl bg-white/5 border border-white/10 text-white hover:bg-[#0077B5] hover:text-white transition-all text-xl"
+                title="LinkedIn">
+                <i class="bi bi-linkedin"></i>
+            </button>
+            <!-- WhatsApp -->
+            <button onclick="shareWhatsApp()"
+                class="w-14 h-14 flex items-center justify-center rounded-2xl bg-white/5 border border-white/10 text-white hover:bg-[#25D366] hover:text-white transition-all text-xl"
+                title="WhatsApp">
+                <i class="bi bi-whatsapp"></i>
+            </button>
+            <!-- E-mail -->
+            <button onclick="shareEmail()"
+                class="w-14 h-14 flex items-center justify-center rounded-2xl bg-white/5 border border-white/10 text-white hover:bg-[#EA4335] hover:text-white transition-all text-xl"
+                title="E-mail">
+                <i class="bi bi-envelope-fill"></i>
+            </button>
+            <!-- Copy Link -->
+            <button onclick="copyToClipboard()" id="btn-copy-global"
+                class="w-14 h-14 flex items-center justify-center rounded-2xl bg-white/5 border border-white/10 text-white hover:bg-[#00F2FF] hover:text-[#050A18] transition-all text-xl relative"
+                title="Copiar Link">
+                <i class="bi bi-link-45deg"></i>
+                <span id="copy-tooltip-global"
+                    class="absolute -top-12 bg-[#00F2FF] text-[#050A18] text-[10px] font-black px-3 py-1 rounded-lg opacity-0 pointer-events-none transition-all uppercase tracking-widest">Copiado!</span>
+            </button>
+            <!-- Print -->
+            <button onclick="window.print()"
+                class="w-14 h-14 flex items-center justify-center rounded-2xl bg-white/5 border border-white/10 text-white hover:bg-white hover:text-[#050A18] transition-all text-xl"
+                title="Imprimir">
+                <i class="bi bi-printer-fill"></i>
+            </button>
+        </div>
+    </div>
+</div>

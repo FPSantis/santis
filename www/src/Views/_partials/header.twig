@@ -1,0 +1,35 @@
+<!-- 01 - HEADER -->
+<header class="fixed top-0 w-full z-[310] transition-all duration-500 border-b border-white/5 bg-[#050A18]/60 backdrop-blur-xl">
+    <div class="container mx-auto px-6 py-5 flex justify-between items-center">
+        <div class="logo group">
+            <img src="{{ URL_BASE }}assets/img/logo-santis.svg" alt="Santis Engenharia Digital" class="h-8 transition group-hover:scale-105">
+        </div>
+        <div class="hidden md:flex gap-12 Montserrat text-[10px] items-center">
+            <a href="#performance" class="nav-link-premium text-gray-400 hover:text-[#00F2FF]">Performance</a>
+            <a href="#services" class="nav-link-premium text-gray-400 hover:text-[#00F2FF]">Site Seguro</a>
+            <a href="#portfolio" class="nav-link-premium text-gray-400 hover:text-[#00F2FF]">Portfólio</a>
+            <a href="#blog" class="nav-link-premium text-gray-400 hover:text-[#00F2FF]">Radar</a>
+        </div>
+        <div class="flex items-center gap-6">
+            <a href="#contato" class="hidden md:block btn-outline-pill text-white Montserrat">Contato</a>
+            <button id="mobile-menu-toggle" class="md:hidden flex flex-col gap-1.5 p-2 z-[210] relative">
+                <span class="w-6 h-0.5 bg-white transition-all duration-300"></span>
+                <span class="w-4 h-0.5 bg-[#00F2FF] self-end transition-all duration-300"></span>
+            </button>
+        </div>
+    </div>
+</header>
+
+<!-- Mobile Menu Overlay (Outside Header) -->
+<div id="mobile-menu" class="fixed inset-0 w-full h-screen h-[100dvh] bg-[#050A18]/98 backdrop-blur-3xl z-[300] opacity-0 pointer-events-none transition-all duration-500 flex flex-col items-center justify-center">
+    <div class="flex flex-col gap-10 text-center Montserrat px-6 items-center">
+        <a href="#top" class="mobile-nav-link mb-4 group">
+            <img src="{{ URL_BASE }}assets/img/logo-santis.svg" alt="Santis" class="h-12 opacity-90 brightness-200 transition group-hover:scale-110">
+        </a>
+        <a href="#performance" class="mobile-nav-link text-3xl font-black text-gray-400 hover:text-[#00F2FF] uppercase tracking-[4px]">Performance</a>
+        <a href="#services" class="mobile-nav-link text-3xl font-black text-gray-400 hover:text-[#00F2FF] uppercase tracking-[4px]">Site Seguro</a>
+        <a href="#portfolio" class="mobile-nav-link text-3xl font-black text-gray-400 hover:text-[#00F2FF] uppercase tracking-[4px]">Portfólio</a>
+        <a href="#blog" class="mobile-nav-link text-3xl font-black text-gray-400 hover:text-[#00F2FF] uppercase tracking-[4px]">Radar</a>
+        <a href="#contato" class="mobile-nav-link mt-8 btn-solid-purple px-14 py-6 rounded-full font-black text-[14px] uppercase tracking-[3px]">Contato</a>
+    </div>
+</div>

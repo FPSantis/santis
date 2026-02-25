@@ -1,0 +1,53 @@
+body {
+    font-family: 'Montserrat', sans-serif;
+}
+
+.glass-card {
+    background: rgba(255, 255, 255, 0.02);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+/* Radar Animation */
+.radar-container {
+    width: 250px;
+    height: 250px;
+    border-radius: 50%;
+    border: 2px solid rgba(0, 242, 255, 0.2);
+    position: relative;
+    background: radial-gradient(circle, rgba(0, 242, 255, 0.05) 0%, transparent 70%);
+    overflow: hidden;
+}
+
+.radar-sweep {
+    position: absolute;
+    width: 50%;
+    height: 50%;
+    top: 0;
+    left: 50%;
+    background: linear-gradient(90deg, rgba(0, 242, 255, 0.4) 0%, transparent 100%);
+    transform-origin: bottom left;
+    animation: sweep 4s linear infinite;
+}
+
+.radar-grid {
+    position: absolute;
+    inset: 0;
+    background-image:
+        radial-gradient(circle, transparent 30%, rgba(0, 242, 255, 0.05) 31%, transparent 32%),
+        radial-gradient(circle, transparent 60%, rgba(0, 242, 255, 0.05) 61%, transparent 62%);
+}
+
+@keyframes sweep {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+input::placeholder {
+    color: rgba(255, 255, 255, 0.3);
+}

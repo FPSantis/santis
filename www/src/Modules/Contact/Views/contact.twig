@@ -1,0 +1,51 @@
+<!-- 09 - FALE CONOSCO -->
+<section id="contato" class="pt-16 pb-0 bg-[#050A18]">
+    <div class="container mx-auto px-6 text-center md:text-left">
+        <!-- Linha 1: Tag Fale Conosco -->
+        <div class="mb-0">
+            <div class="badge-highlight mx-auto md:mx-0">Fale Conosco</div>
+        </div>
+        <!-- Linha 2: QrCode Formulario | Comunicação | Redes Ativas -->
+        <div class="grid lg:grid-cols-12 gap-12 items-center mb-0">
+            <!-- Coluna: QrCode + Formulario -->
+            <div class="lg:col-span-8 flex flex-col md:flex-row items-center gap-10">
+                <div class="hidden md:block shrink-0 p-2 bg-white/5 border border-white/10 rounded-xl group transition-all hover:border-[#00F2FF]/30">
+                    <img src="{{ URL_BASE }}assets/img/whatsapp-qr.svg" alt="WhatsApp QR Code" class="w-24 h-24 opacity-80 group-hover:opacity-100 transition duration-500">
+                </div>
+                <div class="w-full px-6 md:px-0">
+                    <form id="whatsapp-footer-form" class="flex flex-col md:flex-row gap-4 items-end md:items-center">
+                        <div class="w-full md:w-1/3 text-left">
+                            <label class="block text-[8px] font-black uppercase tracking-widest text-[#00F2FF]/40 mb-2">Nome</label>
+                            <input type="text" id="footer-name" placeholder="Seu nome" class="contact-input w-full">
+                        </div>
+                        <div class="w-full md:w-1/2 text-left">
+                            <label class="block text-[8px] font-black uppercase tracking-widest text-[#00F2FF]/40 mb-2">Mensagem</label>
+                            <input type="text" id="footer-message" placeholder="Como podemos ajudar?" class="contact-input w-full">
+                        </div>
+                        <button type="submit" class="whatsapp-send-btn flex items-center justify-center gap-2 w-full md:w-auto mt-4 md:mt-6">
+                            <i class="bi bi-whatsapp"></i>
+                            <span>ENVIAR</span>
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Coluna: Comunicação -->
+            <div class="lg:col-span-2 space-y-2 mt-8 md:mt-0 text-center md:text-left">
+                <h5 class="text-white text-[10px] font-black uppercase tracking-widest mb-3">Comunicação</h5>
+                <a href="mailto:contato@santis.eng.br" class="block text-gray-400 hover:text-[#00F2FF] transition text-lg md:text-sm">contato@santis.eng.br</a>
+                <span class="block text-gray-600 text-[12px] md:text-[10px] font-bold uppercase tracking-wider">São Carlos - SP | Brasil</span>
+            </div>
+
+            <!-- Coluna: Redes Ativas -->
+            <div class="lg:col-span-2 space-y-2 text-center md:text-right mt-8 md:mt-0">
+                <h5 class="text-white text-[10px] font-black uppercase tracking-widest mb-3">Redes Ativas</h5>
+                <div class="flex justify-center md:justify-end gap-6 text-2xl md:text-xl">
+                    <a href="#" class="text-gray-500 hover:text-[#1877F2] transition"><i class="bi bi-facebook"></i></a>
+                    <a href="#" class="text-gray-500 hover:text-[#E4405F] transition"><i class="bi bi-instagram"></i></a>
+                    <a href="#" class="text-gray-500 hover:text-[#0A66C2] transition"><i class="bi bi-linkedin"></i></a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
