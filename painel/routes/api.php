@@ -49,4 +49,8 @@ $api->mount('/secure', function() use ($api) {
     $api->get('/types', 'Painel\Http\Controllers\ContentTypeController@index');
     $api->post('/types', 'Painel\Http\Controllers\ContentTypeController@store');
 
+    // Módulos EAV Dinâmicos (Série de Entradas via Regex por slug do Tipo)
+    $api->get('/entries/(\w+)', 'Painel\Http\Controllers\EntryController@index');
+    $api->post('/entries/(\w+)', 'Painel\Http\Controllers\EntryController@store');
+
 });
