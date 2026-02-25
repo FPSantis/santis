@@ -38,6 +38,11 @@ $router->get('/settings', 'Painel\Http\Controllers\WebController@settings');
 $router->get('/types', 'Painel\Http\Controllers\WebController@types');
 $router->get('/types/create', 'Painel\Http\Controllers\WebController@typeCreate');
 
+// Rotas de Entradas Dinâmicas (EAV / CMS Data)
+// Captura qualquer string pós /entries/ e passa como argumento na variavel SLUG
+$router->get('/entries/([a-z0-9_-]+)', 'Painel\Http\Controllers\WebController@entriesIndex');
+$router->get('/entries/([a-z0-9_-]+)/create', 'Painel\Http\Controllers\WebController@entriesCreate');
+
 // Exceções 404
 $router->set404(function() {
     header($_SERVER['SERVER_PROTOCOL'] . ' 404 Not Found');

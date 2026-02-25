@@ -70,4 +70,28 @@ class WebController
             'menu_active' => 'types'
         ]);
     }
+
+    /**
+     * Listagem Genérica de Entradas (Recebe da rota Ex: "portifolio")
+     */
+    public function entriesIndex(string $typeSlug)
+    {
+        View::render('entries/index.twig', [
+            'title' => 'Gerenciar Entradas',
+            'menu_active' => 'entries_' . $typeSlug,
+            'type_slug' => $typeSlug
+        ]);
+    }
+
+    /**
+     * Formulário de Criação Visual (Recebe da rota Ex: "portifolio")
+     */
+    public function entriesCreate(string $typeSlug)
+    {
+        View::render('entries/form.twig', [
+            'title' => 'Adicionar Nova Entrada',
+            'menu_active' => 'entries_' . $typeSlug,
+            'type_slug' => $typeSlug
+        ]);
+    }
 }

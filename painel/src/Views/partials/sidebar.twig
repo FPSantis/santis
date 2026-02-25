@@ -30,15 +30,35 @@
         <div data-i18n="Types">Tipos de Conteúdo</div>
       </a>
     </li>
-    <li class="menu-item {% if menu_active == 'media' %}active{% endif %}">
-      <a href="/media" class="menu-link">
-        <i class="menu-icon icon-base bx bx-file"></i>
-        <div data-i18n="Media (CDN)">Mídia (CDN)</div>
+    <li class="menu-item {% if menu_active == 'dashboard' %}active{% endif %}">
+      <a href="/" class="menu-link">
+        <i class="menu-icon icon-base bx bx-home-circle"></i>
+        <div data-i18n="Dashboard">Dashboard</div>
       </a>
     </li>
 
     <li class="menu-header small">
-      <span class="menu-header-text" data-i18n="Sistema">Sistema</span>
+      <span class="menu-header-text" data-i18n="Módulos">Módulos</span>
+    </li>
+    
+    {% for mod in MENU_DYNAMIC_MODULES %}
+      {# Só exibe no menu principal se o tipo estiver ATIVO #}
+      {% if mod.is_active %}
+      <li class="menu-item {% if menu_active == ('entries_' ~ mod.slug) %}active{% endif %}">
+        <a href="/entries/{{ mod.slug }}" class="menu-link">
+          <i class="menu-icon icon-base bx bx-collection"></i>
+          <div data-i18n="{{ mod.name }}">{{ mod.name }}</div>
+        </a>
+      </li>
+      {% endif %}
+    {% else %}
+      <li class="menu-header small">
+        <span class="menu-header-text text-muted">Nenhum Módulo EAV</span>
+      </li>
+    {% endfor %}
+
+    <li class="menu-header small">
+      <span class="menu-header-text" data-i18n="Infraestrutura">Infraestrutura</span>
     </li>
     <li class="menu-item {% if menu_active == 'settings' %}active{% endif %}">
       <a href="/settings" class="menu-link">
