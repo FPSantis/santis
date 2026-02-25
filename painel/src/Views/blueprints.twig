@@ -1,0 +1,133 @@
+{% extends "layouts/admin.twig" %}
+
+{% block content %}
+<div class="row align-items-stretch">
+  <!-- Export Blueprint -->
+  <div class="col-md-6 mb-4">
+    <div class="card h-100">
+      <div class="card-header border-bottom">
+        <h5 class="card-title mb-0"><i class="bx bx-download text-primary me-2"></i>Exportar Blueprint</h5>
+      </div>
+      <div class="card-body mt-3">
+        <p class="card-text">
+          O <strong>Blueprint</strong> é um retrato atual da arquitetura de inteligência deste Tenant.
+        </p>
+        <ul class="ms-0 ps-3 text-muted">
+            <li>Exporta todos os Tipos de Conteúdo (e seus schemas)</li>
+            <li>Exporta todas as Configurações Globais</li>
+            <li><strong>Não exporta conteúdos, mídias ou dados sensíveis (LGPD)</strong>.</li>
+        </ul>
+        <p class="mb-4">Perfeito para clonar a estrutura deste site para um novo cliente (Agency Mode).</p>
+        
+        <button type="button" class="btn btn-primary" id="btnExport">
+            Gerar Arquivo SantisCMS (.json)
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Import Blueprint -->
+  <div class="col-md-6 mb-4">
+    <div class="card h-100 border border-warning">
+      <div class="card-header border-bottom bg-label-warning">
+        <h5 class="card-title mb-0 text-warning"><i class="bx bx-upload me-2"></i>Injetar Blueprint Externo</h5>
+      </div>
+      <div class="card-body mt-3">
+        <div class="alert alert-warning mb-4" role="alert">
+          <h6 class="alert-heading mb-1"><i class="bx bx-error-circle me-1"></i>Atenção Webmaster</h6>
+          <span>Ao injetar um blueprint de outro site, novos módulos serão adicionados ao menu lateral e Configurações Globais correntes serão subscritas.</span>
+        </div>
+        
+        <form id="formImport" enctype="multipart/form-data">
+            <div class="mb-3">
+                <label for="blueprintFile" class="form-label">Arquivo de Origem (.json)</label>
+                <input class="form-control" type="file" id="blueprintFile" accept="application/json" required>
+            </div>
+            <button type="submit" class="btn btn-warning" id="btnImport">
+                Iniciar Semeadura de Dados
+            </button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block page_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const token = localStorage.getItem('santis_jwt');
+    
+    // EXPORT
+    document.getElementById('btnExport').addEventListener('click', function() {
+        // Envia requisição com Header de Auth e lida com o Download Nativo Blob
+        fetch('/api/secure/blueprints/export', {
+            method: 'GET',
+            headers: { 'Authorization': 'Bearer ' + token }
+        })
+        .then(response => {
+            if(!response.ok) throw new Error('Falha HTTP');
+            return response.blob();
+        })
+        .then(blob => {
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.style.display = 'none';
+            a.href = url;
+            a.download = `SantisCMS_Blueprint_${new Date().getTime()}.json`;
+            document.body.appendChild(a);
+            a.click();
+            window.URL.revokeObjectURL(url);
+            alert("Exportação concluída com sucesso!");
+        })
+        .catch(err => {
+            console.error(err);
+            alert('Não foi possivel exportar o blueprint no momento.');
+        });
+    });
+
+    // IMPORT
+    const formImport = document.getElementById('formImport');
+    formImport.addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        let confirmBox = confirm("Aviso Irreversível! As configurações globais atômicas serão esmagadas pelas configurações do arquivo. Deseja iniciar a semeadura em Produção?");
+        if(!confirmBox) return;
+
+        let btn = document.getElementById('btnImport');
+        let oldText = btn.innerHTML;
+        btn.innerHTML = 'Processando...';
+        btn.disabled = true;
+
+        let formData = new FormData();
+        formData.append('blueprint_file', document.getElementById('blueprintFile').files[0]);
+
+        fetch('/api/secure/blueprints/import', {
+            method: 'POST',
+            headers: { 
+                'Authorization': 'Bearer ' + token 
+                // NÃO coloca 'Content-Type': 'multipart/form-data' no FETCH senao dá erro de Boundary
+            },
+            body: formData
+        })
+        .then(r => r.json())
+        .then(data => {
+            btn.innerHTML = oldText;
+            btn.disabled = false;
+            
+            if(data.success) {
+                alert('SEMEADURA CONCLUÍDA! O Painel será atualizado.');
+                window.location.reload();
+            } else {
+                alert('ERRO: ' + data.message);
+            }
+        })
+        .catch(err => {
+            btn.innerHTML = oldText;
+            btn.disabled = false;
+            alert('Falha na comunicação.');
+        });
+    });
+});
+</script>
+{% endblock %}

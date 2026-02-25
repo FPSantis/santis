@@ -72,6 +72,17 @@ class WebController
     }
 
     /**
+     * Interface de Exportação/Importação de Configurações (SaaS)
+     */
+    public function blueprints()
+    {
+        View::render('blueprints.twig', [
+            'title' => 'Migrações / Blueprints',
+            'menu_active' => 'blueprints'
+        ]);
+    }
+
+    /**
      * Listagem Genérica de Entradas (Recebe da rota Ex: "portifolio")
      */
     public function entriesIndex(string $typeSlug)

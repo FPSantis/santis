@@ -61,4 +61,8 @@ $api->mount('/secure', function() use ($api) {
     $api->get('/settings', 'Painel\Http\Controllers\SettingController@index');
     $api->post('/settings', 'Painel\Http\Controllers\SettingController@store');
 
+    // Blueprints SaaS (Import/Export Core)
+    $api->get('/blueprints/export', 'Painel\Http\Controllers\BlueprintController@export');
+    $api->post('/blueprints/import', 'Painel\Http\Controllers\BlueprintController@import');
+
 });
