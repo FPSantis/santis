@@ -44,4 +44,9 @@ $api->mount('/secure', function() use ($api) {
             'permissions' => ['all']
         ], 'Sessão JWT válida e decodificada com sucesso.');
     });
+
+    // Content Types / Modelagem Dinâmica (CMS Builder)
+    $api->get('/types', 'Painel\Http\Controllers\ContentTypeController@index');
+    $api->post('/types', 'Painel\Http\Controllers\ContentTypeController@store');
+
 });
