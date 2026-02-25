@@ -1,0 +1,251 @@
+{% extends "layouts/admin.twig" %}
+
+{% block content %}
+<div class="row">
+  <div class="col-12 col-lg-8">
+    <div class="card mb-4">
+      <div class="card-header d-flex justify-content-between align-items-center">
+        <h5 class="mb-0">Criar Novo Tipo de Conteúdo (Módulo)</h5>
+      </div>
+      <div class="card-body">
+        <form id="builderForm">
+          <h6>1. Configurações Básicas</h6>
+          <div class="row g-3 mb-4">
+            <div class="col-md-6">
+              <label class="form-label" for="typeName">Nome (Plural)</label>
+              <input type="text" id="typeName" class="form-control" placeholder="Ex: Projetos, Clientes" required />
+            </div>
+            <div class="col-md-6">
+              <label class="form-label" for="typeSlug">Endereço da API (Slug)</label>
+              <input type="text" id="typeSlug" class="form-control bg-light" placeholder="Slug automático" required readonly />
+            </div>
+            <div class="col-12">
+              <label class="form-label" for="typeDesc">Descrição do Módulo</label>
+              <textarea id="typeDesc" class="form-control" rows="2" placeholder="Descreva para os redatores a finalidade deste módulo"></textarea>
+            </div>
+          </div>
+          
+          <hr class="my-4" />
+          
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <h6 class="mb-0">2. Construtor de Campos (Schema Builder)</h6>
+            <button type="button" id="addFieldBtn" class="btn btn-sm btn-outline-primary">
+              <i class="bx bx-plus me-1"></i> Adicionar Campo
+            </button>
+          </div>
+          
+          <!-- Container de Campos Dinâmicos -->
+          <div id="fieldsContainer" class="d-flex flex-column gap-3 mb-4">
+             <div class="text-center text-muted p-4 border border-dashed rounded" id="emptyState">
+                 Nenhum campo customizado adicionado. O sistema sempre cria ID, Data e Tenant automaticamente.
+             </div>
+          </div>
+          
+          <div class="mt-4">
+            <button type="submit" class="btn btn-primary" id="saveBtn">
+              <i class="bx bx-save me-1"></i> Registrar Módulo no Banco
+            </button>
+            <a href="/types" class="btn btn-label-secondary">Cancelar</a>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+  
+  <div class="col-12 col-lg-4">
+    <div class="card bg-primary text-white mb-4">
+      <div class="card-body">
+        <h5 class="card-title text-white">Como Funciona o EAV Headless?</h5>
+        <p class="card-text">
+          Cada Tipo de Conteúdo que você cria aqui gera automaticamente uma nova sub-rota em nossa API (ex: <code>/api/secure/entries/PRODUTOS</code>).
+        </p>
+        <p class="card-text">
+          Os "Campos" projetados aqui dirão ao sistema o que desenhar na tela de formulário quando o redator for criar uma nova "Entrada" neste módulo. Em vez de quebras de tabelas MySQL, geramos um JSON rápido que a sua Landing Page consome instantaneamente!
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block page_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    
+    // Auto-gerador de SLUG
+    const nameInput = document.getElementById('typeName');
+    const slugInput = document.getElementById('typeSlug');
+    
+    nameInput.addEventListener('input', function() {
+        slugInput.value = this.value
+            .toLowerCase()
+            .replace(/[^\w\s-]/g, '')
+            .replace(/[\s_-]+/g, '-')
+            .replace(/^-+|-+$/g, '');
+    });
+
+    // FIELD BUILDER LOGIC
+    const fieldsContainer = document.getElementById('fieldsContainer');
+    const emptyState = document.getElementById('emptyState');
+    const addFieldBtn = document.getElementById('addFieldBtn');
+    
+    let fieldCount = 0;
+
+    addFieldBtn.addEventListener('click', function() {
+        if(emptyState) { emptyState.style.display = 'none'; }
+        
+        fieldCount++;
+        const fieldHtml = `
+            <div class="card shadow-none border builder-field" data-id="${fieldCount}">
+                <div class="card-body p-3">
+                    <div class="d-flex justify-content-between align-items-center mb-2 pb-2 border-bottom">
+                        <span class="badge bg-label-dark"><i class="bx bx-menu cursor-move me-1"></i> Campo #${fieldCount}</span>
+                        <button type="button" class="btn btn-sm btn-icon btn-text-danger btn-remove-field" onclick="this.closest('.builder-field').remove(); checkEmpty()">
+                            <i class="bx bx-trash"></i>
+                        </button>
+                    </div>
+                    <div class="row g-2">
+                        <div class="col-md-4">
+                            <label class="form-label" style="font-size: 11px;">Rótulo de Exibição (Label)</label>
+                            <input type="text" class="form-control form-control-sm field-label" placeholder="Ex: Título da Aba" required>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label" style="font-size: 11px;">Nome Técnico (Key)</label>
+                            <input type="text" class="form-control form-control-sm field-key bg-light" placeholder="ex: tag_titulo" required readonly>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label" style="font-size: 11px;">Tipo do Dado (Input)</label>
+                            <select class="form-select form-select-sm field-type">
+                                <option value="text">Texto Curto</option>
+                                <option value="textarea">Texto Longo</option>
+                                <option value="richtext">Editor Rico (WYSIWYG)</option>
+                                <option value="image">Upload de Imagem</option>
+                                <option value="date">Seletor de Data</option>
+                                <option value="boolean">Verdadeiro/Falso (Toggle)</option>
+                            </select>
+                        </div>
+                        <div class="col-md-2 mt-4 d-flex align-items-center">
+                            <div class="form-check form-switch mt-1">
+                                <input class="form-check-input field-required" type="checkbox" id="req_${fieldCount}">
+                                <label class="form-check-label" style="font-size: 11px;" for="req_${fieldCount}">Obrigatório</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        fieldsContainer.insertAdjacentHTML('beforeend', fieldHtml);
+        
+        // Auto-key binding para os recém nascidos
+        let newCard = fieldsContainer.lastElementChild;
+        let labelInput = newCard.querySelector('.field-label');
+        let keyInput = newCard.querySelector('.field-key');
+        
+        labelInput.addEventListener('input', function() {
+            keyInput.value = this.value
+                .toLowerCase()
+                .replace(/[^\w\s-]/g, '')
+                .replace(/[\s-]+/g, '_')
+                .replace(/^-+|-+$/g, '');
+        });
+    });
+
+    // Helper Expor pro window para chamar de clicks embutidos
+    window.checkEmpty = function() {
+        if(fieldsContainer.querySelectorAll('.builder-field').length === 0) {
+            if(emptyState) { emptyState.style.display = 'block'; }
+        }
+    };
+
+    // SUBMIT E TRANSFORMAÇÃO EM JSON
+    const form = document.getElementById('builderForm');
+    
+    form.addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const btn = document.getElementById('saveBtn');
+        let oldText = btn.innerHTML;
+        btn.innerHTML = '<i class="bx bx-loader-alt bx-spin me-1"></i> Registrando...';
+        btn.disabled = true;
+
+        // 1. Compila o Header
+        const payload = {
+            name: nameInput.value,
+            slug: slugInput.value,
+            description: document.getElementById('typeDesc').value,
+            is_active: 1,
+            schema: []
+        };
+        
+        // 2. Compila os Campos (Lógica EAV Engine)
+        const fields = fieldsContainer.querySelectorAll('.builder-field');
+        
+        // Chaves nativas proibidas de serem criadas pelo usuário
+        const forbiddenKeys = ['id', 'tenant_id', 'created_at', 'updated_at', 'is_active', 'content_type_id'];
+
+        let abort = false;
+        
+        fields.forEach((f, idx) => {
+            let k = f.querySelector('.field-key').value;
+            
+            if(forbiddenKeys.includes(k)) {
+                alert(`A palavra Chave '${k}' é restrita ao núcleo do sistema. Por favor escolha outro nome.`);
+                abort = true;
+                return;
+            }
+            
+            payload.schema.push({
+                order: idx + 1,
+                label: f.querySelector('.field-label').value,
+                key: k,
+                type: f.querySelector('.field-type').value,
+                required: f.querySelector('.field-required').checked
+            });
+        });
+
+        if(abort) {
+            btn.innerHTML = oldText;
+            btn.disabled = false;
+            return;
+        }
+
+        // 3. Serializa como String JSON Final para o Payload da API Rest
+        // Na vdd a Request API nossa converte JSON nativo
+        let jsonPayload = {
+            name: payload.name,
+            slug: payload.slug,
+            description: payload.description,
+            is_active: payload.is_active,
+            schema: JSON.stringify(payload.schema) // Transformado em string blindada pra BD
+        };
+
+        const token = localStorage.getItem('santis_jwt');
+
+        fetch('/api/secure/types', {
+            method: 'POST',
+            headers: { 
+                'Authorization': 'Bearer ' + token,
+                'Content-Type': 'application/json' 
+            },
+            body: JSON.stringify(jsonPayload)
+        })
+        .then(r => r.json())
+        .then(data => {
+            if(data.success) {
+                window.location.href = '/types'; // Redirect Index List
+            } else {
+                alert('Erro do Controlador: ' + data.message);
+                btn.innerHTML = oldText;
+                btn.disabled = false;
+            }
+        })
+        .catch(err => {
+            alert('Falha na comunicação.');
+            btn.innerHTML = oldText;
+            btn.disabled = false;
+        });
+    });
+});
+</script>
+{% endblock %}

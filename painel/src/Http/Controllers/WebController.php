@@ -48,4 +48,26 @@ class WebController
             'menu_active' => 'settings'
         ]);
     }
+
+    /**
+     * Listagem dos Tipos de Conteúdos Existentes
+     */
+    public function types()
+    {
+        View::render('content_types/index.twig', [
+            'title' => 'Construtor de Tipos de Conteúdo (Módulos)',
+            'menu_active' => 'types'
+        ]);
+    }
+
+    /**
+     * Tela com Formulário JS de Construção EAV
+     */
+    public function typeCreate()
+    {
+        View::render('content_types/form.twig', [
+            'title' => 'Criar Novo Tipo de Conteúdo',
+            'menu_active' => 'types'
+        ]);
+    }
 }

@@ -1,0 +1,86 @@
+{% extends "layouts/admin.twig" %}
+
+{% block content %}
+<div class="card">
+  <div class="card-header d-flex justify-content-between align-items-center">
+    <h5 class="mb-0">Gerenciador de Tipos de Conteúdo</h5>
+    <a href="/types/create" class="btn btn-primary">
+      <i class="icon-base bx bx-plus me-1"></i> Criar Novo Tipo
+    </a>
+  </div>
+  <div class="card-body">
+    <div class="table-responsive text-nowrap">
+      <table class="table table-hover" id="typesTable">
+        <thead>
+          <tr>
+            <th>Nome</th>
+            <th>Slug de Roteamento</th>
+            <th>Qtd. de Campos</th>
+            <th>Status</th>
+            <th>Data de Criação</th>
+            <th>Ações</th>
+          </tr>
+        </thead>
+        <tbody class="table-border-bottom-0" id="typesTableBody">
+          <tr>
+            <td colspan="6" class="text-center py-4">Carregando tipos de conteúdo...</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block page_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const token = localStorage.getItem('santis_jwt');
+    const tbody = document.getElementById('typesTableBody');
+
+    fetch('/api/secure/types', {
+        method: 'GET',
+        headers: {
+            'Authorization': 'Bearer ' + token,
+            'Accept': 'application/json'
+        }
+    })
+    .then(r => r.json())
+    .then(data => {
+        if(data.success && data.data.length > 0) {
+            tbody.innerHTML = ''; 
+            
+            data.data.forEach(type => {
+                let schemaCount = type.schema ? Object.keys(type.schema).length : 0;
+                let statusBadge = type.is_active 
+                    ? '<span class="badge bg-label-success">Ativo</span>'
+                    : '<span class="badge bg-label-secondary">Inativo</span>';
+                
+                let formatedDate = new Date(type.created_at).toLocaleDateString('pt-BR');
+
+                tbody.innerHTML += `
+                  <tr>
+                    <td><strong>${type.name}</strong><br><small class="text-muted">${type.description || 'Sem descrição'}</small></td>
+                    <td><span class="badge bg-label-primary">/api/secure/entries/${type.slug}</span></td>
+                    <td>${schemaCount} campos definidos</td>
+                    <td>${statusBadge}</td>
+                    <td>${formatedDate}</td>
+                    <td>
+                      <button type="button" class="btn btn-sm btn-icon btn-text-secondary" title="Editar"><i class="bx bx-edit"></i></button>
+                      <button type="button" class="btn btn-sm btn-icon btn-text-danger" title="Apagar"><i class="bx bx-trash"></i></button>
+                    </td>
+                  </tr>
+                `;
+            });
+            
+        } else {
+            tbody.innerHTML = '<tr><td colspan="6" class="text-center py-4 text-muted">Nenhum Tipo de Conteúdo customizado cadastrado no Santis CMS.</td></tr>';
+        }
+    })
+    .catch(error => {
+        console.error('Erro:', error);
+        tbody.innerHTML = '<tr><td colspan="6" class="text-center py-4 text-danger">Erro de Conexão com a API Base.</td></tr>';
+    });
+});
+</script>
+{% endblock %}

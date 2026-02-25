@@ -34,6 +34,10 @@ $router->get('/login', 'Painel\Http\Controllers\WebController@login');
 $router->get('/media', 'Painel\Http\Controllers\WebController@media');
 $router->get('/settings', 'Painel\Http\Controllers\WebController@settings');
 
+// Rotas do Content Type Builder (CRUD de Módulos)
+$router->get('/types', 'Painel\Http\Controllers\WebController@types');
+$router->get('/types/create', 'Painel\Http\Controllers\WebController@typeCreate');
+
 // Exceções 404
 $router->set404(function() {
     header($_SERVER['SERVER_PROTOCOL'] . ' 404 Not Found');
