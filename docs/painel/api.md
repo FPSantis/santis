@@ -94,4 +94,66 @@ Registra via Active Record um NOVO `Content Type` estrutural.
   },
   "message": "Tipo de conteúdo criado com sucesso."
 }
+
+---
+
+### GET `/api/secure/entries/{type_slug}`
+Exibe todas as "Entradas" ou "Posts" associadas a um Módulo específico (`type_slug`). Por exemplo, `/api/secure/entries/radar` vai carregar o blog, enquanto `/api/secure/entries/portfolio` vai carregar os cases.
+
+**Response (200 OK):**
+```json
+{
+  "success": true,
+  "data": [
+    {
+      "id": 15,
+      "tenant_id": 1,
+      "content_type_id": 1,
+      "category_id": 3,
+      "title": "Novo Evento Online",
+      "slug": "novo-evento-online",
+      "status": "published",
+      "content_data": {
+        "author": "Equipe Santis",
+        "featured_image": "/cdn/public_html/radar/2026/02/banner.jpg"
+      },
+      "category_name": "Tecnologia",
+      "category_slug": "tecnologia",
+      "...": "..."
+    }
+  ],
+  "message": "1 entradas do tipo 'radar' localizadas."
+}
+```
+
+---
+
+### POST `/api/secure/entries/{type_slug}`
+Cria uma nova Entrada/Registro para um módulo. O campo milagroso aqui é o `content_data`, que aceita um objeto JSON livre e o injeta diretamente no Banco de Dados MariaDB como Dado Estruturado EAV Híbrido.
+
+**Request Body (JSON):**
+```json
+{
+  "title": "Novo Evento Online",
+  "slug": "novo-evento-online",
+  "status": "published",
+  "category_id": 3,
+  "content_data": {
+    "author": "Equipe Santis",
+    "featured_image": "/cdn/public_html/radar/2026/02/banner.jpg"
+  }
+}
+```
+
+**Response (201 Created):**
+```json
+{
+  "success": true,
+  "data": {
+    "id": 16,
+    "slug": "novo-evento-online"
+  },
+  "message": "Entrada documentada e arquivada via EAV."
+}
+```
 ```
