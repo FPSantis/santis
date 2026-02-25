@@ -1,0 +1,91 @@
+{% extends "layouts/admin.twig" %}
+
+{% block content %}
+<div class="card">
+  <div class="card-header d-flex justify-content-between align-items-center">
+    <h5 class="mb-0">Gerenciador de Mídia (CDN)</h5>
+    <button type="button" class="btn btn-primary" onclick="alert('TODO: Implementar Dropzone de Uploads Multimídia')">
+      <i class="icon-base bx bx-upload me-1"></i> Fazer Upload
+    </button>
+  </div>
+  <div class="card-body">
+    <div class="table-responsive text-nowrap">
+      <table class="table table-hover" id="mediaTable">
+        <thead>
+          <tr>
+            <th>Prévia</th>
+            <th>Nome Original</th>
+            <th>Tamanho</th>
+            <th>Tipo MIME</th>
+            <th>Data de Envio</th>
+            <th>Ações</th>
+          </tr>
+        </thead>
+        <tbody class="table-border-bottom-0" id="mediaTableBody">
+          <tr>
+            <td colspan="6" class="text-center py-4">Carregando arquivos da CDN...</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block page_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const token = localStorage.getItem('santis_jwt');
+    const tbody = document.getElementById('mediaTableBody');
+
+    // Fetch protegido com JWT
+    fetch('/api/secure/media', {
+        method: 'GET',
+        headers: {
+            'Authorization': 'Bearer ' + token,
+            'Accept': 'application/json'
+        }
+    })
+    .then(response => {
+        if (!response.ok) { throw new Error('Falha de Autenticação na API'); }
+        return response.json();
+    })
+    .then(data => {
+        if(data.success && data.data.length > 0) {
+            tbody.innerHTML = ''; // Limpa "Carregando"
+            
+            data.data.forEach(file => {
+                // Checa se é imagem para mostrar preview
+                let isImage = file.mime_type.startsWith('image/');
+                let previewHtml = isImage 
+                    ? `<img src="${file.full_url}" alt="preview" width="40" height="40" class="rounded border" style="object-fit:cover">`
+                    : `<div class="bg-label-primary rounded p-2 text-center" style="width:40px;height:40px"><i class="bx bx-file mt-1"></i></div>`;
+
+                let formatedDate = new Date(file.created_at).toLocaleDateString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+
+                tbody.innerHTML += `
+                  <tr>
+                    <td>${previewHtml}</td>
+                    <td><strong>${file.original_name}</strong><br><small class="text-muted">${file.filename}</small></td>
+                    <td>${file.size_formatted}</td>
+                    <td><span class="badge bg-label-secondary">${file.mime_type}</span></td>
+                    <td>${formatedDate}</td>
+                    <td>
+                      <a href="${file.full_url}" target="_blank" class="btn btn-sm btn-icon btn-text-secondary"><i class="bx bx-link-external"></i></a>
+                      <button type="button" class="btn btn-sm btn-icon btn-text-danger" title="Breve"><i class="bx bx-trash"></i></button>
+                    </td>
+                  </tr>
+                `;
+            });
+            
+        } else {
+            tbody.innerHTML = '<tr><td colspan="6" class="text-center py-4 text-muted">A CDN deste tenant está vazia.</td></tr>';
+        }
+    })
+    .catch(error => {
+        console.error('Erro ao buscar mídias:', error);
+        tbody.innerHTML = '<tr><td colspan="6" class="text-center py-4 text-danger">Erro de Conexão com a API Base. Faça Logoff e tente novamente.</td></tr>';
+    });
+});
+</script>
+{% endblock %}

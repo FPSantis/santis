@@ -26,4 +26,26 @@ class WebController
             'title' => 'Login | Santis CMS'
         ]);
     }
+
+    /**
+     * Módulo CDN (Lista de Arquivos)
+     */
+    public function media()
+    {
+        View::render('media.twig', [
+            'title' => 'Gerenciador de Mídia | CDN',
+            'menu_active' => 'media'
+        ]);
+    }
+
+    /**
+     * Interface de Configurações Globais
+     */
+    public function settings()
+    {
+        View::render('settings.twig', [
+            'title' => 'Configurações Globais',
+            'menu_active' => 'settings'
+        ]);
+    }
 }

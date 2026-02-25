@@ -30,10 +30,20 @@
         <div data-i18n="Types">Tipos de Conteúdo</div>
       </a>
     </li>
-    <li class="menu-item">
-      <a href="#" class="menu-link">
+    <li class="menu-item {% if menu_active == 'media' %}active{% endif %}">
+      <a href="/media" class="menu-link">
         <i class="menu-icon icon-base bx bx-file"></i>
-        <div data-i18n="Entries">Entradas</div>
+        <div data-i18n="Media (CDN)">Mídia (CDN)</div>
+      </a>
+    </li>
+
+    <li class="menu-header small">
+      <span class="menu-header-text" data-i18n="Sistema">Sistema</span>
+    </li>
+    <li class="menu-item {% if menu_active == 'settings' %}active{% endif %}">
+      <a href="/settings" class="menu-link">
+        <i class="menu-icon icon-base bx bx-cog"></i>
+        <div data-i18n="Global Settings">Global Settings</div>
       </a>
     </li>
   </ul>

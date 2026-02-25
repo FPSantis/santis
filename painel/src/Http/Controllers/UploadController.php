@@ -25,6 +25,26 @@ class UploadController
     ];
 
     /**
+     * Lista todas as mídias do Tenant
+     * GET /api/secure/media
+     */
+    public function index()
+    {
+        $tenantId = 1; // Fixo MVP
+        $files = MediaFile::all($tenantId);
+        
+        // Formata as saídas para compatibilizar com DataTables se necessário
+        $cdnDomain = getenv('CDN_URL') ?: 'https://cdn.santis.ddev.site';
+        
+        foreach ($files as &$file) {
+            $file['full_url'] = $cdnDomain . $file['path'];
+            $file['size_formatted'] = number_format($file['size_bytes'] / 1024, 2) . ' KB';
+        }
+
+        return Response::json(true, $files, 'Lista de mídias carregada com sucesso.');
+    }
+
+    /**
      * Endpoint para receber POST multipart/form-data com o binário
      * POST /api/secure/upload
      */

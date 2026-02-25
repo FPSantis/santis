@@ -31,6 +31,8 @@ $router->get('/api/test', function() {
 // Admin Panel Routes Handled by Twig Controller
 $router->get('/', 'Painel\Http\Controllers\WebController@dashboard');
 $router->get('/login', 'Painel\Http\Controllers\WebController@login');
+$router->get('/media', 'Painel\Http\Controllers\WebController@media');
+$router->get('/settings', 'Painel\Http\Controllers\WebController@settings');
 
 // Exceções 404
 $router->set404(function() {

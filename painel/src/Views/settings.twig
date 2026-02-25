@@ -1,0 +1,114 @@
+{% extends "layouts/admin.twig" %}
+
+{% block content %}
+<div class="card mb-4">
+  <h5 class="card-header">Configurações Globais do Site (Tenant)</h5>
+  <form id="formSettings" class="card-body">
+    
+    <div class="row g-4 border-bottom pb-4 mb-4">
+      <div class="col-md-6">
+        <label for="company_name" class="form-label">Nome da Empresa</label>
+        <input type="text" class="form-control" id="company_name" placeholder="Ex: Santis Engenharia Digital">
+      </div>
+      <div class="col-md-6">
+        <label for="contact_email" class="form-label">E-mail Principal de Contato</label>
+        <input type="email" class="form-control" id="contact_email" placeholder="contato@empresa.com.br">
+      </div>
+      <div class="col-md-6">
+        <label for="phone_whatsapp" class="form-label">WhatsApp Oficial (DDI+DDD+Numero)</label>
+        <input type="number" class="form-control" id="phone_whatsapp" placeholder="5511999999999">
+      </div>
+      <div class="col-md-6">
+        <label for="instagram_url" class="form-label">Link do Instagram</label>
+        <input type="url" class="form-control" id="instagram_url" placeholder="https://instagram.com/santis">
+      </div>
+    </div>
+    
+    <div class="row g-4 pb-4 mb-4">
+      <div class="col-md-12">
+        <label for="seo_description" class="form-label">Descrição SEO Global (Meta Tag)</label>
+        <textarea class="form-control" id="seo_description" rows="3" placeholder="Resumo do negócio que aparece no Google..."></textarea>
+      </div>
+      <div class="col-md-12">
+        <label for="custom_css" class="form-label">CSS Customizado (Injetado no Navbar)</label>
+        <textarea class="form-control font-monospace" id="custom_css" rows="3" placeholder=":root { --primary-color: #ff0000; }"></textarea>
+      </div>
+    </div>
+    
+    <div class="mt-4">
+      <button type="submit" class="btn btn-primary me-2"><i class="bx bx-save me-1"></i>Salvar Configurações</button>
+      <button type="reset" class="btn btn-label-secondary">Cancelar</button>
+    </div>
+  </form>
+</div>
+{% endblock %}
+
+{% block page_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const token = localStorage.getItem('santis_jwt');
+    const form = document.getElementById('formSettings');
+    
+    // Lista de inputs que salvaremos dinamicamente
+    const inputs = ['company_name', 'contact_email', 'phone_whatsapp', 'instagram_url', 'seo_description', 'custom_css'];
+
+    // 1. Carrega os Dados Iniciais
+    fetch('/api/secure/settings', {
+        method: 'GET',
+        headers: { 'Authorization': 'Bearer ' + token }
+    })
+    .then(r => r.json())
+    .then(data => {
+        if(data.success && data.data) {
+            inputs.forEach(id => {
+                if(data.data[id]) {
+                    document.getElementById(id).value = data.data[id];
+                }
+            });
+        }
+    })
+    .catch(console.error);
+
+    // 2. Salva as Edições
+    form.addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        let payload = {};
+        inputs.forEach(id => {
+            let val = document.getElementById(id).value;
+            // Só mandamos o que tiver valor para não sujar o DB (ou mandamos tudo pra limpar)
+            payload[id] = val;
+        });
+
+        const btn = form.querySelector('button[type="submit"]');
+        let oldText = btn.innerHTML;
+        btn.innerHTML = 'Salvando...';
+        btn.disabled = true;
+
+        fetch('/api/secure/settings', {
+            method: 'POST',
+            headers: { 
+                'Authorization': 'Bearer ' + token,
+                'Content-Type': 'application/json' 
+            },
+            body: JSON.stringify(payload)
+        })
+        .then(r => r.json())
+        .then(data => {
+            btn.innerHTML = oldText;
+            btn.disabled = false;
+            if(data.success) {
+                alert('Configurações salvas e aplicadas na CDN com sucesso!');
+            } else {
+                alert('Erro: ' + data.message);
+            }
+        })
+        .catch(err => {
+            btn.innerHTML = oldText;
+            btn.disabled = false;
+            alert('Falha na comunicação.');
+        });
+    });
+});
+</script>
+{% endblock %}
