@@ -1,0 +1,14 @@
+RewriteEngine On
+
+# Impede listagem de diretório
+Options -Indexes
+
+# Se o arquivo ou pasta existir fisicamente, não redireciona (ex: imagens dentro de api/docs)
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+
+# Todas as outras requisições são repassadas para o Roteador index.php silenciosamente
+RewriteRule ^(.*)$ index.php [QSA,L]
+
+# CORS Header Básico de segurança Apache-level (Opcional, pois fazemos via PHP também)
+Header set Access-Control-Allow-Origin "*"

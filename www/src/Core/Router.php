@@ -15,11 +15,11 @@ class Router {
     public function run() {
         // Rotas Públicas Principais
         $this->router->get('/', 'App\Controllers\SiteController@index');
-        $this->router->get('/blog.html', 'App\Controllers\SiteController@blog');
-        $this->router->get('/post.html', function() {
-            // Como o URL atual recebe por query parameter (post.html?id=X), pegamos via $_GET
+        $this->router->get('/radar', 'App\Controllers\SiteController@blog');
+        $this->router->get('/artigo', function() {
+            // Como o URL atual recebe por query parameter (artigo?id=X), pegamos via $_GET
             $id = $_GET['id'] ?? 1;
-            $controller = new SiteController();
+            $controller = new \App\Controllers\SiteController();
             $controller->post($id);
         });
 
