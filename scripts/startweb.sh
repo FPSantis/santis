@@ -1,8 +1,8 @@
 #!/bin/bash
 PROJECT_ROOT="/mnt/d/_WEB/santis"
 
-echo "🚀 Santis: Iniciando Motores (Multi-Site)..."
 cd "$PROJECT_ROOT" || exit
+
 
 ddev start
 

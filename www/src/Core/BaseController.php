@@ -29,6 +29,13 @@ class BaseController {
             $urlBase .= '/';
         }
         $this->twig->addGlobal('URL_BASE', $urlBase);
+        
+        // Adiciona CDN_URL como variável global
+        $cdnUrl = $_ENV['CDN_URL'] ?? 'https://cdn.santis.ddev.site/';
+        if (substr($cdnUrl, -1) !== '/') {
+            $cdnUrl .= '/';
+        }
+        $this->twig->addGlobal('CDN_URL', $cdnUrl);
     }
 
     /**
