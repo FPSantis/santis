@@ -13,7 +13,6 @@
 
 # Temporary and Reference Files
 tmp/
-ref/
 
 # Logs and Caches
 *.log
