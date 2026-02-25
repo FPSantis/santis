@@ -16,8 +16,8 @@ A estrutura do desenvolvimento e todas as pequenas tarefas (épicos) estão divi
 - [x] Implementar sistema de Autenticação (JWT ou Sessão Base) no Backend.
 - [x] Construir os CRUDs básicos (Tipos, Conteúdo, Configurações).
 - [x] Integração Central com a Tabela/Pasta de CDN (Controlador e File Manager de Uploads).
-- [ ] Auditing Base (Logar cada ação dos usuários no Backend em uma Tabela `audit_logs`).
-- [ ] Implementar Helper de Criptografia At-Rest (LGPD) para ofuscação bidirecional em tabelas de PII (Leads/Usuários externos).
+- [ ] Auditing Base (Fase P6) - Logar cada ação dos usuários no Backend em uma Tabela `audit_logs`.
+- [ ] Implementar Helper de Criptografia At-Rest LGPD (Fase P7) para ofuscação bidirecional em tabelas de PII (Leads/Usuários externos).
 
 ## FASE 3: Painel Webmaster e Admin (Sneat Pro)
 - [ ] Instalar os assets limpos do Sneat Pro na pasta `public_html` (apenas o necessário).
