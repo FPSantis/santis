@@ -20,12 +20,12 @@ A estrutura do desenvolvimento e todas as pequenas tarefas (épicos) estão divi
 - [x] Implementar Helper de Criptografia At-Rest LGPD (Fase P7) para ofuscação bidirecional em tabelas de PII (Leads/Usuários externos).
 
 ## FASE 3: Painel Webmaster e Admin (Sneat Pro)
-- [ ] Instalar os assets limpos do Sneat Pro na pasta `public_html` (apenas o necessário).
-- [ ] Criar Dashboard de Entrada (Visão Admin e Visão Geral).
-- [ ] Criar listagens de Arquivos do Módulo CDN.
-- [ ] Interface de controle Global Settings.
-- [ ] Interface do Webmaster para criação visual de "Tipos" de Conteúdo e "Drivers" de Mensageiros.
-- [ ] Ferramenta de Importação/Exportação (JSON) para Tipos de Conteúdo e Configurações (Reuso de templates entre clientes).
+- [x] Instalar os assets limpos do Sneat Pro na pasta `public_html` (apenas o necessário).
+- [x] Criar Dashboard de Entrada (Visão Admin e Visão Geral).
+- [x] Criar listagens de Arquivos do Módulo CDN.
+- [x] Interface de controle Global Settings.
+- [x] Interface do Webmaster para criação visual de "Tipos" de Conteúdo e "Drivers" de Mensageiros.
+- [x] Ferramenta de Importação/Exportação (JSON) para Tipos de Conteúdo e Configurações (Reuso de templates entre clientes).
 
 ## FASE 4: Integração com Frontend (Santis / Apps)
 - [ ] Configurar Landing Page para fazer GETs de conteúdo dos Tipos Dinâmicos.
