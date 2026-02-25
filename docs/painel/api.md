@@ -156,4 +156,32 @@ Cria uma nova Entrada/Registro para um módulo. O campo milagroso aqui é o `con
   "message": "Entrada documentada e arquivada via EAV."
 }
 ```
+
+---
+
+### POST `/api/secure/upload`
+Endpoint validador de arquivo binário (`multipart/form-data`) que envia imagens ou PDFs fisicamente para as pastas da nossa CDN Frontend e gera uma URL relativa pronta para ser lincada em qualquer entrada do banco.
+
+**Request Form-Data:**
+- `file` (Arquivo Binário de até 5MB)
+- Extensões Permitidas: `jpg, png, webp, gif, pdf`.
+
+**Response (201 Created):**
+```json
+{
+  "success": true,
+  "data": {
+    "id": 8,
+    "tenant_id": 1,
+    "filename": "fundo-hero-1abc99.webp",
+    "original_name": "fundo-hero.webp",
+    "mime_type": "image/webp",
+    "size_bytes": 104500,
+    "path": "/uploads/2026/02/fundo-hero-1abc99.webp",
+    "uploaded_by": 1,
+    "full_url": "https://cdn.santis.ddev.site/uploads/2026/02/fundo-hero-1abc99.webp"
+  },
+  "message": "Upload realizado com sucesso transferido para CDN."
+}
+```
 ```
