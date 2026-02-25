@@ -86,16 +86,28 @@ Como lidar com uma funcionalidade super exclusiva, como a API do `haveibeenpwned
 
 ---
 
-## 5. Escalabilidade SaaS (Blueprints e Encapsulamento)
+## 5. Escalabilidade SaaS e Instâncias
 
-Pensando em uma adoção "SaaS" onde o sistema roda em múltiplos servidores/clientes, a arquitetura deve prever dois comportamentos vitais a longo prazo.
+A adoção ocorrerá em duas fases de hospedagem, devendo o código estar preparado para ambas:
 
-### 5.1 Importação/Exportação Total (Site Blueprints)
+### 5.1 Fase Inicial (Instâncias Isoladas)
+No primeiro momento, cada cliente bancará sua própria hospedagem na Hostinger. Teremos instâncias físicas separadas:
+- `www.cliente1.com.br`
+- `painel.cliente1.com.br`
+- `cdn.cliente1.com.br`
+Neste modelo, o banco de dados é **exclusivo do cliente** (Mono-Tenant). Para evitar conflitos futuros caso os bancos precisem ser mesclados, e para facilitar a identificação, as tabelas adotarão um prefixo de ambiente isolado configurável via arquivo `.env` (ex: `DB_PREFIX=santis_`). Todas as queries do ORM ou QueryBuilder lerão este prefixo dinamicamente (ex: `santis_users`, `santis_portfolio`).
+
+### 5.2 Fase Futura (Painel Centralizado Multi-Tenant)
+Opcionalmente, no futuro, poderemos ter um único painel central (`painel.santis.com.br`) gerenciando os conteúdos de dezenas de `www.clienteX.com.br`. 
+- Neste caso, o código já deve nascer prevendo a variável `tenant_id` (ID do Cliente) em todas as tabelas centrais (ex: `tenant_id` na tabela de *Posts* restringe o post para aparecer apenas no site do Cliente X).
+- Na Fase 1, o `tenant_id` será apenas um `1` fixado (já que é um banco isolado), mas sua existência garante que o código não precisará ser reescrito na Fase 2.
+
+### 5.3 Importação/Exportação Total (Site Blueprints)
 Além de exportar apenas um "Custom Type", o Webmaster poderá exportar um "Blueprint" completo de um cliente (Ex: "Template Imobiliária").
 - **O que compõe um Blueprint:** A definição de Tipos (Imóveis, Corretores, Contato), Configurações Padrão (Cores genéricas), Arquitetura da CDN vazia (pastas pré-criadas) e a base estática do Frontend (www).
 - Quando um novo cliente entrar, o Webmaster clica em "Gerar do Blueprint". O sistema instantaneamente clona o esquema de pastas na CDN, cria as tabelas do Tenant baseadas no JSON, e acopla a Landing Page padrão. O administrador só precisará trocar cores, logotipos e textos.
 
-### 5.2 Arquitetura de Módulos Independentes (Safe Updates)
+### 5.4 Arquitetura de Módulos Independentes (Safe Updates)
 Para poder atualizar todos os clientes simultaneamente (ex: Repositório Base V1.0 para V1.1) através de um comando ou `git pull`, os Módulos (Mensageiros, Tipos de Mídia, Social) devem ser 100% **encapsulados e independentes**.
 - Adicionar um novo Driver de Mensageiro (ex: Slack) jamais deve tocar no script de envio via E-Mail.
 - O novo código do "Driver Slack" é injetado na base de código de todos os clientes em uma atualização.
@@ -103,8 +115,23 @@ Para poder atualizar todos os clientes simultaneamente (ex: Repositório Base V1
 
 ---
 
-## 6. Próxima Etapa: O Banco de Dados Dinâmico
+## 6. Autenticação de API (API Keys & Segurança JWT)
 
-Para suportar essa arquitetura *EAV (Entity-Attribute-Value)* ou *Relacional Dinâmica*, as tabelas precisarão prever a separação por `tenant_id` (Cliente) e os mapeamentos dos "Campos Personalizados".
+Como o Painel é *Headless* (sem cabeça), a única forma do "Mundo Exterior" (um Site, um App Android, um Desktop) ler o banco ou pedir para o *Driver de E-mail* disparar uma mensagem, é batendo numa URL do painel (`api/v1/messenger/send`).
+Se esta URL for aberta, qualquer pessoa inspecionando o código do site descobriria a rota e faria SPAM.
 
-Toda a codificação SQL só deverá ser iniciada após a validação unânime destes conceitos pelos idealizadores.
+Para garantir segurança rigorosa:
+1. **API Keys por Aplicação (Machine-to-Machine):** O Webmaster gera uma credencial única no Painel Administrativo do Cliente (ex: uma chave privada RSA ou um Token Alfanumérico Longo).
+   - O aplicativo (Frontend/App) do cliente arquiva essa chave (idealmente via `.env` do App e jamais exposta em JS público - neste caso, o `www` atua como Proxy Backend for Frontend, escondendo a chave).
+   - Toda requisição originada do App deverá conter no cabeçalho HTTP: `Authorization: Bearer <API-KEY-DO-CLIENTE-1>`.
+   - O Painel valida se a API Key existe, a qual App Cliente ela pertence (via `tenant_id`) e se permite escrita. Módulos críticos (Lead/Mensagens) exigirão POSTs assinados verificados.
+
+2. **CORS Dinâmico Restrito:**
+   - O Backend Administrativo possuirá uma *Whitelist* de domínios permitidos via CORS.
+   - O painel do Cliente X só aceita requisições HTTP (GET/POST) cujos `Origin` e `Referer` sejam exatamente `https://www.clienteX.com.br` ou IPs autorizados. Tentativas forjadas caindo de origens abertas são negadas a nível de webserver/gateway antes mesmo de consumir o PHP.
+
+---
+
+## 7. Próxima Etapa: O Banco de Dados Dinâmico
+
+Para suportar essa arquitetura *EAV (Entity-Attribute-Value)* ou *Relacional Dinâmica*, e prever a flexibilidade das fases Monolíticas vs Multi-Tenant, o mapeamento será a espinha dorsal de todo o desenvolvimento subsequente.
