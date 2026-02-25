@@ -19,8 +19,8 @@ class User
         
         $mockUser = [
             'id' => 1,
-            'name' => 'Webmaster Santis',
-            'email' => 'admin@santis.net.br',
+            'name' => 'Fernando Santis',
+            'email' => 'fpsantis@gmail.com',
             'tenant_id' => 1,
             // Hash gerada com password_hash('santis2026', PASSWORD_DEFAULT);
             'password_hash' => '$2y$12$wMcsBMq4csfL0Aua99B0gemoJaJcQp.uJJYrmcty2/WEg8lamQaSS', 
@@ -43,8 +43,8 @@ class User
         if ($id === 1) {
             return [
                 'id' => 1,
-                'name' => 'Webmaster Santis',
-                'email' => 'admin@santis.net.br',
+                'name' => 'Fernando Santis',
+                'email' => 'fpsantis@gmail.com',
                 'role' => 'webmaster',
                 'tenant_id' => 1
             ];
