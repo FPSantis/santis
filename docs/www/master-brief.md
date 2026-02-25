@@ -31,7 +31,26 @@ O site **não é monolítico**. A página principal (`Home`) atua apenas como um
 
 ---
 
-## 🔍 3. Lógicas Interativas Principais
+## 📂 3. Separação Estrita de Assets e Código
+Em fevereiro de 2026, a arquitetura foi aprimorada para o modelo profissional de isolamento total de responsabilidades, dividindo o ecossistema em três camadas físicas irrevogáveis:
+
+### 3.1. Camada de Lógica e Renderização (`www/src/*`)
+Contém **exclusivamente** regras de negócio (Controllers PHP) e os templates visuais dinâmicos (Views Twig). *Nenhum* asset ou imagem que o navegador precise processar vive aqui. Esta pasta é inacessível da internet pelo Nginx para reforço sumário de segurança.
+
+### 3.2. Camada de Assets Estruturais da "Casca" (`www/public_html/assets/*`)
+O subdomínio da Landing Page entrega diretamente pelo Nginx **apenas o que forma a interface**:
+- Folhas de estilo (CSS) compiladas por Módulo.
+- Scripts Vanilla (JS) de comportamento e animação de interface.
+- Imagens Vetoriais/Logos estruturais do próprio site (ex: `logo-santis.svg`).
+
+### 3.3. Camada de Conteúdo Dinâmico (A CDN) (`cdn/public_html/*`)
+Isolamento em subdomínio nativo `cdn.santis...`. Aqui reside tudo que não é o código-fonte da aplicação front-end, mas sim aquilo que é conteúdo inserido ou alterado com o tempo.
+- **Estrutura**: Pastas segmentadas por módulo e temporalidade (`cdn/public_html/<modulo>/YYYY/MM/`).
+- Abriga mockups dinâmicos do Portfólio, miniaturas de posts do Radar (Blog), logotipos de parceiros em nuvem e arquivos de serviços. Todo link de mídia em JSON aponta obrigatoriamente para a URL base da CDN.
+
+---
+
+## 🔍 4. Lógicas Interativas Principais
 
 ### Modal de Verificação (Santis Scan)
 Ativado no módulo Hero, simula uma varredura real:
@@ -45,7 +64,7 @@ Ativado no módulo Hero, simula uma varredura real:
 
 ---
 
-## 📡 4. Roteamento (Controllers)
+## 📡 5. Roteamento (Controllers)
 As requisições públicas (que passam pelo `public_html/index.php`) são interpretadas pelo `Router.php` que invoca os controllers específicos (`src/Controllers/`):
 
 - **SiteController**: Processa a Home page e renderiza a composição Módulo a Módulo.

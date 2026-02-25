@@ -7,12 +7,13 @@ A estrutura do desenvolvimento e todas as pequenas tarefas (épicos) estão divi
 - [x] Brainstorming das entidades Iniciais (RBAC, Site Content, CDN, Settings).
 - [x] Documentar o Conceito do CMS Headless (Arquitetura Multi-Tenant).
 - [x] Documentar Padrões de Git e Fluxo de Dev das IAs.
-- [ ] Implementar e Revisar a Arquitetura Final do Banco de Dados Dinâmico (`schema.sql`).
+- [x] Implementar e Revisar a Arquitetura Final do Banco de Dados Dinâmico (`schema.sql`).
   *(Precisamos refazer o BD para acomodar Tipos dinâmicos e Tenants antes de iniciar a Fase 2)*
 
 ## FASE 2: Backend Core (API e Banco de Dados)
-- [ ] Estruturar Router base em PHP para API REST (Responder JSON/CORS).
-- [ ] Implementar sistema de Autenticação (JWT ou Sessão Base) no Backend.
+- [x] Estruturar Router base em PHP para API REST (Responder JSON/CORS).
+- [x] Refatorar separação estrita de Assets Locais vs Mídia na CDN (Front e Docs atualizados).
+- [x] Implementar sistema de Autenticação (JWT ou Sessão Base) no Backend.
 - [ ] Construir os CRUDs básicos (Tipos, Conteúdo, Configurações).
 - [ ] Integração Central com a Tabela/Pasta de CDN (Controlador e File Manager de Uploads).
 - [ ] Auditing Base (Logar cada ação dos usuários no Backend em uma Tabela `audit_logs`).
