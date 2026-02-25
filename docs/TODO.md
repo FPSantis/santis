@@ -14,7 +14,7 @@ A estrutura do desenvolvimento e todas as pequenas tarefas (épicos) estão divi
 - [x] Estruturar Router base em PHP para API REST (Responder JSON/CORS).
 - [x] Refatorar separação estrita de Assets Locais vs Mídia na CDN (Front e Docs atualizados).
 - [x] Implementar sistema de Autenticação (JWT ou Sessão Base) no Backend.
-- [ ] Construir os CRUDs básicos (Tipos, Conteúdo, Configurações).
+- [x] Construir os CRUDs básicos (Tipos, Conteúdo, Configurações).
 - [ ] Integração Central com a Tabela/Pasta de CDN (Controlador e File Manager de Uploads).
 - [ ] Auditing Base (Logar cada ação dos usuários no Backend em uma Tabela `audit_logs`).
 - [ ] Implementar Helper de Criptografia At-Rest (LGPD) para ofuscação bidirecional em tabelas de PII (Leads/Usuários externos).
