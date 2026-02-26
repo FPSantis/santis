@@ -39,7 +39,7 @@ A estrutura do desenvolvimento e todas as pequenas tarefas (épicos) estão divi
 - [x] Mover todo pacote bruto HTML aprovado de `/ref/www` renascendo a real `/www/public_html/`.
 - [x] Codificar a Classe Core de JS Fetch (`api.js`) mapeada para buscar os endpoints listados na Fase 4.
 - [x] Criar lógica de "Fallback Autônomo" (Renderizar base fake/cacheada offline caso a API do Painel expire / falhe em responder).
-- [ ] Conectar os retornos em JSON diretamente nas Áreas Alvo do HTML estático limpo (Destruir Skeleton Loader e inserir os Cards EAV).
+- [x] Conectar os retornos em JSON diretamente nas Áreas Alvo do HTML estático limpo (Destruir Skeleton Loader e inserir os Cards EAV).
 
 ## FASE 6: Escalabilidade SaaS (Blueprints)
 - [ ] Construir o motor de "Blueprint Export/Import" (Exporta Tipos EAV + Settings Padrões + Scaffold CDN + Base WWW HTML).
