@@ -4,6 +4,8 @@ namespace Painel\Core;
 
 use Twig\Environment;
 use Twig\Loader\FilesystemLoader;
+use Twig\Extension\DebugExtension;
+use Painel\Models\ContentType;
 
 class View
 {
