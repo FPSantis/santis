@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Santis | Radar de Inteligência</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="assets/css/main.css">
+    <link rel="stylesheet" href="assets/css/radar-news.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+</head>
+
+<body class="bg-[#050A18] text-white font-sans antialiased">
+
+    <!-- Header -->
+    <header class="py-10 absolute top-0 w-full z-[100] bg-transparent border-none no-print">
+        <div class="container mx-auto px-6 flex justify-between items-center">
+            <a href="index.html"
+                class="px-6 py-3 bg-[#050A18]/40 backdrop-blur-md border border-white/10 rounded-full flex gap-3 items-center group hover:border-[#00F2FF] hover:bg-[#00F2FF]/10 transition-all active:scale-95 shadow-2xl">
+                <i class="bi bi-arrow-left text-[#00F2FF] group-hover:-translate-x-2 transition-transform"></i>
+                <span class="text-[10px] font-black uppercase tracking-[0.3em] text-[#00F2FF]">Explorar Início</span>
+            </a>
+            <div class="logo">
+                <img src="assets/img/logo-santis.svg" alt="Santis" class="h-10">
+            </div>
+        </div>
+    </header>
+
+    <!-- Persistent Background: Fernando Santis Photo (Far-Right Alignment) -->
+    <div class="fixed inset-0 z-0 pointer-events-none bg-[#050A18] overflow-hidden">
+        <img src="assets/img/hero-santis.png" class="absolute top-0 right-[-15vw] w-[75vw] h-auto opacity-50">
+        <div class="absolute inset-0 bg-[#050A18]/60"></div>
+    </div>
+
+    <main class="relative z-10">
+        <!-- Cinematic Header Banner -->
+        <div
+            class="relative min-h-[550px] md:h-[65vh] w-full overflow-hidden flex items-end pt-40 pb-20 md:pt-0 md:pb-32">
+            <div class="absolute inset-0 z-[-1]">
+                <!-- Letting fixed background take the lead, banner just adds depth -->
+                <div class="absolute inset-0 post-banner-fade"></div>
+            </div>
+
+            <div class="container mx-auto px-6 relative z-10 text-center max-w-4xl">
+                <div id="blog-pretitle" class="badge-highlight mb-6 pr-10">Radar Online</div>
+                <h1 id="blog-title"
+                    class="text-5xl md:text-7xl font-black Montserrat uppercase tracking-tighter text-white leading-[1.2] mb-8 italic">
+                    <span
+                        class="inline-block text-transparent bg-clip-text bg-gradient-to-r from-[#00F2FF] via-[#8A2BE2] to-[#00F2FF] animate-gradient px-4 pb-4">Radar
+                        Santis</span>
+                </h1>
+                <p id="blog-description"
+                    class="text-gray-400 font-light text-xl mb-12 max-w-3xl mx-auto leading-relaxed">
+                    Sincronizados com o pulso tecnológico global. Sua dose em tempo real de inteligência em segurança e
+                    performance digital.
+                </p>
+
+                <!-- Category Filters -->
+                <div class="flex justify-center gap-4 flex-wrap">
+                    <a href="blog.html"
+                        class="filter-btn px-10 py-4 rounded-full border border-white/10 text-[10px] font-black uppercase tracking-widest"
+                        id="filter-all">Todos os Artigos</a>
+                    <a href="blog.html?filter=Segurança"
+                        class="filter-btn px-10 py-4 rounded-full border border-white/10 text-[10px] font-black uppercase tracking-widest"
+                        id="filter-seguranca">Segurança</a>
+                    <a href="blog.html?filter=Otimização"
+                        class="filter-btn px-10 py-4 rounded-full border border-white/10 text-[10px] font-black uppercase tracking-widest"
+                        id="filter-otimizacao">Otimização</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="container mx-auto px-6 pt-0 pb-5">
+
+            <!-- Grid -->
+            <div class="radar-grid-fixed" id="radar-grid">
+                <!-- Posts dynamicly loaded here -->
+            </div>
+
+            <!-- Pagination -->
+            <div id="load-more-container" class="mt-24 text-center">
+                <button id="load-more-blog"
+                    class="px-12 py-5 bg-white/5 border border-white/10 rounded-full text-[12px] font-black uppercase tracking-[4px] text-white hover:border-[#8A2BE2] hover:bg-[#8A2BE2]/10 transition-all active:scale-95 shadow-2xl">
+                    Carregar Mais Inteligência
+                </button>
+            </div>
+
+            <!-- Global Share Bar (Same as post.html) -->
+            <div class="mt-20 pt-0 border-t border-white/5">
+                <div class="flex flex-col md:flex-row justify-between items-center gap-12 max-w-5xl mx-auto">
+                    <div>
+                        <h4 class="text-white font-black Montserrat uppercase tracking-[4px] text-sm mb-2">Compartilhar
+                            Radar</h4>
+                        <p class="text-gray-600 text-[10px] uppercase tracking-widest font-black italic">Escrito com
+                            <span class="text-[#8A2BE2] animate-pulse italic"><i class="bi bi-heart-fill"></i></span>
+                            por Fernando Santis
+                        </p>
+                    </div>
+                    <div class="flex flex-wrap justify-center gap-4 max-w-[220px] md:max-w-none">
+                        <!-- Facebook -->
+                        <button onclick="shareFacebook()"
+                            class="w-14 h-14 flex items-center justify-center rounded-2xl bg-white/5 border border-white/10 text-white hover:bg-[#1877F2] hover:text-white transition-all text-xl"
+                            title="Facebook">
+                            <i class="bi bi-facebook"></i>
+                        </button>
+                        <!-- LinkedIn -->
+                        <button
+                            onclick="window.open('https://www.linkedin.com/sharing/share-offsite/?url=' + encodeURIComponent(window.location.href), '_blank')"
+                            class="w-14 h-14 flex items-center justify-center rounded-2xl bg-white/5 border border-white/10 text-white hover:bg-[#0077B5] hover:text-white transition-all text-xl"
+                            title="LinkedIn">
+                            <i class="bi bi-linkedin"></i>
+                        </button>
+                        <!-- WhatsApp -->
+                        <button onclick="shareWhatsApp()"
+                            class="w-14 h-14 flex items-center justify-center rounded-2xl bg-white/5 border border-white/10 text-white hover:bg-[#25D366] hover:text-white transition-all text-xl"
+                            title="WhatsApp">
+                            <i class="bi bi-whatsapp"></i>
+                        </button>
+                        <!-- E-mail -->
+                        <button onclick="shareEmail()"
+                            class="w-14 h-14 flex items-center justify-center rounded-2xl bg-white/5 border border-white/10 text-white hover:bg-[#EA4335] hover:text-white transition-all text-xl"
+                            title="E-mail">
+                            <i class="bi bi-envelope-fill"></i>
+                        </button>
+                        <!-- Copy Link -->
+                        <button onclick="copyToClipboard()" id="btn-copy-global"
+                            class="w-14 h-14 flex items-center justify-center rounded-2xl bg-white/5 border border-white/10 text-white hover:bg-[#00F2FF] hover:text-[#050A18] transition-all text-xl relative"
+                            title="Copiar Link">
+                            <i class="bi bi-link-45deg"></i>
+                            <span id="copy-tooltip-global"
+                                class="absolute -top-12 bg-[#00F2FF] text-[#050A18] text-[10px] font-black px-3 py-1 rounded-lg opacity-0 pointer-events-none transition-all uppercase tracking-widest">Copiado!</span>
+                        </button>
+                        <!-- Print -->
+                        <button onclick="window.print()"
+                            class="w-14 h-14 flex items-center justify-center rounded-2xl bg-white/5 border border-white/10 text-white hover:bg-white hover:text-[#050A18] transition-all text-xl"
+                            title="Imprimir Radar">
+                            <i class="bi bi-printer-fill"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- 09 - FALE CONOSCO -->
+    <footer id="contato" class="pt-16 pb-0 bg-[#050A18] relative z-10">
+        <div class="container mx-auto px-6 text-center md:text-left">
+            <!-- Linha 1: Tag Fale Conosco -->
+            <div class="mb-0">
+                <div class="badge-highlight mx-auto md:mx-0">Fale Conosco</div>
+            </div>
+            <!-- Linha 2: QrCode Formulario | Comunicação | Redes Ativas -->
+            <div class="grid lg:grid-cols-12 gap-12 items-center mb-0">
+                <!-- Coluna: QrCode + Formulario -->
+                <div class="lg:col-span-8 flex flex-col md:flex-row items-center gap-10">
+                    <div
+                        class="hidden md:block shrink-0 p-2 bg-white/5 border border-white/10 rounded-xl group transition-all hover:border-[#00F2FF]/30">
+                        <img src="assets/img/whatsapp-qr.svg" alt="WhatsApp QR Code"
+                            class="w-24 h-24 opacity-80 group-hover:opacity-100 transition duration-500">
+                    </div>
+                    <div class="w-full px-6 md:px-0">
+                        <form id="whatsapp-footer-form"
+                            class="flex flex-col md:flex-row gap-4 items-end md:items-center">
+                            <div class="w-full md:w-1/3 text-left">
+                                <label
+                                    class="block text-[8px] font-black uppercase tracking-widest text-[#00F2FF]/40 mb-2">Nome</label>
+                                <input type="text" id="footer-name" placeholder="Seu nome" class="contact-input w-full">
+                            </div>
+                            <div class="w-full md:w-1/2 text-left">
+                                <label
+                                    class="block text-[8px] font-black uppercase tracking-widest text-[#00F2FF]/40 mb-2">Mensagem</label>
+                                <input type="text" id="footer-message" placeholder="Como podemos ajudar?"
+                                    class="contact-input w-full">
+                            </div>
+                            <button type="submit"
+                                class="whatsapp-send-btn flex items-center justify-center gap-2 w-full md:w-auto mt-4 md:mt-6">
+                                <i class="bi bi-whatsapp"></i>
+                                <span>ENVIAR</span>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- 10 - RODAPÉ INFOS -->
+                <!-- Coluna: Comunicação -->
+                <div class="lg:col-span-2 space-y-2 mt-8 md:mt-0 text-center md:text-left">
+                    <h5 class="text-white text-[10px] font-black uppercase tracking-widest mb-3">Comunicação</h5>
+                    <a href="mailto:contato@santis.eng.br"
+                        class="block text-gray-400 hover:text-[#00F2FF] transition text-lg md:text-sm">contato@santis.eng.br</a>
+                    <span class="block text-gray-600 text-[12px] md:text-[10px] font-bold uppercase tracking-wider">São
+                        Carlos - SP |
+                        Brasil</span>
+                </div>
+
+                <!-- Coluna: Redes Ativas -->
+                <div class="lg:col-span-2 space-y-2 text-center md:text-right mt-8 md:mt-0">
+                    <h5 class="text-white text-[10px] font-black uppercase tracking-widest mb-3">Redes Ativas</h5>
+                    <div class="flex justify-center md:justify-end gap-6 text-2xl md:text-xl">
+                        <a href="#" class="text-gray-500 hover:text-[#1877F2] transition"><i
+                                class="bi bi-facebook"></i></a>
+                        <a href="#" class="text-gray-500 hover:text-[#E4405F] transition"><i
+                                class="bi bi-instagram"></i></a>
+                        <a href="#" class="text-gray-500 hover:text-[#0A66C2] transition"><i
+                                class="bi bi-linkedin"></i></a>
+                    </div>
+                </div>
+            </div>
+            <!-- Linha 3: Logo (em branco e maior) CopyRight | Feito com Coração -->
+            <div
+                class="pt-8 mt-12 border-t border-white/5 flex flex-col items-center gap-8 md:flex-row md:justify-between">
+                <!-- Esquerda: Logo e Copyright -->
+                <div class="flex flex-col items-center md:flex-row gap-6 text-center md:text-left">
+                    <img src="assets/img/logo-santis.svg" alt="Santis" class="h-14 opacity-90 brightness-200">
+                    <div class="text-[9px] font-black uppercase tracking-[2px] text-gray-400">
+                        © 2025-
+                        <script>document.write(new Date().getFullYear())</script> Santis: Inteligência, Tecnologia e
+                        Performance.<br>todos direitos reservados.
+                    </div>
+                </div>
+                <!-- Direita: Feito com Coração -->
+                <div class="text-[9px] font-black uppercase tracking-[3px] text-gray-400 mb-8 md:mb-0">
+                    Feito com <span class="text-red-500 animate-pulse text-xs">❤️</span> por Fernando Santis
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="assets/js/blog-data.js"></script>
+    <script src="assets/js/radar.js"></script>
+</body>
+
+</html>

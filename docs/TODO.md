@@ -27,15 +27,23 @@ A estrutura do desenvolvimento e todas as pequenas tarefas (épicos) estão divi
 - [x] Interface do Webmaster para criação visual de "Tipos" de Conteúdo e "Drivers" de Mensageiros.
 - [x] Ferramenta de Importação/Exportação (JSON) para Tipos de Conteúdo e Configurações (Reuso de templates entre clientes).
 
-## FASE 4: Integração com Frontend (Santis / Apps)
-- [ ] Configurar Landing Page para fazer GETs de conteúdo dos Tipos Dinâmicos.
-- [ ] Formatar o Asset Manager do CMS para só injetar JS/CSS que a Landing precisar.
-- [ ] Implementar forms de Contato (POST pra API de Mensageiro).
+## FASE 4: Back-end API - Entidades, Mídia e Drivers
+- [ ] Construir Rota Rest `GET /api/v1/settings` (Disponibilizar Configs Globais como Slogan, Contatos, Cópias, SVG Logos).
+- [ ] Provisionar fisicamente (MariaDB/Painel) os 5 Novos Custom Types EAV (`services`, `partners`, `portfolio`, `social_networks`, `blog`).
+- [ ] Criar "Media Manager" e "Tipos de Upload" (Validação MIME/Resize) exportando estritos para `/cdn/public_html/portfolio/`, `/blog/` e `/config/`.
+- [ ] Implementar Serviços REST exclusivos (`GET /api/v1/services/share-options`, `POST /api/v1/messenger/whatsapp`, `POST /api/v1/scanner/pwned`).
 
-## FASE 5: Escalabilidade SaaS (Blueprints e Updates Base)
-- [ ] Construir o motor de "Blueprint Export/Import" (Exporta Tipos + Scaffold de CDN + Scaffold WWW base).
-- [ ] Modularizar injeções de código para garantir que novas `features/` possam ser mergiadas na `main` no estado "Desativado por Padrão" sem quebrar tenants existentes.
+## FASE 5: Front-end WWW (Vanilla JS & Fallback)
+- [ ] Renomear o `/www` antigo (Experimentos MVC) para `/ref/www_migrated` para preservação térmica de códigos CSS e classes uteis.
+- [ ] Mover todo pacote bruto HTML aprovado de `/ref/www` renascendo a real `/www/public_html/`.
+- [ ] Codificar a Classe Core de JS Fetch (`api.js`) mapeada para buscar os endpoints listados na Fase 4.
+- [ ] Criar lógica de "Fallback Autônomo" (Renderizar base fake/cacheada offline caso a API do Painel expire / falhe em responder).
+- [ ] Conectar os retornos em JSON diretamente nas Áreas Alvo do HTML estático limpo (Destruir Skeleton Loader e inserir os Cards EAV).
+
+## FASE 6: Escalabilidade SaaS (Blueprints)
+- [ ] Construir o motor de "Blueprint Export/Import" (Exporta Tipos EAV + Settings Padrões + Scaffold CDN + Base WWW HTML).
+- [ ] Modularizar injeções de código para garantir que novas Módulos Driver possam ser fundidos na `main` inativos.
 
 ## Fixo: Rotina Contínua
-- [ ] Atualização constante dos Docs.
 - [ ] Testes Nativos a cada Merge.
+- [ ] Respeito absoluto à integridade isolada do `www`, `cdn` e `painel`.
