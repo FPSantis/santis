@@ -42,8 +42,8 @@ A estrutura do desenvolvimento e todas as pequenas tarefas (épicos) estão divi
 - [x] Conectar os retornos em JSON diretamente nas Áreas Alvo do HTML estático limpo (Destruir Skeleton Loader e inserir os Cards EAV).
 
 ## FASE 6: Escalabilidade SaaS (Blueprints)
-- [ ] Construir o motor de "Blueprint Export/Import" (Exporta Tipos EAV + Settings Padrões + Scaffold CDN + Base WWW HTML).
-- [ ] Modularizar injeções de código para garantir que novas Módulos Driver possam ser fundidos na `main` inativos.
+- [x] Construir o motor de "Blueprint Export/Import" (Exporta Tipos EAV + Settings Padrões + Scaffold CDN + Base WWW HTML).
+- [x] Modularizar injeções de código para garantir que novas Módulos Driver possam ser fundidos na `main` inativos.
 
 ## Fixo: Rotina Contínua
 - [ ] Testes Nativos a cada Merge.
