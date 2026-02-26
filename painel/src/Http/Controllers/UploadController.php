@@ -20,6 +20,7 @@ class UploadController
         'image/jpeg' => 'jpg',
         'image/png'  => 'png',
         'image/webp' => 'webp',
+        'image/svg+xml' => 'svg',
         'image/gif'  => 'gif',
         'application/pdf' => 'pdf'
     ];
@@ -58,6 +59,9 @@ class UploadController
         }
 
         $file = $_FILES['file'];
+        // Configuração de Rota Customizável via Painel (Ex: upload pra /config, /portfolio, /blog)
+        $destinationFolder = $request->input('destination_folder') ?? 'uploads';
+        $destinationFolder = preg_replace('/[^a-zA-Z0-9_\-]/', '', $destinationFolder); // Sanitize
 
         // 1. Validação de Tamanho
         if ($file['size'] > self::MAX_SIZE) {
@@ -70,16 +74,22 @@ class UploadController
         finfo_close($finfo);
 
         if (!array_key_exists($mimeType, self::ALLOWED_MIMES)) {
-            return Response::error("Tipo de arquivo não suportado: {$mimeType}. São permitidos apenas imagens (JPG, PNG, WEBP, GIF) e PDFs.", 415);
+            return Response::error("Tipo de arquivo não suportado: {$mimeType}. São permitidos apenas imagens (JPG, PNG, WEBP, SVG, GIF) e PDFs.", 415);
         }
 
-        // 3. Montar a Árvore de Diretórios (Ano/Mês)
+        // 3. Montar a Árvore de Diretórios
         $year = date('Y');
         $month = date('m');
         
-        // Caminho Absoluto dentro do Servidor: /mnt/d/_WEB/santis/cdn/public_html/uploads/2026/02/
         $cdnRoot = dirname(__DIR__, 4) . '/cdn/public_html';
-        $relativeDir = "/uploads/{$year}/{$month}";
+        
+        // Exceção: A pasta /config não leva data, é global.
+        if ($destinationFolder === 'config') {
+             $relativeDir = "/{$destinationFolder}";
+        } else {
+             $relativeDir = "/{$destinationFolder}/{$year}/{$month}";
+        }
+        
         $absoluteDir = $cdnRoot . $relativeDir;
 
         // Se não existir, crie fisicamente as pastas
@@ -87,46 +97,63 @@ class UploadController
             mkdir($absoluteDir, 0777, true);
         }
 
-        // 4. Gerar nome de arquivo seguro + Hash único para evitar sobreposições
-        $extension = self::ALLOWED_MIMES[$mimeType];
+        // 4. Lógica de Conversão e Salvar fisicamente o Arquivo
         $safeOriginalName = preg_replace('/[^a-zA-Z0-9_-]/', '_', pathinfo($file['name'], PATHINFO_FILENAME));
-        $uniqueFilename = $safeOriginalName . '-' . uniqid() . '.' . $extension;
+        $uniqueFilename = $safeOriginalName . '-' . uniqid();
         
-        $absolutePath = $absoluteDir . '/' . $uniqueFilename;
+        $isConvertibleImage = in_array($mimeType, ['image/jpeg', 'image/png']);
         
-        // Caminho Salvo no BD que a API vai entregar (Esse caminho + $SITE_URL_CDN = Sucesso Visual)
-        $dbPath = $relativeDir . '/' . $uniqueFilename;
+        // Se for WEBP (já nativo), pulamos recompressão e só movemos limpo (a menos que precise forçar resize)
+        // Se for SVG, não converte e move.
+        // Se for JPG/PNG e a extensão GD estiver ON, processa!
 
-        // 5. O Pulo do Gato (O Move físico entre o Buffer do PHP e a CDN real)
-        if (move_uploaded_file($file['tmp_name'], $absolutePath)) {
+        if ($isConvertibleImage) {
+            $finalFilename = $uniqueFilename . '.webp';
+            $absolutePath = $absoluteDir . '/' . $finalFilename;
+            $dbPath = $relativeDir . '/' . $finalFilename;
             
-            // 6. Arquivou com sucesso? Armazene na Tabela `media_files` do MariaDB
-            $data = [
-                'filename'      => $uniqueFilename,
-                'original_name' => $file['name'],
-                'mime_type'     => $mimeType,
-                'size_bytes'    => $file['size'],
-                'path'          => $dbPath,
-                'uploaded_by'   => $userId
-            ];
-
             try {
-                $newId = MediaFile::create($tenantId, $data);
-                $fileRecord = MediaFile::find($newId, $tenantId);
-                
-                // Anexa a URL Completa pro Front usar agora mesmo se quiser
-                $cdnDomain = getenv('CDN_URL') ?: 'https://cdn.santis.ddev.site';
-                $fileRecord['full_url'] = $cdnDomain . $fileRecord['path'];
-
-                return Response::json(true, $fileRecord, 'Upload realizado com sucesso transferido para CDN.', 201);
+                \Painel\Core\ImageHelper::processToWebp($file['tmp_name'], $absolutePath, 1200, 1200, 85);
+                $finalMime = 'image/webp';
+                // Calculamos o novo tamanho pós compressão WEBP (Pode reduzir 90%!)
+                $finalSize = filesize($absolutePath);
             } catch (Exception $e) {
-                // Em caso raro da query errar DEPOIS de upar, excluímos a imagem órfã da CDN.
-                @unlink($absolutePath);
-                return Response::error('Erro ao guardar rastreio no Banco: ' . $e->getMessage(), 500);
+                 return Response::error('A compressão do Arquivo falhou GD API: ' . $e->getMessage(), 500);
             }
-
         } else {
-            return Response::error('Falha crítica de I/O ao tentar interligar as caixas Painel -> CDN.', 500);
+            // SVGs, WEBP e PDFs movem direto (Zero GD compression)
+            $extension = self::ALLOWED_MIMES[$mimeType] ?? 'bin';
+            $finalFilename = $uniqueFilename . '.' . $extension;
+            $absolutePath = $absoluteDir . '/' . $finalFilename;
+            $dbPath = $relativeDir . '/' . $finalFilename; $finalMime = $mimeType;
+            $finalSize = $file['size'];
+
+            if (!move_uploaded_file($file['tmp_name'], $absolutePath)) {
+                return Response::error('Falha crítica de I/O ao tentar mover o arquivo para a CDN.', 500);
+            }
+        }
+
+        // 6. Arquivou com sucesso? Armazene na Tabela `media_files` do MariaDB
+        $data = [
+            'filename'      => $finalFilename,
+            'original_name' => $file['name'],
+            'mime_type'     => $finalMime,
+            'size_bytes'    => $finalSize,
+            'path'          => $dbPath,
+            'uploaded_by'   => $userId
+        ];
+
+        try {
+            $newId = MediaFile::create($tenantId, $data);
+            $fileRecord = MediaFile::find($newId, $tenantId);
+            
+            $cdnDomain = getenv('CDN_URL') ?: 'https://cdn.santis.ddev.site';
+            $fileRecord['full_url'] = $cdnDomain . $fileRecord['path'];
+
+            return Response::json(true, $fileRecord, 'Upload WEBP/Global realizado com sucesso transferido para CDN.', 201);
+        } catch (Exception $e) {
+            @unlink($absolutePath);
+            return Response::error('Erro ao guardar rastreio no Banco: ' . $e->getMessage(), 500);
         }
     }
 }

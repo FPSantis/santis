@@ -20,8 +20,23 @@ $api->get('/ping', function() {
     ], 'API está online e conectada com sucesso.');
 });
 
-// Rotas Públicas
+// Rotas Públicas (Operações sem JWT)
 $api->post('/login', 'Painel\Http\Controllers\AuthController@login');
+
+// Grupo V1 API Frontend Pública
+$api->mount('/v1', function() use ($api) {
+    // Configurações Globais (ReadOnly)
+    $api->get('/settings', 'Painel\Http\Controllers\SettingController@index');
+    
+    
+    // Entradas Públicas de Módulos (ReadOnly) ex: Portfólio, Serviços
+    $api->get('/entries/(\w+)', 'Painel\Http\Controllers\EntryController@publicIndex');
+
+    // Serviços e Drivers Ativos (Acionados pelo Front, Executados no Painel)
+    $api->get('/services/share-options', 'Painel\Http\Controllers\ServiceController@shareOptions');
+    $api->post('/messenger/whatsapp', 'Painel\Http\Controllers\ServiceController@sendWhatsApp');
+    $api->post('/scanner/pwned', 'Painel\Http\Controllers\ServiceController@scanPwned');
+});
 
 // Grupo de Rotas Protegidas (Exigem JWT)
 $api->mount('/secure', function() use ($api) {
@@ -57,8 +72,7 @@ $api->mount('/secure', function() use ($api) {
     $api->get('/media', 'Painel\Http\Controllers\UploadController@index');
     $api->post('/upload', 'Painel\Http\Controllers\UploadController@store');
 
-    // Configurações Globais
-    $api->get('/settings', 'Painel\Http\Controllers\SettingController@index');
+    // Configurações Globais Administrativas (Save)
     $api->post('/settings', 'Painel\Http\Controllers\SettingController@store');
 
     // Blueprints SaaS (Import/Export Core)

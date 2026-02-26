@@ -28,6 +28,31 @@ class EntryController
     }
 
     /**
+     * Rota de Leitura Pública do Frontend
+     * GET /api/v1/entries/{type_slug}
+     */
+    public function publicIndex(string $typeSlug)
+    {
+        $tenantId = 1;
+
+        try {
+            // Em produção, filtrar apenas Entradas cujo status='published'
+            $entries = Entry::byTypeSlug($tenantId, $typeSlug);
+            
+            // Decodificar JSON strings em Arrays para envio Limpo via Endpoint REST
+            foreach ($entries as &$entry) {
+                if (isset($entry['content_data']) && is_string($entry['content_data'])) {
+                    $entry['content_data'] = json_decode($entry['content_data'], true);
+                }
+            }
+            
+            return Response::json(true, $entries, "Dados Públicos do Serviço '{$typeSlug}' servidos com sucesso.");
+        } catch (Exception $e) {
+            return Response::error('Erro ao prover dados: ' . $e->getMessage(), 500);
+        }
+    }
+
+    /**
      * Registra nova Entrada Atrelada ao Frontend Builder
      * POST /api/secure/entries/{type_slug}
      */
