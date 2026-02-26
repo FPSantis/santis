@@ -9,27 +9,19 @@ namespace Painel\Models;
 class User
 {
     /**
-     * Valida as credenciais. Em produção, isso fará "SELECT * FROM users WHERE email = ?".
+     * Valida as credenciais buscando no Banco de Dados
      */
     public static function attempt(string $email, string $password): ?array
     {
-        // Mock de Administrador do Painel
-        // Senha original era 'santis2026' mas deve ser checada usando password_verify
-        // Aqui usaremos dados fixos para montar a Arquitetura do JWT.
+        $db = \Painel\Core\Database::getInstance();
+        $stmt = $db->prepare("SELECT * FROM users WHERE email = :email LIMIT 1");
+        $stmt->execute(['email' => $email]);
         
-        $mockUser = [
-            'id' => 1,
-            'name' => 'Fernando Santis',
-            'email' => 'fpsantis@gmail.com',
-            'tenant_id' => 1,
-            // Hash gerada com password_hash('santis2026', PASSWORD_DEFAULT);
-            'password_hash' => '$2y$12$wMcsBMq4csfL0Aua99B0gemoJaJcQp.uJJYrmcty2/WEg8lamQaSS', 
-        ];
+        $user = $stmt->fetch(\PDO::FETCH_ASSOC);
 
-        // Validar e-mail e hash bcrypt
-        if ($email === $mockUser['email'] && password_verify($password, $mockUser['password_hash'])) {
-            unset($mockUser['password_hash']); // Nunca retorne o hash
-            return $mockUser;
+        if ($user && password_verify($password, $user['password_hash'])) {
+            unset($user['password_hash']); // Nunca retorne o hash
+            return $user;
         }
 
         return null;
@@ -40,15 +32,12 @@ class User
      */
     public static function findById(int $id): ?array
     {
-        if ($id === 1) {
-            return [
-                'id' => 1,
-                'name' => 'Fernando Santis',
-                'email' => 'fpsantis@gmail.com',
-                'role' => 'webmaster',
-                'tenant_id' => 1
-            ];
-        }
-        return null;
+        $db = \Painel\Core\Database::getInstance();
+        $stmt = $db->prepare("SELECT id, tenant_id, name, email, role FROM users WHERE id = :id LIMIT 1");
+        $stmt->execute(['id' => $id]);
+        
+        $user = $stmt->fetch(\PDO::FETCH_ASSOC);
+        
+        return $user ?: null;
     }
 }
