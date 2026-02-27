@@ -65,6 +65,14 @@ class Request
     }
 
     /**
+     * Pega um campo específico (Alias para input)
+     */
+    public function get(string $key, $default = null)
+    {
+        return $this->input($key, $default);
+    }
+
+    /**
      * Pega um campo específico
      */
     public function input(string $key, $default = null)
@@ -106,5 +114,22 @@ class Request
     public function getMethod(): string
     {
         return $this->method;
+    }
+
+    /**
+     * Retorna o usuário autenticado caso exista (Populodo pelo AuthMiddleware)
+     */
+    public function user(): ?array
+    {
+        $userId = $_SERVER['AUTH_USER_ID'] ?? null;
+        if (!$userId) return null;
+
+        $user = \Painel\Models\User::findById((int)$userId);
+        if ($user) {
+            // Compatibilidade com código legado que usa 'tenant' em vez de 'tenant_id'
+            $user['tenant'] = $user['tenant_id'];
+            $user['userId'] = $user['id'];
+        }
+        return $user;
     }
 }

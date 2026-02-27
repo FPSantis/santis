@@ -8,56 +8,83 @@ use Painel\Models\MediaFile;
 
 class MediaController
 {
-    /**
-     * Listar todos os arquivos (paginado e filtrado)
-     */
     public function index()
     {
-        $request = new Request();
-        $user = $request->user();
-        if (!$user || !isset($user['tenant'])) { return Response::error('Acesso não autorizado', 401); }
-        
-        $tenantId = $user['tenant'];
-        $folderId = $request->get('folder_id');
-        $filters = [
-            'q' => $request->get('q'),
-            'type' => $request->get('type')
-        ];
+        try {
+            $request = new Request();
+            $user = $request->user();
+            
+            $tenantId = $user ? $user['tenant_id'] : 1; 
+            
+            $folderId = $request->get('folder_id');
+            $filters = [
+                'q'    => $request->get('q'),
+                'type' => $request->get('type')
+            ];
 
-        if (isset($folderId)) {
-            if ($folderId === 'null' || $folderId === '' || $folderId === 0) {
+            if ($folderId === 'null' || $folderId === '' || $folderId === '0' || $folderId === 0 || $folderId === null) {
                 $filters['folder_id'] = null;
             } else {
                 $filters['folder_id'] = (int)$folderId;
             }
-        } else {
-            $filters['folder_id'] = null;
-        }
 
-        $page = (int)($request->get('page') ?: 1);
-        $limit = (int)($request->get('limit') ?: 50);
-        $offset = ($page - 1) * $limit;
-        
-        $files = MediaFile::all($tenantId, $filters, $limit, $offset);
-        $folders = [];
-        $currentFolder = null;
+            $page   = (int)($request->get('page') ?: 1);
+            $limit  = (int)($request->get('limit') ?: 50);
+            $offset = ($page - 1) * $limit;
+            
+            $files         = MediaFile::all($tenantId, $filters, $limit, $offset);
+            $folders       = [];
+            $currentFolder = null;
 
-        if ($filters['folder_id']) {
-            $currentFolder = MediaFile::findFolder($filters['folder_id'], $tenantId);
-        }
+            if ($filters['folder_id']) {
+                $currentFolder = MediaFile::findFolder($filters['folder_id'], $tenantId);
+            }
 
-        // Se estiver navegando (sem busca global), traz subpastas
-        if (empty($filters['q']) && empty($filters['type'])) {
-            $folders = MediaFile::allFolders($tenantId, $filters['folder_id']);
+            if (empty($filters['q']) && empty($filters['type'])) {
+                $allFolders = MediaFile::allFolders($tenantId, $filters['folder_id']);
+
+                // Build a slug → ContentType map for icon/name enrichment (root only)
+                $moduleMap = [];
+                if ($filters['folder_id'] === null) {
+                    $contentTypes = \Painel\Models\ContentType::all($tenantId);
+                    foreach ($contentTypes as $ct) {
+                        $moduleMap[strtolower($ct['slug'])] = $ct;
+                    }
+                }
+                
+                foreach ($allFolders as $f) {
+                    $name = mb_strtolower($f['name'], 'UTF-8');
+                    // Blacklist de pastas internas
+                    if ($filters['folder_id'] === null && in_array($name, ['config', 'gerenciador', 'inicio', 'início'])) {
+                        continue;
+                    }
+                    // Match by path segment (e.g. '/partners' → 'partners') not by display name
+                    $pathSlug = isset($f['path']) ? strtolower(trim(explode('/', $f['path'])[1] ?? '', '/')) : $name;
+                    
+                    if (isset($moduleMap[$pathSlug])) {
+                        $ct = $moduleMap[$pathSlug];
+                        $f['display_name'] = $ct['name'];
+                        $f['module_icon']  = $ct['icon'] ?? 'bx-collection';
+                    } else {
+                        $f['display_name'] = $f['name'];
+                        $f['module_icon']  = 'bx-folder';
+                    }
+                    $folders[] = $f;
+                }
+            }
+            
+            return Response::json(true, [
+                'files'          => $files,
+                'folders'        => $folders,
+                'current_folder' => $currentFolder,
+                'page'           => $page,
+                'limit'          => $limit
+            ], 'Mídias recuperadas com sucesso');
+
+        } catch (\Throwable $e) {
+            error_log("CRITICAL_MEDIA_ERROR: " . $e->getMessage() . " in " . $e->getFile() . ":" . $e->getLine());
+            return Response::error('Erro Fatal: ' . $e->getMessage() . ' em ' . basename($e->getFile()) . ':' . $e->getLine(), 500);
         }
-        
-        return Response::json(true, [
-            'files' => $files,
-            'folders' => $folders,
-            'current_folder' => $currentFolder,
-            'page' => $page,
-            'limit' => $limit
-        ], 'Mídias recuperadas com sucesso');
     }
 
     public function upload()
@@ -77,31 +104,34 @@ class MediaController
         $folderId = $request->get('folder_id') ?: null;
         
         // Determinar o caminho físico e aplicar regras modulares
-        $relativePath = "/uploads";
-        if ($folderId) {
-            $db = \Painel\Core\Database::getInstance();
-            $stmt = $db->prepare("SELECT id, name, path FROM media_folders WHERE id = :id AND tenant_id = :tenant_id");
-            $stmt->execute(['id' => $folderId, 'tenant_id' => $tenantId]);
-            $f = $stmt->fetch();
-            
-            if ($f) {
-                $relativePath = $f['path'];
-                $moduleName = strtolower($f['name']);
-                
-                // Regra: Portfolio, Radar e Services usam YYYY/MM
-                $modularFolders = ['portfolio', 'radar', 'services'];
-                if (in_array($moduleName, $modularFolders)) {
-                    $dateSubpath = "/" . date('Y/m');
-                    $relativePath .= $dateSubpath;
-                    
-                    // Garantir que a pasta YYYY/MM existe no DB e Fisicamente
-                    $folderId = $this->ensureFolderExists($tenantId, date('Y/m'), $relativePath, $f['id']);
-                }
-            }
+        // Regra: Todo upload gerenciado vai para /{module}/YYYY/MM ou /uploads/YYYY/MM
+        $baseDir = "/uploads";
+        $parentIdForDate = null;
+
+        if (!$folderId) {
+            return Response::error('Por favor, selecione uma pasta de módulo para enviar arquivos.', 400);
+        }
+
+        $db = \Painel\Core\Database::getInstance();
+        $stmt = $db->prepare("SELECT id, name, path FROM media_folders WHERE id = :id AND tenant_id = :tenant_id");
+        $stmt->execute(['id' => $folderId, 'tenant_id' => $tenantId]);
+        $f = $stmt->fetch();
+        
+        if (!$f) {
+            return Response::error('Pasta destino inválida.', 400);
+        }
+
+        $baseDir = $f['path'];
+        $parentIdForDate = $f['id'];
+
+        // Se a pasta selecionada já for uma pasta de data (ex: /radar/2026/02), mantemos ela
+        if (preg_match('/\/\d{4}\/\d{2}$/', $baseDir)) {
+            $relativePath = $baseDir;
         } else {
-            // Default para a raiz de uploads com data
-            $relativePath .= "/" . date('Y/m');
-            $folderId = $this->ensureFolderExists($tenantId, date('Y/m'), $relativePath, null);
+            // Caso contrário (está na raiz do módulo), criamos/usamos a subpasta YYYY/MM
+            // Agora vale para TODOS os módulos, incluindo Partners
+            $relativePath = $baseDir . "/" . date('Y/m');
+            $folderId = $this->ensureFolderExists($tenantId, date('Y/m'), $relativePath, $parentIdForDate);
         }
 
         // Validar MIME
@@ -125,11 +155,12 @@ class MediaController
             mkdir($targetDir, 0755, true);
         }
 
-        $safeOriginalName = preg_replace('/[^a-zA-Z0-9_-]/', '_', pathinfo($file['name'], PATHINFO_FILENAME));
-        $uniqueFilename = $safeOriginalName . '-' . uniqid();
+        // Hashed filename for security and privacy (Always hashed)
+        $extension = $allowedMimes[$mimeType];
+        $hashedFilename = md5(uniqid(rand(), true));
+        $finalFilename = $hashedFilename . '.' . ($extension === 'jpeg' || $extension === 'png' ? 'webp' : $extension);
         
         if (in_array($mimeType, ['image/jpeg', 'image/png'])) {
-            $finalFilename = $uniqueFilename . '.webp';
             $absolutePath = $targetDir . '/' . $finalFilename;
             $dbPath = $relativePath . '/' . $finalFilename;
             try {
@@ -140,8 +171,6 @@ class MediaController
                 return Response::error('Conversão falhou: ' . $e->getMessage(), 500);
             }
         } else {
-            $extension = $allowedMimes[$mimeType];
-            $finalFilename = $uniqueFilename . '.' . $extension;
             $absolutePath = $targetDir . '/' . $finalFilename;
             $dbPath = $relativePath . '/' . $finalFilename;
             $finalMime = $mimeType;
@@ -151,8 +180,9 @@ class MediaController
             }
         }
         
+        // Mantemos o nome original no DB para o usuário, mas o arquivo real usa o hash
         $mediaId = MediaFile::create($tenantId, [
-            'filename'    => $finalFilename,
+            'filename'    => $file['name'], 
             'path'        => $dbPath,
             'mime_type'   => $finalMime,
             'size_bytes'  => $finalSize,
@@ -163,7 +193,7 @@ class MediaController
         return Response::json(true, [
             'id' => $mediaId,
             'path' => $dbPath,
-            'url' => 'https://cdn.santis.net.br' . $dbPath
+            'url' => $this->getCdnBaseUrl() . $dbPath
         ], 'Arquivo enviado com sucesso!');
     }
 
@@ -227,7 +257,7 @@ class MediaController
         
         if (!$media) { return Response::error('Arquivo não localizado', 404); }
         
-        $media['url'] = 'https://cdn.santis.net.br' . $media['file_path'];
+        $media['url'] = $this->getCdnBaseUrl() . $media['file_path'];
         $media['size_formatted'] = number_format($media['size'] / 1024, 1) . ' KB';
         
         // Adicionar Indexação (Onde este arquivo é usado?)
@@ -325,5 +355,15 @@ class MediaController
         
         // Criar no DB
         return MediaFile::createFolder($tenantId, $name, $path, $parentId);
+    }
+
+    /**
+     * Retorna a URL base do CDN dinamicamente baseada no Host
+     */
+    private function getCdnBaseUrl(): string
+    {
+        $host = $_SERVER['HTTP_HOST'] ?? 'painel.santis.net.br';
+        $domain = preg_replace('/^painel\./', '', $host);
+        return "https://cdn.{$domain}";
     }
 }

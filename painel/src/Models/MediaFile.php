@@ -133,13 +133,13 @@ class MediaFile
     /**
      * Métodos para Pastas
      */
-    public static function allFolders(int $tenantId, int $parentId = null): array
+    public static function allFolders(int $tenantId, ?int $parentId = null): array
     {
         $db = Database::getInstance();
         $query = "SELECT * FROM media_folders WHERE tenant_id = :tenant_id";
         $params = [':tenant_id' => $tenantId];
 
-        if ($parentId === null) {
+        if ($parentId === null || $parentId === 0 || $parentId === 'null' || $parentId === '') {
             $query .= " AND parent_id IS NULL";
         } else {
             $query .= " AND parent_id = :parent_id";
@@ -151,7 +151,7 @@ class MediaFile
         return $stmt->fetchAll();
     }
 
-    public static function createFolder(int $tenantId, string $name, string $path, int $parentId = null): int
+    public static function createFolder(int $tenantId, string $name, string $path, ?int $parentId = null): int
     {
         $db = Database::getInstance();
         $stmt = $db->prepare("INSERT INTO media_folders (tenant_id, name, path, parent_id) VALUES (:tenant_id, :name, :path, :parent_id)");

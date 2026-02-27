@@ -17,7 +17,31 @@
     background: #f5f5f9;
     border-radius: 0.375rem 0.375rem 0 0;
   }
-  .media-preview { width: 100%; height: 100%; object-fit: cover; }
+  /* Checkerboard for transparent assets (SVG, PNG with alpha) */
+  .media-preview-container.transparent-bg {
+    background-color: transparent;
+    background-image:
+      linear-gradient(45deg, #ccc 25%, transparent 25%),
+      linear-gradient(-45deg, #ccc 25%, transparent 25%),
+      linear-gradient(45deg, transparent 75%, #ccc 75%),
+      linear-gradient(-45deg, transparent 75%, #ccc 75%);
+    background-size: 16px 16px;
+    background-position: 0 0, 0 8px, 8px -8px, -8px 0px;
+  }
+  /* Dark theme override */
+  [data-theme="dark"] .media-preview-container.transparent-bg,
+  .dark-layout .media-preview-container.transparent-bg {
+    background-image:
+      linear-gradient(45deg, #3a3a4a 25%, transparent 25%),
+      linear-gradient(-45deg, #3a3a4a 25%, transparent 25%),
+      linear-gradient(45deg, transparent 75%, #3a3a4a 75%),
+      linear-gradient(-45deg, transparent 75%, #3a3a4a 75%);
+    background-size: 16px 16px;
+    background-position: 0 0, 0 8px, 8px -8px, -8px 0px;
+    background-color: #2b2c40;
+  }
+  .media-preview { width: 100%; height: 100%; object-fit: contain; }
+  .media-preview.cover { object-fit: cover; }
   .media-icon { font-size: 3.5rem; color: #8592a3; }
   
   /* Overlays & Actions (Sneat style) */
@@ -43,28 +67,47 @@
   /* Folders */
   .folder-item { cursor: pointer; transition: 0.2s; }
   .folder-item:hover { transform: translateY(-2px); }
+
+  /* List View */
+  #mediaWrapper.list-view { display: flex !important; flex-direction: column; gap: 0.5rem; }
+  #mediaWrapper.list-view > div { width: 100% !important; flex: none !important; max-width: 100% !important; }
+  #mediaWrapper.list-view .media-card { flex-direction: row !important; height: auto !important; }
+  #mediaWrapper.list-view .media-preview-container { 
+    width: 64px; min-width: 64px; height: 64px;
+    aspect-ratio: unset;
+    border-radius: 0.375rem 0 0 0.375rem;
+    flex-shrink: 0;
+  }
+  #mediaWrapper.list-view .media-preview { object-fit: cover; }
+  #mediaWrapper.list-view .card-body { 
+    border-top: none !important; 
+    border-left: 1px solid rgba(0,0,0,.1);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 0.75rem !important;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+  #mediaWrapper.list-view .card-body p { margin-bottom: 0; flex: 1; min-width: 0; }
+  #mediaWrapper.list-view .card-body > div { margin-top: 0 !important; }
+  #mediaWrapper.list-view .folder-item .card { flex-direction: row !important; height: auto !important; }
+  #mediaWrapper.list-view .folder-item .card-body { border-left: 3px solid #ffab00; flex-direction: row; align-items: center; gap: 0.75rem; }
 </style>
 {% endblock %}
 
 {% block content %}
-<div class="container-xxl flex-grow-1 container-p-y">
+
+    <!-- Content Header: Breadcrumb (left) + Upload button (right) -->
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <div>
-            <h4 class="fw-bold mb-0">Gerenciador de Mídia</h4>
-            <nav aria-label="breadcrumb">
-                <ol class="breadcrumb mb-0 mt-1" id="mediaBreadcrumb">
-                    <li class="breadcrumb-item"><a href="javascript:void(0)" onclick="navigateFolder(null)">Uploads</a></li>
-                </ol>
-            </nav>
-        </div>
-        <div class="d-flex gap-2">
-            <button class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#modalCreateFolder">
-                <i class="bx bx-folder-plus me-1"></i> Nova Pasta
-            </button>
-            <button class="btn btn-primary" data-bs-toggle="collapse" data-bs-target="#uploadCollapse">
-                <i class="bx bx-upload me-1"></i> Enviar Arquivos
-            </button>
-        </div>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb mb-0" id="mediaBreadcrumb">
+                <li class="breadcrumb-item active">Início</li>
+            </ol>
+        </nav>
+        <button type="button" class="btn btn-primary" id="btnOpenUpload" data-bs-toggle="collapse" data-bs-target="#uploadCollapse">
+            <i class="bx bx-upload me-1"></i> Adicionar novos ativos
+        </button>
     </div>
 
     <!-- Upload Area -->
@@ -72,10 +115,15 @@
         <div class="card">
             <div class="card-body">
                 <div id="dz-upload" class="dropzone p-5 border-dashed rounded text-center">
-                    <div class="dz-message">
+                    <div class="dz-message" id="dzMessage">
                         <i class="bx bx-cloud-upload display-4 text-primary"></i>
                         <h5 class="mt-3">Solte os arquivos aqui ou clique para fazer upload</h5>
-                        <p class="text-muted small mb-0">Arquivos serão salvos na pasta atual</p>
+                        <p class="text-muted small mb-0">Os arquivos serão organizados automaticamente em subpastas de data.</p>
+                    </div>
+                    <div id="rootUploadWarning" class="d-none p-4">
+                        <i class="bx bx-error-circle display-4 text-warning"></i>
+                        <h5 class="mt-3">Selecione uma categoria primeiro</h5>
+                        <p class="text-muted">Por favor, navegue até uma das pastas acima (Portfolio, Radar, etc) para enviar novos arquivos.</p>
                     </div>
                 </div>
                 <div class="mt-3 d-flex justify-content-end gap-2 d-none" id="uploadActions">
@@ -91,7 +139,7 @@
         <div class="card-body d-flex flex-wrap align-items-center justify-content-between gap-3 py-3">
             <div class="d-flex align-items-center gap-3 flex-grow-1">
                 <div class="btn-group" role="group">
-                    <button type="button" class="btn btn-sm btn-outline-secondary filter-type active" data-type="all">Tudo</button>
+                    <button type="button" class="btn btn-sm btn-outline-secondary filter-type" data-type="all">Tudo</button>
                     <button type="button" class="btn btn-sm btn-outline-secondary filter-type" data-type="image">Imagens</button>
                     <button type="button" class="btn btn-sm btn-outline-secondary filter-type" data-type="video">Vídeos</button>
                     <button type="button" class="btn btn-sm btn-outline-secondary filter-type" data-type="document">PDFs</button>
@@ -170,9 +218,12 @@
                 <label class="form-label small text-uppercase fw-bold">Alt Text (SEO)</label>
                 <textarea id="editAltText" class="form-control" rows="2" placeholder="Descreva a imagem..."></textarea>
             </div>
-            <div class="mb-3">
-                <label class="form-label small text-uppercase fw-bold">Legenda</label>
-                <textarea id="editCaption" class="form-control" rows="2"></textarea>
+            <div class="mb-4">
+                <label class="form-label small text-uppercase fw-bold">URL Pública</label>
+                <div class="input-group input-group-merge">
+                    <input type="text" id="editUrl" class="form-control" readonly>
+                    <span class="input-group-text cursor-pointer" id="btnCopyUrl"><i class="bx bx-copy"></i></span>
+                </div>
             </div>
             
             <div class="mb-4 d-none" id="usageContainer">
@@ -189,32 +240,8 @@
         </form>
     </div>
 </div>
+<!-- / Offcanvas Details -->
 
-<!-- Modal Create Folder -->
-<div class="modal fade" id="modalCreateFolder" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Nova Pasta</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body">
-                <div class="alert alert-primary d-flex align-items-center mb-3">
-                    <i class="bx bx-info-circle me-2"></i>
-                    <span>A pasta será criada fisicamente no CDN Santis.</span>
-                </div>
-                <div>
-                    <label class="form-label">Nome da Pasta</label>
-                    <input type="text" id="newFolderName" class="form-control" placeholder="Ex: banners-2024">
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-label-secondary" data-bs-dismiss="modal">Fechar</button>
-                <button type="button" class="btn btn-primary" id="btnConfirmCreateFolder">Criar Agora</button>
-            </div>
-        </div>
-    </div>
-</div>
 {% endblock %}
 
 {% block page_js %}
@@ -222,18 +249,20 @@
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     const token = localStorage.getItem('santis_jwt');
-    const cdnBase = 'https://cdn.santis.net.br'; // Using the defined domain
+    const cdnBase = '{{ cdn_url|default("https://cdn.santis.net.br") }}';
     
     // State
     let currentFolderId = null; // null means root
-    let currentFolderName = 'Raiz';
-    let currentPath = '/uploads';
+    let currentFolderName = 'Início';
+    let currentPath = '/';
     let currentSearch = '';
     let currentType = 'all';
     let currentPage = 1;
     let isLoading = false;
     let hasMore = true;
     let selectedIds = [];
+    // Breadcrumb stack: [{id, name}, ...] — grows as user navigates deeper
+    let breadcrumbStack = [];
     
     // UI Refs
     const wrapper = document.getElementById('mediaWrapper');
@@ -272,17 +301,27 @@ document.addEventListener('DOMContentLoaded', function() {
             const res = await resp.json();
             
             if (res.success) {
+                console.log('%cMedia API Success:', 'color: green; font-weight: bold;', res.data);
                 if (refresh) {
-                    renderFolders(res.data.folders);
+                    const folders = Array.isArray(res.data.folders) ? res.data.folders : [];
+                    console.log(`Folders found: ${folders.length}`);
+                    renderFolders(folders);
                     updateBreadcrumbs(res.data.current_folder);
                 }
-                renderFiles(res.data.files);
+                
+                if (currentFolderId !== null || currentSearch || currentType !== 'all') {
+                    renderFiles(res.data.files);
+                }
                 
                 if (res.data.files.length < 40) hasMore = false;
                 currentPage++;
+            } else {
+                console.error('Media API Error:', res.message);
+                wrapper.innerHTML = `<div class="col-12 text-center py-5"><i class="bx bx-error bx-lg text-danger mb-3"></i><h5>Erro ao carregar mídias: ${res.message}</h5></div>`;
             }
         } catch (e) {
-            console.error(e);
+            console.error('Fetch Exception:', e);
+            wrapper.innerHTML = `<div class="col-12 text-center py-5"><i class="bx bx-error bx-lg text-danger mb-3"></i><h5>Erro de conexão ao servidor. Verifique o console.</h5></div>`;
         } finally {
             isLoading = false;
             loading.classList.add('d-none');
@@ -290,17 +329,27 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function renderFolders(folders) {
-        if (!folders) return;
+        if (!folders || folders.length === 0) {
+            if (currentFolderId === null) {
+                wrapper.innerHTML = '<div class="col-12 text-center py-5"><i class="bx bx-folder-open bx-lg text-muted mb-3"></i><h5>Nenhuma categoria encontrada.</h5></div>';
+            }
+            return;
+        }
+
         folders.forEach(f => {
+            const displayName = f.display_name || f.name;
+            const moduleIcon  = f.module_icon  || 'bx-folder';
             const div = document.createElement('div');
             div.className = 'col-6 col-md-4 col-lg-2 folder-item';
             div.innerHTML = `
-                <div class="card h-100 shadow-none border" onclick="navigateFolder(${f.id}, '${f.name}')">
-                    <div class="card-body d-flex align-items-center p-3">
-                        <i class="bx bxs-folder bx-md text-warning me-2"></i>
-                        <div class="text-truncate">
-                            <h6 class="mb-0 text-truncate">${f.name}</h6>
-                        </div>
+                <div class="card h-100 shadow-none border media-card" onclick="window.navigateFolder(${f.id}, '${displayName.replace(/'/g, "\\'")}')">
+                    <div class="media-preview-container" style="cursor:pointer; position:relative;">
+                        <i class="bx bxs-folder" style="font-size: 5rem; color: var(--bs-warning, #ffab00); opacity: 0.75;"></i>
+                        <i class="bx ${moduleIcon}" style="position:absolute; font-size: 1.7rem; color: var(--bs-primary, #696cff); bottom: 28%; left: 50%; transform: translateX(-50%);"></i>
+                    </div>
+                    <div class="card-body p-2 border-top">
+                        <p class="card-text small fw-semibold text-truncate mb-0" title="${displayName}">${displayName}</p>
+                        <p class="card-text text-muted mb-0" style="font-size:0.7rem;">Categoria de Mídia</p>
                     </div>
                 </div>
             `;
@@ -311,7 +360,11 @@ document.addEventListener('DOMContentLoaded', function() {
     function renderFiles(files) {
         files.forEach(f => {
             const isImg = f.mime_type.startsWith('image/');
-            const url = cdnBase + f.file_path; // Corrected: was file_path
+            const isSvg = f.mime_type === 'image/svg+xml';
+            const isPng = f.mime_type === 'image/png';
+            const useTransparentBg = isSvg || isPng; // SVGs and PNGs may have transparency
+            const useCoverFit = !isSvg && !isPng; // JPEGs/WEBPs look better with cover
+            const url = cdnBase + f.file_path;
             const ext = f.file_path.split('.').pop().toUpperCase();
             
             const div = document.createElement('div');
@@ -325,8 +378,8 @@ document.addEventListener('DOMContentLoaded', function() {
                         <button type="button" class="btn btn-icon btn-xs btn-white shadow-sm btn-edit" title="Detalhes"><i class="bx bx-pencil text-primary"></i></button>
                         <a href="${url}" target="_blank" class="btn btn-icon btn-xs btn-white shadow-sm" title="Abrir Link"><i class="bx bx-link-external text-secondary"></i></a>
                     </div>
-                    <div class="media-preview-container">
-                        ${isImg ? `<img src="${url}" class="media-preview" alt="${f.alt_text || ''}">` : `<i class="bx bxs-file-blank media-icon"></i>`}
+                    <div class="media-preview-container${useTransparentBg ? ' transparent-bg' : ''}">
+                        ${isImg ? `<img src="${url}" class="media-preview${useCoverFit ? ' cover' : ''}" alt="${f.alt_text || ''}">` : `<i class="bx bxs-file-blank media-icon"></i>`}
                     </div>
                     <div class="card-body p-2 border-top">
                         <p class="card-text small fw-medium text-truncate mb-0" title="${f.file_name}">${f.file_name}</p>
@@ -378,27 +431,36 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     async function openDetails(id) {
-        const resp = await fetch(`/api/secure/media/${id}`, {
-            headers: { 'Authorization': 'Bearer ' + token }
-        });
-        const res = await resp.json();
-        
-        if (res.success) {
+        try {
+            const resp = await fetch(`/api/secure/media/${id}`, {
+                headers: { 'Authorization': 'Bearer ' + token }
+            });
+            const res = await resp.json();
+            
+            if (!res.success) {
+                alert('Não foi possível carregar os detalhes do arquivo.');
+                return;
+            }
+
             const f = res.data;
             document.getElementById('editId').value = f.id;
-            document.getElementById('editFileName').value = f.file_name;
+            document.getElementById('editFileName').value = f.file_name || '';
             
             // Technical specs
-            document.getElementById('metaSize').innerText = f.size_formatted;
-            document.getElementById('metaExt').innerText = f.file_path.split('.').pop().toUpperCase();
-            document.getElementById('metaDate').innerText = new Date(f.created_at).toLocaleDateString();
-            document.getElementById('metaMime').innerText = f.mime_type;
+            document.getElementById('metaSize').innerText = f.size_formatted || '-';
+            document.getElementById('metaExt').innerText = (f.file_path || '').split('.').pop().toUpperCase();
+            document.getElementById('metaDate').innerText = f.created_at ? new Date(f.created_at).toLocaleDateString('pt-BR') : '-';
+            document.getElementById('metaMime').innerText = f.mime_type || '-';
             
             // Editable fields
             document.getElementById('editAltText').value = f.alt_text || '';
-            document.getElementById('editCaption').value = f.caption || '';
+            if (document.getElementById('editCaption')) {
+                document.getElementById('editCaption').value = f.caption || '';
+            }
             
             const fullUrl = cdnBase + f.file_path;
+            document.getElementById('editUrl').value = fullUrl;
+
             const container = document.getElementById('usageContainer');
             const list = document.getElementById('usageList');
             list.innerHTML = '';
@@ -417,32 +479,89 @@ document.addEventListener('DOMContentLoaded', function() {
                 container.classList.add('d-none');
             }
 
-            const isImg = f.mime_type.startsWith('image/');
+            const isImg = f.mime_type && f.mime_type.startsWith('image/');
+            const isSvg = f.mime_type === 'image/svg+xml';
             document.getElementById('detailPreview').innerHTML = isImg 
-                ? `<img src="${fullUrl}" class="img-fluid rounded" style="max-height: 200px; object-fit: contain;">`
+                ? `<img src="${fullUrl}" class="img-fluid rounded" style="max-height: 220px; object-fit: contain; ${isSvg ? 'background: repeating-conic-gradient(#ccc 0% 25%, #fff 0% 50%) 0 0 / 16px 16px;' : ''}">`
                 : `<i class="bx bxs-file-blank display-1 text-primary"></i>`;
             
             offcanvasDetails.show();
+        } catch (e) {
+            console.error('openDetails error:', e);
+            alert('Erro de conexão ao carregar detalhes do arquivo.');
         }
     }
 
     // Navigation and Breadcrumbs
-    window.navigateFolder = (id, name = 'Mídia') => {
+    window.navigateFolder = (id, name, stackIndex) => {
+        // stackIndex: if provided, trim the stack to that level (breadcrumb click)
+        if (id === null) {
+            breadcrumbStack = [];
+        } else if (stackIndex !== undefined) {
+            // Clicked an ancestor in the breadcrumb — truncate stack
+            breadcrumbStack = breadcrumbStack.slice(0, stackIndex + 1);
+        } else {
+            // Navigating deeper: push new item
+            breadcrumbStack.push({ id, name });
+        }
+
         currentFolderId = id;
-        currentFolderName = name;
+        currentFolderName = name || 'Início';
         loadMedia(true);
         selectedIds = [];
         bulkActions.classList.add('d-none');
+        renderBreadcrumbs();
+        
+        // Handle upload area visibility/state
+        const dzMsg = document.getElementById('dzMessage');
+        const rootWarning = document.getElementById('rootUploadWarning');
+        const btnOpenUpload = document.getElementById('btnOpenUpload');
+        
+        if (id === null) {
+            dzMsg?.classList.add('d-none');
+            rootWarning?.classList.remove('d-none');
+            if (btnOpenUpload) {
+                btnOpenUpload.disabled = true;
+                btnOpenUpload.title = "Selecione uma categoria primeiro";
+            }
+            if (myDropzone && typeof myDropzone.removeEventListeners === 'function') myDropzone.removeEventListeners();
+        } else {
+            dzMsg?.classList.remove('d-none');
+            rootWarning?.classList.add('d-none');
+            if (btnOpenUpload) {
+                btnOpenUpload.disabled = false;
+                btnOpenUpload.title = "";
+            }
+            if (myDropzone && typeof myDropzone.setupEventListeners === 'function') myDropzone.setupEventListeners();
+        }
+        
+        // Ensure upload collapse is closed when navigating
+        const collapse = bootstrap.Collapse.getInstance(document.getElementById('uploadCollapse'));
+        if (collapse) collapse.hide();
     };
 
-    function updateBreadcrumbs(folder) {
+    function renderBreadcrumbs() {
         const bc = document.getElementById('mediaBreadcrumb');
-        bc.innerHTML = '<li class="breadcrumb-item"><a href="javascript:void(0)" onclick="navigateFolder(null)">Mídia</a></li>';
-        
-        if (folder) {
-            // Here we could handle path segments if we wanted nested logic, but for now simple 1-level or full name
-            bc.innerHTML += `<li class="breadcrumb-item active">${folder.name}</li>`;
-        }
+        if (!bc) return;
+
+        // 'Início' is always a clickable link that reloads root
+        let html = '<li class="breadcrumb-item"><a href="javascript:void(0)" onclick="window.navigateFolder(null)">Início</a></li>';
+
+        breadcrumbStack.forEach((crumb, index) => {
+            const isLast = index === breadcrumbStack.length - 1;
+            if (isLast) {
+                html += `<li class="breadcrumb-item active" aria-current="page">${crumb.name}</li>`;
+            } else {
+                html += `<li class="breadcrumb-item"><a href="javascript:void(0)" onclick="window.navigateFolder(${crumb.id}, '${crumb.name}', ${index})">${crumb.name}</a></li>`;
+            }
+        });
+
+        bc.innerHTML = html;
+    }
+
+    function updateBreadcrumbs(folder) {
+        // Called after API response — no longer rebuilds from API, stack handles it
+        renderBreadcrumbs();
     }
 
     // Search and Filters
@@ -463,6 +582,24 @@ document.addEventListener('DOMContentLoaded', function() {
             loadMedia(true);
         };
     });
+
+    // Grid / List View Toggle
+    let currentView = 'grid'; // 'grid' | 'list'
+    document.getElementById('viewGrid').onclick = () => {
+        currentView = 'grid';
+        wrapper.classList.remove('list-view');
+        wrapper.className = 'row g-4'; // restore grid classes
+        document.getElementById('viewGrid').classList.add('active');
+        document.getElementById('viewList').classList.remove('active');
+        loadMedia(true);
+    };
+    document.getElementById('viewList').onclick = () => {
+        currentView = 'list';
+        wrapper.className = 'list-view'; // switch to list
+        document.getElementById('viewList').classList.add('active');
+        document.getElementById('viewGrid').classList.remove('active');
+        loadMedia(true);
+    };
 
     // Form Submissions
     document.getElementById('formMediaDetails').onsubmit = async (e) => {
@@ -486,22 +623,6 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     };
 
-    document.getElementById('btnConfirmCreateFolder').onclick = async () => {
-        const name = document.getElementById('newFolderName').value;
-        if (!name) return;
-        
-        const resp = await fetch('/api/secure/media/folders', {
-            method: 'POST',
-            headers: { 'Authorization': 'Bearer ' + token, 'Content-Type': 'application/x-www-form-urlencoded' },
-            body: new URLSearchParams({ name: name, parent_id: currentFolderId || '' })
-        });
-        
-        if ((await resp.json()).success) {
-            bootstrap.Modal.getInstance(document.getElementById('modalCreateFolder')).hide();
-            document.getElementById('newFolderName').value = '';
-            loadMedia(true);
-        }
-    };
 
     document.getElementById('btnDeleteDetail').onclick = async () => {
         if (!confirm('Deseja excluir este arquivo permanentemente do CDN?')) return;
@@ -534,6 +655,7 @@ document.addEventListener('DOMContentLoaded', function() {
         params: () => ({ folder_id: currentFolderId || '' }),
         acceptedFiles: 'image/*,application/pdf,video/*',
     });
+    
 
     myDropzone.on("addedfile", () => document.getElementById('uploadActions').classList.remove('d-none'));
     myDropzone.on("queuecomplete", () => {
@@ -549,9 +671,10 @@ document.addEventListener('DOMContentLoaded', function() {
         document.getElementById('uploadActions').classList.add('d-none');
     };
 
-    // Infinite Scroll Implementation
+    // Infinite Scroll — only fires AFTER the initial load completes
+    let initialized = false;
     const observer = new IntersectionObserver(entries => {
-        if (entries[0].isIntersecting && hasMore && !isLoading) {
+        if (entries[0].isIntersecting && hasMore && !isLoading && initialized) {
             loadMedia();
         }
     }, { threshold: 0.5 });
@@ -567,8 +690,10 @@ document.addEventListener('DOMContentLoaded', function() {
         setTimeout(() => icon.className = 'bx bx-copy', 2000);
     };
 
-    // Init
-    loadMedia(true);
+    // Init — run AFTER all setup, before observer can fire
+    window.navigateFolder(null);
+    // Mark as ready after the async load resolves
+    setTimeout(() => { initialized = true; }, 800);
 });
 </script>
 {% endblock %}
