@@ -9,6 +9,7 @@ use Painel\Core\Response;
 
 // A variável $api é injetada automaticamente (Instância do BramusRouter)
 // Use $api->get(), $api->post()
+error_log("API Routing loaded. URI: " . $_SERVER['REQUEST_URI']);
 
 // Rota de Health Check / Ping
 $api->get('/ping', function() {
@@ -30,7 +31,7 @@ $api->mount('/v1', function() use ($api) {
     
     
     // Entradas Públicas de Módulos (ReadOnly) ex: Portfólio, Serviços
-    $api->get('/entries/(\w+)', 'Painel\Http\Controllers\EntryController@publicIndex');
+    $api->get('/entries/([a-zA-Z0-9_-]+)', 'Painel\Http\Controllers\EntryController@publicIndex');
 
     // Serviços e Drivers Ativos (Acionados pelo Front, Executados no Painel)
     $api->get('/services/share-options', 'Painel\Http\Controllers\ServiceController@shareOptions');
@@ -63,14 +64,26 @@ $api->mount('/secure', function() use ($api) {
     // Content Types / Modelagem Dinâmica (CMS Builder)
     $api->get('/types', 'Painel\Http\Controllers\ContentTypeController@index');
     $api->post('/types', 'Painel\Http\Controllers\ContentTypeController@store');
+    $api->get('/types/(\d+)', 'Painel\Http\Controllers\ContentTypeController@show');
+    $api->put('/types/(\d+)', 'Painel\Http\Controllers\ContentTypeController@update');
+    $api->delete('/types/(\d+)', 'Painel\Http\Controllers\ContentTypeController@delete');
 
     // Módulos EAV Dinâmicos (Série de Entradas via Regex por slug do Tipo)
-    $api->get('/entries/(\w+)', 'Painel\Http\Controllers\EntryController@index');
-    $api->post('/entries/(\w+)', 'Painel\Http\Controllers\EntryController@store');
+    $api->get('/entries/([a-zA-Z0-9_-]+)', 'Painel\Http\Controllers\EntryController@index');
+    $api->post('/entries/([a-zA-Z0-9_-]+)', 'Painel\Http\Controllers\EntryController@store');
+    $api->get('/entries/([a-zA-Z0-9_-]+)/(\d+)', 'Painel\Http\Controllers\EntryController@show');
+    $api->put('/entries/([a-zA-Z0-9_-]+)/(\d+)', 'Painel\Http\Controllers\EntryController@update');
+    $api->delete('/entries/([a-zA-Z0-9_-]+)/(\d+)', 'Painel\Http\Controllers\EntryController@delete');
 
     // Integração CDN e Upload de Mídia Físico
-    $api->get('/media', 'Painel\Http\Controllers\UploadController@index');
-    $api->post('/upload', 'Painel\Http\Controllers\UploadController@store');
+    $api->get('/media', 'Painel\Http\Controllers\MediaController@index');
+    $api->post('/media/upload', 'Painel\Http\Controllers\MediaController@upload');
+    $api->get('/media/(\d+)', 'Painel\Http\Controllers\MediaController@show');
+    $api->put('/media/(\d+)', 'Painel\Http\Controllers\MediaController@update');
+    $api->delete('/media/(\d+)', 'Painel\Http\Controllers\MediaController@delete');
+    $api->post('/media/delete-bulk', 'Painel\Http\Controllers\MediaController@deleteMultiple');
+    $api->post('/media/folders', 'Painel\Http\Controllers\MediaController@createFolder');
+    $api->delete('/media/folders/(\d+)', 'Painel\Http\Controllers\MediaController@deleteFolder');
 
     // Configurações Globais Administrativas (Save)
     $api->post('/settings', 'Painel\Http\Controllers\SettingController@store');

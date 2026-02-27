@@ -34,9 +34,15 @@ $router->get('/login', 'Painel\Http\Controllers\WebController@login');
 $router->get('/media', 'Painel\Http\Controllers\WebController@media');
 $router->get('/settings', 'Painel\Http\Controllers\WebController@settings');
 
-// Rotas do Content Type Builder (CRUD de Módulos)
-$router->get('/types', 'Painel\Http\Controllers\WebController@types');
-$router->get('/types/create', 'Painel\Http\Controllers\WebController@typeCreate');
+// Legado: Redirecionar /types para /modulos (Rebranding)
+$router->get('/types', function() { header('Location: /modulos', true, 301); exit; });
+$router->get('/types/create', function() { header('Location: /modulos/create', true, 301); exit; });
+$router->get('/types/(\d+)/edit', function($id) { header("Location: /modulos/$id/edit", true, 301); exit; });
+
+// Rotas do Construtor de Módulos (CRUD de Módulos)
+$router->get('/modulos', 'Painel\Http\Controllers\WebController@modules');
+$router->get('/modulos/create', 'Painel\Http\Controllers\WebController@moduleCreate');
+$router->get('/modulos/(\d+)/edit', 'Painel\Http\Controllers\WebController@moduleEdit');
 
 // Blueprints (SaaS Backup)
 $router->get('/blueprints', 'Painel\Http\Controllers\WebController@blueprints');
@@ -45,6 +51,7 @@ $router->get('/blueprints', 'Painel\Http\Controllers\WebController@blueprints');
 // Captura qualquer string pós /entries/ e passa como argumento na variavel SLUG
 $router->get('/entries/([a-z0-9_-]+)', 'Painel\Http\Controllers\WebController@entriesIndex');
 $router->get('/entries/([a-z0-9_-]+)/create', 'Painel\Http\Controllers\WebController@entriesCreate');
+$router->get('/entries/([a-z0-9_-]+)/(\d+)/edit', 'Painel\Http\Controllers\WebController@entriesEdit');
 
 // Exceções 404
 $router->set404(function() {

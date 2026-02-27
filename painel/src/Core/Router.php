@@ -12,9 +12,12 @@ class Router
 {
     private BramusRouter $bramus;
 
-    public function __construct()
+    public function __construct($basePath = '')
     {
         $this->bramus = new BramusRouter();
+        if ($basePath) {
+            $this->bramus->setBasePath($basePath);
+        }
         $this->setupGlobalHandlers();
     }
 
@@ -23,6 +26,17 @@ class Router
      */
     private function setupGlobalHandlers()
     {
+        // 1. CORS / OPTIONS Preflight (Executa o mais cedo possível)
+        header('Access-Control-Allow-Origin: *');
+        header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS');
+        header('Access-Control-Allow-Headers: Authorization, Content-Type, X-Requested-With');
+        header('Access-Control-Max-Age: 86400');
+
+        if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+            http_response_code(200);
+            exit();
+        }
+
         // Tratamento Global de Exceptions: Transforma erros fatais do PHP em JSON 500
         set_exception_handler(function (\Throwable $ex) {
             // Em produção agressiva não devemos deitar os detalhes ($ex->getMessage()),
@@ -38,21 +52,6 @@ class Router
         // 404 Handler nativo da API
         $this->bramus->set404(function() {
             Response::error('Endpoint ou rota não encontrada na API do Santis CMS.', 404);
-        });
-
-        // Middleware Global (CORS Básico Padrão SaaS API) Executa em TODOS os métodos ANTES da rota
-        $this->bramus->before('ALL', '.*', function() {
-            // Permite que qualquer (Origin) ou apenas os Domains registrados na tb_tenants acessem a API
-            header('Access-Control-Allow-Origin: *'); // TODO: No futuro, checar se a $_SERVER['HTTP_ORIGIN'] está na lista da API Key
-            header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS');
-            header('Access-Control-Allow-Headers: Authorization, Content-Type, X-Requested-With');
-            header('Access-Control-Max-Age: 86400'); // Cacheia o Preflight por 24h para economizar Queries
-            
-            // Tratamento do OPTIONS (Preflight Cross-Origin)
-            if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
-                http_response_code(200);
-                exit();
-            }
         });
     }
 

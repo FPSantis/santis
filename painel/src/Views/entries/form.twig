@@ -5,21 +5,15 @@
   <div class="col-12 col-xl-8">
     <div class="card mb-4">
       <div class="card-header d-flex justify-content-between align-items-center">
-        <h5 class="mb-0 text-capitalize" id="formHeaderTitle">Nova Entrada: {{ type_slug }}</h5>
+        <h5 class="mb-0 text-capitalize" id="formHeaderTitle">Carregando Módulo...</h5>
       </div>
       <div class="card-body">
-        
         <div id="loadingIndicator" class="text-center py-5">
             <i class="bx bx-loader-alt bx-spin bx-md text-primary mb-3"></i>
             <p>Construindo Interface via Schema EAV...</p>
         </div>
-        
         <form id="dynamicEntryForm" style="display: none;">
-            
-            <div id="formFieldsContainer" class="row g-4">
-                <!-- Os campos serão injetados AQUI pelo Javascript -->
-            </div>
-            
+            <div id="formFieldsContainer" class="row g-4"></div>
             <div class="mt-4 pt-3 border-top">
                 <button type="submit" class="btn btn-primary" id="btnSubmit">
                     <i class="bx bx-save me-1"></i> Salvar Registro
@@ -39,7 +33,7 @@
                 <option value="published">Publicado (Online)</option>
                 <option value="draft">Rascunho (Offline)</option>
             </select>
-            <small class="text-muted">Itens em rascunho não são expostos pela API pública do Frontend.</small>
+            <small class="text-muted">Itens em rascunho não são expostos pela API pública.</small>
         </div>
       </div>
   </div>
@@ -49,149 +43,102 @@
 {% block page_js %}
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    
     const token = localStorage.getItem('santis_jwt');
     const slug = '{{ type_slug }}';
-    
+    const entryId = '{{ entry_id|default('') }}';
+    const isEdit = entryId !== '';
     const container = document.getElementById('formFieldsContainer');
     const form = document.getElementById('dynamicEntryForm');
     const loader = document.getElementById('loadingIndicator');
-    
-    // Variável global para armazenar o Schema do formulário
-    let currentSchema = [];
-    
-    // 1. CHAMA A API PARA LER COMO É O FORMULÁRIO (EAV SCHEMA)
-    fetch('/api/secure/types', {
-        headers: { 'Authorization': 'Bearer ' + token }
-    })
-    .then(r => r.json())
-    .then(data => {
-        if(!data.success) throw new Error('Falha ao obter Tipos.');
+    const headerTitle = document.getElementById('formHeaderTitle');
+
+    // Load Schema and Data
+    const p1 = fetch('/api/secure/types', { headers: { 'Authorization': 'Bearer '+token } }).then(r => r.json());
+    const p2 = isEdit ? fetch(`/api/secure/entries/${slug}/${entryId}`, { headers: { 'Authorization': 'Bearer '+token } }).then(r => r.json()) : Promise.resolve({success:true, data:null});
+
+    Promise.all([p1, p2]).then(([schemaRes, dataRes]) => {
+        if (!schemaRes.success) throw new Error('Falha ao carregar configuração do módulo.');
         
-        // Encontra o tipo certo pelo Slug
-        let typeModel = data.data.find(t => t.slug === slug);
-        if(!typeModel) throw new Error('Tipo de conteúdo não existente.');
-        
-        document.getElementById('formHeaderTitle').innerText = 'Nova Entrada: ' + typeModel.name;
-        
-        currentSchema = typeModel.schema || [];
-        renderFormFields(currentSchema);
-    })
-    .catch(err => {
-        loader.innerHTML = `<div class="alert alert-danger">${err.message}</div>`;
-    });
-    
-    // 2. FUNÇÃO RENDERIZADORA DE HTML DINÂMICO
-    function renderFormFields(schema) {
-        if(schema.length === 0) {
-            container.innerHTML = '<div class="col-12"><div class="alert alert-warning">Este Módulo não possui nenhum campo configurado pelo Webmaster.</div></div>';
-        } else {
-            let html = '';
-            
-            // Ordena usando o 'order' gravado no schema
-            schema.sort((a,b) => a.order - b.order).forEach(field => {
-                let isReq = field.required ? 'required' : '';
-                let reqStar = field.required ? '<span class="text-danger">*</span>' : '';
-                
-                html += '<div class="col-12">'; // Sempre fullwidth por MVP (Pode Evoluir pra Col-6 dps)
-                html += `<label class="form-label">${field.label} ${reqStar}</label>`;
-                
-                switch(field.type) {
-                    case 'text':
-                        html += `<input type="text" class="form-control dynamic-input" data-key="${field.key}" ${isReq}>`;
-                        break;
-                    case 'textarea':
-                        html += `<textarea class="form-control dynamic-input" data-key="${field.key}" rows="4" ${isReq}></textarea>`;
-                        break;
-                    case 'richtext':
-                        // O ideal seria ligar QuillJS, faremos textarea básico pra MVP
-                        html += `<textarea class="form-control dynamic-input bg-light" placeholder="Suporta HTML" data-key="${field.key}" rows="8" ${isReq}></textarea>`;
-                        break;
-                    case 'date':
-                        html += `<input type="date" class="form-control dynamic-input" data-key="${field.key}" ${isReq}>`;
-                        break;
-                    case 'boolean':
-                        html += `
-                        <div class="form-check form-switch mt-2">
-                            <input class="form-check-input dynamic-input" type="checkbox" data-key="${field.key}">
-                            <label class="form-check-label">Habilitar ${field.label}</label>
-                        </div>`;
-                        break;
-                    case 'image':
-                        // Componente Simplificado de Upload MVP
-                        html += `
-                        <div class="input-group">
-                            <input type="text" class="form-control dynamic-input" data-key="${field.key}" placeholder="/uploads/..." aria-describedby="btn_${field.key}" ${isReq}>
-                            <button class="btn btn-outline-primary" type="button" id="btn_${field.key}">Anexar via CDN</button>
-                        </div>`;
-                        break;
-                    default:
-                        html += `<input type="text" class="form-control dynamic-input" data-key="${field.key}" ${isReq}>`;
-                }
-                
-                html += `<div class="form-text mt-1 text-muted" style="font-size:10px;">Chave Técnica: <code>${field.key}</code></div>`;
-                html += '</div>';
-            });
-            
-            container.innerHTML = html;
-        }
-        
-        // Transição de Tela
+        const typeModel = schemaRes.data.find(t => t.slug.toLowerCase() === slug.toLowerCase());
+        if (!typeModel) throw new Error('Módulo não encontrado.');
+
+        const schema = typeModel.schema || [];
+        const entryData = dataRes.data;
+
+        headerTitle.innerText = isEdit ? 'Editar Entrada: ' + (entryData.title || typeModel.name) : 'Nova Entrada: ' + typeModel.name;
+        if (isEdit) document.getElementById('entryStatus').value = entryData.status;
+
+        renderFields(schema, entryData ? entryData.content_data : null);
         loader.style.display = 'none';
         form.style.display = 'block';
+
+    }).catch(err => {
+        loader.innerHTML = `<div class="alert alert-danger">${err.message}</div>`;
+    });
+
+    function renderFields(schema, values) {
+        if (!Array.isArray(schema) || schema.length === 0) {
+            container.innerHTML = '<div class="col-12"><div class="alert alert-warning">Nenhum campo configurado neste módulo.</div></div>';
+            return;
+        }
+
+        let html = '';
+        // Sort by order safely
+        const sorted = [...schema].sort((a,b) => (parseInt(a.order)||0) - (parseInt(b.order)||0));
+        
+        sorted.forEach(f => {
+            const val = (values && values[f.key]) ? values[f.key] : '';
+            const req = f.required ? 'required' : '';
+            const star = f.required ? '<span class="text-danger">*</span>' : '';
+            
+            html += `<div class="col-12"><label class="form-label">${f.label} ${star}</label>`;
+            
+            if (f.type === 'textarea') {
+                html += `<textarea class="form-control dynamic-input" data-key="${f.key}" rows="3" ${req}>${val}</textarea>`;
+            } else if (f.type === 'richtext') {
+                html += `<textarea class="form-control dynamic-input bg-light" data-key="${f.key}" rows="6" ${req}>${val}</textarea>`;
+            } else if (f.type === 'boolean') {
+                const checked = (val === true || val === 'true' || val === 1) ? 'checked' : '';
+                html += `<div class="form-check form-switch mt-1"><input class="form-check-input dynamic-input" type="checkbox" data-key="${f.key}" ${checked}></div>`;
+            } else if (f.type === 'image') {
+                html += `<input type="text" class="form-control dynamic-input" data-key="${f.key}" value="${val}" placeholder="/uploads/..." ${req}>`;
+            } else {
+                html += `<input type="${f.type === 'url' ? 'url' : (f.type === 'date' ? 'date' : 'text')}" class="form-control dynamic-input" data-key="${f.key}" value="${val}" ${req}>`;
+            }
+            html += `</div>`;
+        });
+        container.innerHTML = html;
     }
-    
-    // 3. CAPTURA DOS DADOS (SUBMIT) PREENCHIDOS E POST NA API
+
     form.addEventListener('submit', function(e) {
         e.preventDefault();
-        
-        let btn = document.getElementById('btnSubmit');
-        let oldText = btn.innerHTML;
-        btn.innerHTML = 'Salvando...';
+        const btn = document.getElementById('btnSubmit');
         btn.disabled = true;
-        
-        let payloadContentData = {};
-        
-        // Loop em todos os inputs gerados pela renderização
-        document.querySelectorAll('.dynamic-input').forEach(input => {
-            let k = input.getAttribute('data-key');
-            
-            // Tratamento especial para Checkboxes
-            if(input.type === 'checkbox') {
-                payloadContentData[k] = input.checked;
-            } else {
-                payloadContentData[k] = input.value;
-            }
+
+        const contentData = {};
+        form.querySelectorAll('.dynamic-input').forEach(inp => {
+            contentData[inp.getAttribute('data-key')] = inp.type === 'checkbox' ? inp.checked : inp.value;
         });
-        
-        let finalPayload = {
+
+        // Título é sempre o primeiro campo ou o campo 'titulo'/'nome'
+        const titleField = contentData.titulo || contentData.nome || contentData.title || Object.values(contentData)[0] || 'Sem Título';
+
+        const payload = {
+            title: titleField,
+            slug: titleField.toString().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, "").replace(/[^\w\s-]/g, '').replace(/[\s_-]+/g, '-'),
             status: document.getElementById('entryStatus').value,
-            content_data: payloadContentData
+            content_data: contentData
         };
-        
-        fetch(`/api/secure/entries/${slug}`, {
-            method: 'POST',
-            headers: { 
-                'Authorization': 'Bearer ' + token,
-                'Content-Type': 'application/json' 
-            },
-            body: JSON.stringify(finalPayload)
+
+        fetch(isEdit ? `/api/secure/entries/${slug}/${entryId}` : `/api/secure/entries/${slug}`, {
+            method: isEdit ? 'PUT' : 'POST',
+            headers: { 'Authorization': 'Bearer '+token, 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
         })
         .then(r => r.json())
-        .then(data => {
-            if(data.success) {
-                // Return to Index
-                window.location.href = `/entries/${slug}`;
-            } else {
-                alert('Falha do Backend: ' + data.message);
-                btn.innerHTML = oldText;
-                btn.disabled = false;
-            }
-        })
-        .catch(err => {
-            alert('Falha na requisição.');
-            btn.innerHTML = oldText;
-            btn.disabled = false;
+        .then(res => {
+            if (res.success) window.location.href = `/entries/${slug}`;
+            else { alert(res.message); btn.disabled = false; }
         });
     });
 });

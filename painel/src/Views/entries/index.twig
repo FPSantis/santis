@@ -38,16 +38,23 @@ document.addEventListener('DOMContentLoaded', function() {
     const slug = '{{ type_slug }}';
     const tbody = document.getElementById('entriesTableBody');
 
-    // MÁGICA 1: Buscar do endpoint Genérico
-    fetch(`/api/secure/entries/${slug}`, {
+    console.log('Santis: Start Fetch for', slug);
+    fetch('/api/secure/entries/' + slug, {
         method: 'GET',
         headers: {
             'Authorization': 'Bearer ' + token,
             'Accept': 'application/json'
         }
     })
-    .then(r => r.json())
+    .then(r => {
+        console.log('HTTP Response Status:', r.status);
+        if (!r.ok) {
+            console.error('Response not OK');
+        }
+        return r.json();
+    })
     .then(data => {
+        console.log('API Data Received:', data);
         if(!data.success) {
             tbody.innerHTML = `<tr><td colspan="4" class="text-center py-4 text-danger">${data.message}</td></tr>`;
             return;
@@ -65,7 +72,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
                 // Aqui poderiamos iterar sobre o content_data para pintar colunas extras, 
                 // mas para MVP manteremos ID e Actions para não sobrecarregar
-                let nameFallback = entry.content_data.title || entry.content_data.name || \`Registro #\${entry.id}\`;
+                const d = entry.content_data || {};
+                let nameFallback = d.title || d.titulo || d.name || d.nome || entry.title || `Registro #${entry.id}`;
 
                 tbody.innerHTML += `
                   <tr>
@@ -73,11 +81,32 @@ document.addEventListener('DOMContentLoaded', function() {
                     <td>${formatedDate}</td>
                     <td>${statusBadge}</td>
                     <td>
-                      <button type="button" class="btn btn-sm btn-icon btn-text-secondary" title="Editar"><i class="bx bx-edit"></i></button>
-                      <button type="button" class="btn btn-sm btn-icon btn-text-danger" title="Apagar"><i class="bx bx-trash"></i></button>
+                      <a href="/entries/${slug}/${entry.id}/edit" class="btn btn-sm btn-icon btn-text-secondary" title="Editar"><i class="bx bx-edit"></i></a>
+                      <button type="button" class="btn btn-sm btn-icon btn-text-danger btn-delete" data-id="${entry.id}" title="Apagar"><i class="bx bx-trash"></i></button>
                     </td>
                   </tr>
                 `;
+            });
+
+            // Delete logic
+            document.querySelectorAll('.btn-delete').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const id = this.getAttribute('data-id');
+                    if (confirm('Tem certeza que deseja apagar este registro?')) {
+                        fetch(`/api/secure/entries/${slug}/${id}`, {
+                            method: 'DELETE',
+                            headers: { 'Authorization': 'Bearer ' + token }
+                        })
+                        .then(r => r.json())
+                        .then(data => {
+                            if (data.success) {
+                                window.location.reload();
+                            } else {
+                                alert('Erro: ' + data.message);
+                            }
+                        });
+                    }
+                });
             });
             
         } else {

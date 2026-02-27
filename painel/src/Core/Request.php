@@ -14,8 +14,29 @@ class Request
     public function __construct()
     {
         $this->method = $_SERVER['REQUEST_METHOD'] ?? 'GET';
-        $this->headers = getallheaders();
+        $this->headers = $this->getAllHeadersPolyfill();
         $this->parseBody();
+    }
+
+    /**
+     * Polyfill para getallheaders() em ambientes onde não está disponível (CLI/FastCGI)
+     */
+    private function getAllHeadersPolyfill(): array
+    {
+        if (function_exists('getallheaders')) {
+            return getallheaders();
+        }
+        $headers = [];
+        foreach ($_SERVER as $name => $value) {
+            if (substr($name, 0, 5) == 'HTTP_') {
+                $headers[str_replace(' ', '-', ucwords(strtolower(str_replace('_', ' ', substr($name, 5)))))] = $value;
+            } elseif ($name === 'CONTENT_TYPE') {
+                $headers['Content-Type'] = $value;
+            } elseif ($name === 'CONTENT_LENGTH') {
+                $headers['Content-Length'] = $value;
+            }
+        }
+        return $headers;
     }
 
     /**

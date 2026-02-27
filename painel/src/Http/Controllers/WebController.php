@@ -6,15 +6,34 @@ use Painel\Core\View;
 
 class WebController
 {
+    private function getSiteVariables(): array
+    {
+        $host = $_SERVER['HTTP_HOST'] ?? 'painel.santis.net.br';
+        $domain = preg_replace('/^painel\./', '', $host);
+        
+        // Em um sistema real multi-tenant, o tenant_id viria da sessão/domínio. 
+        // Usando o Tenant 1 provisoriamente.
+        $settings = \Painel\Models\Setting::all(1);
+        $logoPath = $settings['logo_master'] ?? '/config/logo-santis.svg';
+        $iconPath = $settings['icon_master'] ?? '/config/icon-santis.svg';
+
+        return [
+            'site_logo' => "https://cdn.{$domain}{$logoPath}",
+            'site_icon' => "https://cdn.{$domain}{$iconPath}",
+            'site_url' => "https://www.{$domain}/"
+        ];
+    }
+
     /**
      * Tela Principal do Painel (Dashboard)
      */
     public function dashboard()
     {
+        $vars = $this->getSiteVariables();
+        $vars['title'] = 'Painel de Controle';
+        
         // O JS fará a verificação real do JWT via LocalStorage no load da página
-        View::render('dashboard.twig', [
-            'title' => 'Painel de Controle'
-        ]);
+        View::render('dashboard.twig', $vars);
     }
 
     /**
@@ -22,9 +41,10 @@ class WebController
      */
     public function login()
     {
-        View::render('auth/login.twig', [
-            'title' => 'Login | Santis CMS'
-        ]);
+        $vars = $this->getSiteVariables();
+        $vars['title'] = 'Login | Santis CMS';
+
+        View::render('auth/login.twig', $vars);
     }
 
     /**
@@ -32,54 +52,60 @@ class WebController
      */
     public function media()
     {
-        View::render('media.twig', [
-            'title' => 'Gerenciador de Mídia | CDN',
-            'menu_active' => 'media'
-        ]);
+        $vars = $this->getSiteVariables();
+        $vars['title'] = 'Gerenciador de Mídia | CDN';
+        $vars['menu_active'] = 'media';
+
+        View::render('media.twig', $vars);
     }
 
-    /**
-     * Interface de Configurações Globais
-     */
     public function settings()
     {
-        View::render('settings.twig', [
-            'title' => 'Configurações Globais',
-            'menu_active' => 'settings'
-        ]);
+        $vars = $this->getSiteVariables();
+        $vars['title'] = 'Configurações Globais';
+        $vars['menu_active'] = 'settings';
+
+        View::render('settings.twig', $vars);
     }
 
-    /**
-     * Listagem dos Tipos de Conteúdos Existentes
-     */
-    public function types()
+    public function modules()
     {
-        View::render('content_types/index.twig', [
-            'title' => 'Construtor de Tipos de Conteúdo (Módulos)',
-            'menu_active' => 'types'
-        ]);
+        $vars = $this->getSiteVariables();
+        $vars['title'] = 'Módulos de Conteúdo';
+        $vars['menu_active'] = 'modules';
+
+        View::render('content_types/index.twig', $vars);
     }
 
     /**
      * Tela com Formulário JS de Construção EAV
      */
-    public function typeCreate()
+    public function moduleCreate()
     {
-        View::render('content_types/form.twig', [
-            'title' => 'Criar Novo Tipo de Conteúdo',
-            'menu_active' => 'types'
-        ]);
+        $vars = $this->getSiteVariables();
+        $vars['title'] = 'Criar Novo Módulo';
+        $vars['menu_active'] = 'modules';
+
+        View::render('content_types/form.twig', $vars);
     }
 
-    /**
-     * Interface de Exportação/Importação de Configurações (SaaS)
-     */
+    public function moduleEdit(int $id)
+    {
+        $vars = $this->getSiteVariables();
+        $vars['title'] = 'Editar Módulo';
+        $vars['menu_active'] = 'modules';
+        $vars['type_id'] = $id;
+
+        View::render('content_types/form.twig', $vars);
+    }
+
     public function blueprints()
     {
-        View::render('blueprints.twig', [
-            'title' => 'Migrações / Blueprints',
-            'menu_active' => 'blueprints'
-        ]);
+        $vars = $this->getSiteVariables();
+        $vars['title'] = 'Migrações / Blueprints';
+        $vars['menu_active'] = 'blueprints';
+
+        View::render('blueprints.twig', $vars);
     }
 
     /**
@@ -87,11 +113,12 @@ class WebController
      */
     public function entriesIndex(string $typeSlug)
     {
-        View::render('entries/index.twig', [
-            'title' => 'Gerenciar Entradas',
-            'menu_active' => 'entries_' . $typeSlug,
-            'type_slug' => $typeSlug
-        ]);
+        $vars = $this->getSiteVariables();
+        $vars['title'] = 'Gerenciar Entradas';
+        $vars['menu_active'] = 'entries_' . $typeSlug;
+        $vars['type_slug'] = $typeSlug;
+
+        View::render('entries/index.twig', $vars);
     }
 
     /**
@@ -99,10 +126,25 @@ class WebController
      */
     public function entriesCreate(string $typeSlug)
     {
-        View::render('entries/form.twig', [
-            'title' => 'Adicionar Nova Entrada',
-            'menu_active' => 'entries_' . $typeSlug,
-            'type_slug' => $typeSlug
-        ]);
+        $vars = $this->getSiteVariables();
+        $vars['title'] = 'Adicionar Nova Entrada';
+        $vars['menu_active'] = 'entries_' . $typeSlug;
+        $vars['type_slug'] = $typeSlug;
+
+        View::render('entries/form.twig', $vars);
+    }
+
+    /**
+     * Formulário de Edição Visual
+     */
+    public function entriesEdit(string $typeSlug, int $id)
+    {
+        $vars = $this->getSiteVariables();
+        $vars['title'] = 'Editar Entrada';
+        $vars['menu_active'] = 'entries_' . $typeSlug;
+        $vars['type_slug'] = $typeSlug;
+        $vars['entry_id'] = $id;
+
+        View::render('entries/form.twig', $vars);
     }
 }

@@ -11,6 +11,10 @@
         <input type="text" class="form-control" id="company_name" placeholder="Ex: Santis Engenharia Digital">
       </div>
       <div class="col-md-6">
+        <label for="icon_master" class="form-label">Caminho do Ícone (Retraído)</label>
+        <input type="text" class="form-control" id="icon_master" placeholder="/config/icon-santis.svg">
+      </div>
+      <div class="col-md-6">
         <label for="contact_email" class="form-label">E-mail Principal de Contato</label>
         <input type="email" class="form-control" id="contact_email" placeholder="contato@empresa.com.br">
       </div>
@@ -50,7 +54,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const form = document.getElementById('formSettings');
     
     // Lista de inputs que salvaremos dinamicamente
-    const inputs = ['company_name', 'contact_email', 'phone_whatsapp', 'instagram_url', 'seo_description', 'custom_css'];
+    const inputs = ['company_name', 'icon_master', 'contact_email', 'phone_whatsapp', 'instagram_url', 'seo_description', 'custom_css'];
 
     // 1. Carrega os Dados Iniciais
     fetch('/api/secure/settings', {

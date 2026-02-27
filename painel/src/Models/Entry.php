@@ -44,7 +44,17 @@ class Entry
         // 3. EAV: Como 'content_data' do BD é de fato um JSON nativo, PHP extrai como String.
         // Iremos desmaterializá-lo para objeto real antes de devolver pra REST API.
         foreach ($results as &$row) {
-            $row['content_data'] = json_decode($row['content_data'], true);
+            $data = json_decode($row['content_data'], true);
+            
+            // Normalização Santis: Garante que chaves padrão existam para o Painel JS
+            if ($data) {
+                if (!isset($data['title']) && isset($data['titulo'])) $data['title'] = $data['titulo'];
+                if (!isset($data['name']) && isset($data['nome'])) $data['name'] = $data['nome'];
+                if (isset($data['imagem']) && !isset($data['image'])) $data['image'] = $data['imagem'];
+                if (isset($data['capa']) && !isset($data['cover'])) $data['cover'] = $data['capa'];
+            }
+            
+            $row['content_data'] = $data;
         }
 
         return $results;
@@ -75,5 +85,64 @@ class Entry
         ]);
 
         return (int)$db->lastInsertId();
+    }
+
+    /**
+     * Busca uma entrada específica por ID
+     */
+    public static function find(int $id, int $tenantId): ?array
+    {
+        $db = Database::getInstance();
+        $stmt = $db->prepare("SELECT * FROM entries WHERE id = :id AND tenant_id = :tenant_id");
+        $stmt->execute(['id' => $id, 'tenant_id' => $tenantId]);
+        $row = $stmt->fetch();
+
+        if ($row) {
+            $data = json_decode($row['content_data'], true);
+            // Normalização idêntica ao byTypeSlug
+            if ($data) {
+                if (!isset($data['title']) && isset($data['titulo'])) $data['title'] = $data['titulo'];
+                if (!isset($data['name']) && isset($data['nome'])) $data['name'] = $data['nome'];
+                if (isset($data['imagem']) && !isset($data['image'])) $data['image'] = $data['imagem'];
+                if (isset($data['capa']) && !isset($data['cover'])) $data['cover'] = $data['capa'];
+            }
+            $row['content_data'] = $data;
+            return $row;
+        }
+
+        return null;
+    }
+
+    /**
+     * Atualiza uma entrada existente
+     */
+    public static function update(int $id, int $tenantId, array $data): bool
+    {
+        $db = Database::getInstance();
+        $jsonPayload = isset($data['content_data']) ? json_encode($data['content_data']) : '{}';
+
+        $sql = "UPDATE entries 
+                SET title = :title, slug = :slug, status = :status, content_data = :data, updated_at = NOW()
+                WHERE id = :id AND tenant_id = :tenant_id";
+                
+        $stmt = $db->prepare($sql);
+        return $stmt->execute([
+            'id' => $id,
+            'tenant_id' => $tenantId,
+            'title' => $data['title'],
+            'slug' => $data['slug'],
+            'status' => $data['status'] ?? 'published',
+            'data' => $jsonPayload
+        ]);
+    }
+
+    /**
+     * Remove uma entrada
+     */
+    public static function delete(int $id, int $tenantId): bool
+    {
+        $db = Database::getInstance();
+        $stmt = $db->prepare("DELETE FROM entries WHERE id = :id AND tenant_id = :tenant_id");
+        return $stmt->execute(['id' => $id, 'tenant_id' => $tenantId]);
     }
 }

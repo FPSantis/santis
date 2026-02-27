@@ -21,7 +21,7 @@ if (file_exists(__DIR__ . '/../../config/.env')) {
 }
 
 // 3. Inicia o Roteador Envelopado (Que já ajusta Middlewares, Erros e CORS)
-$routerCore = new Router();
+$routerCore = new Router('/api');
 $api = $routerCore->getBramus();
 
 // 4. Delega a definição das Endpoints para o arquivo separado de rotas (Mantendo o index limpo)
