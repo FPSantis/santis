@@ -175,11 +175,10 @@
                 <textarea id="editCaption" class="form-control" rows="2"></textarea>
             </div>
             
-            <div class="mb-4">
-                <label class="form-label small text-uppercase fw-bold">URL Pública</label>
-                <div class="input-group input-group-merge">
-                    <input type="text" id="editUrl" class="form-control" readonly>
-                    <span class="input-group-text cursor-pointer" id="btnCopyUrl"><i class="bx bx-copy"></i></span>
+            <div class="mb-4 d-none" id="usageContainer">
+                <h6 class="text-muted text-uppercase small fw-bold mb-3">Indexado em (Usado em)</h6>
+                <div id="usageList" class="list-group list-group-flush border rounded">
+                    <!-- Usage links here -->
                 </div>
             </div>
 
@@ -226,7 +225,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const cdnBase = 'https://cdn.santis.net.br'; // Using the defined domain
     
     // State
-    let currentFolderId = null;
+    let currentFolderId = null; // null means root
     let currentFolderName = 'Raiz';
     let currentPath = '/uploads';
     let currentSearch = '';
@@ -312,7 +311,7 @@ document.addEventListener('DOMContentLoaded', function() {
     function renderFiles(files) {
         files.forEach(f => {
             const isImg = f.mime_type.startsWith('image/');
-            const url = cdnBase + f.file_path;
+            const url = cdnBase + f.file_path; // Corrected: was file_path
             const ext = f.file_path.split('.').pop().toUpperCase();
             
             const div = document.createElement('div');
@@ -388,18 +387,39 @@ document.addEventListener('DOMContentLoaded', function() {
             const f = res.data;
             document.getElementById('editId').value = f.id;
             document.getElementById('editFileName').value = f.file_name;
-            document.getElementById('editAltText').value = f.alt_text || '';
-            document.getElementById('editCaption').value = f.caption || '';
-            document.getElementById('editUrl').value = f.url;
             
+            // Technical specs
             document.getElementById('metaSize').innerText = f.size_formatted;
             document.getElementById('metaExt').innerText = f.file_path.split('.').pop().toUpperCase();
             document.getElementById('metaDate').innerText = new Date(f.created_at).toLocaleDateString();
             document.getElementById('metaMime').innerText = f.mime_type;
             
+            // Editable fields
+            document.getElementById('editAltText').value = f.alt_text || '';
+            document.getElementById('editCaption').value = f.caption || '';
+            
+            const fullUrl = cdnBase + f.file_path;
+            const container = document.getElementById('usageContainer');
+            const list = document.getElementById('usageList');
+            list.innerHTML = '';
+            
+            if (f.used_in && f.used_in.length > 0) {
+                container.classList.remove('d-none');
+                f.used_in.forEach(use => {
+                    list.innerHTML += `
+                        <a href="/content/${use.type_slug}/edit/${use.id}" target="_blank" class="list-group-item list-group-item-action p-2 small d-flex justify-content-between">
+                            <span>${use.title}</span>
+                            <span class="badge bg-label-info">${use.type_name}</span>
+                        </a>
+                    `;
+                });
+            } else {
+                container.classList.add('d-none');
+            }
+
             const isImg = f.mime_type.startsWith('image/');
             document.getElementById('detailPreview').innerHTML = isImg 
-                ? `<img src="${f.url}" class="img-fluid rounded" style="max-height: 200px; object-fit: contain;">`
+                ? `<img src="${fullUrl}" class="img-fluid rounded" style="max-height: 200px; object-fit: contain;">`
                 : `<i class="bx bxs-file-blank display-1 text-primary"></i>`;
             
             offcanvasDetails.show();
@@ -407,7 +427,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // Navigation and Breadcrumbs
-    window.navigateFolder = (id, name = 'Raiz') => {
+    window.navigateFolder = (id, name = 'Mídia') => {
         currentFolderId = id;
         currentFolderName = name;
         loadMedia(true);
@@ -417,7 +437,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function updateBreadcrumbs(folder) {
         const bc = document.getElementById('mediaBreadcrumb');
-        bc.innerHTML = '<li class="breadcrumb-item"><a href="javascript:void(0)" onclick="navigateFolder(null)">Uploads</a></li>';
+        bc.innerHTML = '<li class="breadcrumb-item"><a href="javascript:void(0)" onclick="navigateFolder(null)">Mídia</a></li>';
         
         if (folder) {
             // Here we could handle path segments if we wanted nested logic, but for now simple 1-level or full name
@@ -548,7 +568,7 @@ document.addEventListener('DOMContentLoaded', function() {
     };
 
     // Init
-    loadMedia();
+    loadMedia(true);
 });
 </script>
 {% endblock %}

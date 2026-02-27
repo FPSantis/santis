@@ -57,6 +57,12 @@ class ContentTypeController
         try {
             $newId = ContentType::create($tenantId, $data);
             $newType = ContentType::find($newId, $tenantId);
+            
+            // Auto-create Media Folder for this module
+            $folderName = $name;
+            $folderPath = "/" . strtolower($slug);
+            \Painel\Models\MediaFile::createFolder($tenantId, $folderName, $folderPath, null);
+            
             return Response::json(true, $newType, 'Tipo de conteúdo criado com sucesso.', 201);
         } catch (Exception $e) {
             return Response::error('Falha ao registrar novo Tipo: ' . $e->getMessage(), 500);

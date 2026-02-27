@@ -19,12 +19,20 @@ class MediaController
         
         $tenantId = $user['tenant'];
         $folderId = $request->get('folder_id');
-
         $filters = [
             'q' => $request->get('q'),
-            'type' => $request->get('type'),
-            'folder_id' => $folderId
+            'type' => $request->get('type')
         ];
+
+        if (isset($folderId)) {
+            if ($folderId === 'null' || $folderId === '' || $folderId === 0) {
+                $filters['folder_id'] = null;
+            } else {
+                $filters['folder_id'] = (int)$folderId;
+            }
+        } else {
+            $filters['folder_id'] = null;
+        }
 
         $page = (int)($request->get('page') ?: 1);
         $limit = (int)($request->get('limit') ?: 50);
@@ -34,13 +42,13 @@ class MediaController
         $folders = [];
         $currentFolder = null;
 
-        if ($folderId) {
-            $currentFolder = MediaFile::findFolder($folderId, $tenantId); // Need to add this method or handles inline
+        if ($filters['folder_id']) {
+            $currentFolder = MediaFile::findFolder($filters['folder_id'], $tenantId);
         }
 
         // Se estiver navegando (sem busca global), traz subpastas
         if (empty($filters['q']) && empty($filters['type'])) {
-            $folders = MediaFile::allFolders($tenantId, $folderId ?: null);
+            $folders = MediaFile::allFolders($tenantId, $filters['folder_id']);
         }
         
         return Response::json(true, [
@@ -66,21 +74,34 @@ class MediaController
         }
         
         $file = $_FILES['file'];
-        $folderId = $request->get('folder_id');
+        $folderId = $request->get('folder_id') ?: null;
         
-        // Determinar o caminho físico
+        // Determinar o caminho físico e aplicar regras modulares
         $relativePath = "/uploads";
         if ($folderId) {
             $db = \Painel\Core\Database::getInstance();
-            $stmt = $db->prepare("SELECT path FROM media_folders WHERE id = :id AND tenant_id = :tenant_id");
+            $stmt = $db->prepare("SELECT id, name, path FROM media_folders WHERE id = :id AND tenant_id = :tenant_id");
             $stmt->execute(['id' => $folderId, 'tenant_id' => $tenantId]);
             $f = $stmt->fetch();
-            if ($f && $f['path']) {
+            
+            if ($f) {
                 $relativePath = $f['path'];
+                $moduleName = strtolower($f['name']);
+                
+                // Regra: Portfolio, Radar e Services usam YYYY/MM
+                $modularFolders = ['portfolio', 'radar', 'services'];
+                if (in_array($moduleName, $modularFolders)) {
+                    $dateSubpath = "/" . date('Y/m');
+                    $relativePath .= $dateSubpath;
+                    
+                    // Garantir que a pasta YYYY/MM existe no DB e Fisicamente
+                    $folderId = $this->ensureFolderExists($tenantId, date('Y/m'), $relativePath, $f['id']);
+                }
             }
         } else {
-            // Default to yyyy/mm inside /uploads
+            // Default para a raiz de uploads com data
             $relativePath .= "/" . date('Y/m');
+            $folderId = $this->ensureFolderExists($tenantId, date('Y/m'), $relativePath, null);
         }
 
         // Validar MIME
@@ -135,7 +156,7 @@ class MediaController
             'path'        => $dbPath,
             'mime_type'   => $finalMime,
             'size_bytes'  => $finalSize,
-            'folder_id'   => $folderId ?: null,
+            'folder_id'   => $folderId,
             'uploaded_by' => $userId
         ]);
         
@@ -209,6 +230,9 @@ class MediaController
         $media['url'] = 'https://cdn.santis.net.br' . $media['file_path'];
         $media['size_formatted'] = number_format($media['size'] / 1024, 1) . ' KB';
         
+        // Adicionar Indexação (Onde este arquivo é usado?)
+        $media['used_in'] = MediaFile::findUsage($tenantId, $media['file_path']);
+        
         return Response::json(true, $media, 'Mídia recuperada com sucesso');
     }
 
@@ -276,5 +300,30 @@ class MediaController
         }
         
         return Response::json(true, null, 'Arquivos deletados com sucesso.');
+    }
+
+    /**
+     * Garante que uma pasta existe no DB e fisicamente (usado para YYYY/MM)
+     */
+    private function ensureFolderExists(int $tenantId, string $name, string $path, ?int $parentId): int
+    {
+        $db = \Painel\Core\Database::getInstance();
+        
+        // Verificar no DB
+        $stmt = $db->prepare("SELECT id FROM media_folders WHERE path = :path AND tenant_id = :tenant_id");
+        $stmt->execute(['path' => $path, 'tenant_id' => $tenantId]);
+        $folder = $stmt->fetch();
+        
+        if ($folder) return (int)$folder['id'];
+        
+        // Criar fisicamente
+        $cdnRoot = dirname(__DIR__, 3) . '/cdn/public_html';
+        $fullPath = $cdnRoot . $path;
+        if (!is_dir($fullPath)) {
+            mkdir($fullPath, 0755, true);
+        }
+        
+        // Criar no DB
+        return MediaFile::createFolder($tenantId, $name, $path, $parentId);
     }
 }

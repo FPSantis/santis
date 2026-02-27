@@ -182,4 +182,30 @@ class MediaFile
         $result = $stmt->fetch();
         return $result ?: null;
     }
+
+    /**
+     * Busca onde a mídia está sendo usada (indexação reversa)
+     */
+    public static function findUsage(int $tenantId, string $path): array
+    {
+        $db = Database::getInstance();
+        // Busca no JSON content_data das entradas
+        // Usamos LIKE para cobrir escapes de JSON (\/)
+        $stmt = $db->prepare("
+            SELECT e.id, e.title, e.content_type_id, ct.name as type_name, ct.slug as type_slug
+            FROM entries e
+            JOIN content_types ct ON e.content_type_id = ct.id
+            WHERE e.tenant_id = :tenant_id 
+            AND e.content_data LIKE :path
+        ");
+        
+        // Escapar a barra para busca no JSON se necessário, ou usar o path direto
+        $searchPath = str_replace('/', '\\/', $path); 
+        $stmt->execute([
+            'tenant_id' => $tenantId,
+            'path' => '%' . $searchPath . '%'
+        ]);
+        
+        return $stmt->fetchAll();
+    }
 }
