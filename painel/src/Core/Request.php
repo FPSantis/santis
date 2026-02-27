@@ -14,8 +14,29 @@ class Request
     public function __construct()
     {
         $this->method = $_SERVER['REQUEST_METHOD'] ?? 'GET';
-        $this->headers = getallheaders();
+        $this->headers = $this->getAllHeadersPolyfill();
         $this->parseBody();
+    }
+
+    /**
+     * Polyfill para getallheaders() em ambientes onde não está disponível (CLI/FastCGI)
+     */
+    private function getAllHeadersPolyfill(): array
+    {
+        if (function_exists('getallheaders')) {
+            return getallheaders();
+        }
+        $headers = [];
+        foreach ($_SERVER as $name => $value) {
+            if (substr($name, 0, 5) == 'HTTP_') {
+                $headers[str_replace(' ', '-', ucwords(strtolower(str_replace('_', ' ', substr($name, 5)))))] = $value;
+            } elseif ($name === 'CONTENT_TYPE') {
+                $headers['Content-Type'] = $value;
+            } elseif ($name === 'CONTENT_LENGTH') {
+                $headers['Content-Length'] = $value;
+            }
+        }
+        return $headers;
     }
 
     /**
@@ -41,6 +62,14 @@ class Request
     public function all(): array
     {
         return $this->data;
+    }
+
+    /**
+     * Pega um campo específico (Alias para input)
+     */
+    public function get(string $key, $default = null)
+    {
+        return $this->input($key, $default);
     }
 
     /**
@@ -85,5 +114,22 @@ class Request
     public function getMethod(): string
     {
         return $this->method;
+    }
+
+    /**
+     * Retorna o usuário autenticado caso exista (Populodo pelo AuthMiddleware)
+     */
+    public function user(): ?array
+    {
+        $userId = $_SERVER['AUTH_USER_ID'] ?? null;
+        if (!$userId) return null;
+
+        $user = \Painel\Models\User::findById((int)$userId);
+        if ($user) {
+            // Compatibilidade com código legado que usa 'tenant' em vez de 'tenant_id'
+            $user['tenant'] = $user['tenant_id'];
+            $user['userId'] = $user['id'];
+        }
+        return $user;
     }
 }

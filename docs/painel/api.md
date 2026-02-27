@@ -10,7 +10,7 @@ Autentica um usuário e retorna um JSON Web Token (JWT).
 **Request Body (JSON):**
 ```json
 {
-  "email": "admin@santis.net.br",
+  "email": "fpsantis@gmail.com",
   "password": "sua-senha-segura"
 }
 ```
@@ -25,7 +25,7 @@ Autentica um usuário e retorna um JSON Web Token (JWT).
     "user": {
       "id": 1,
       "name": "Webmaster Santis",
-      "email": "admin@santis.net.br",
+      "email": "fpsantis@gmail.com",
       "tenant_id": 1
     }
   },

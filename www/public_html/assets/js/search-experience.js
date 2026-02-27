@@ -125,7 +125,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         <div class="radar-sweep"></div>
                         <div class="radar-ping" style="top: 30%; left: 40%"></div>
                         <div class="radar-ping" style="top: 60%; left: 70%"></div>
-                        <img src="assets/img/logo-santis.svg" class="w-12 h-12 relative z-10 opacity-50" alt="Santis">
+                        <img src="https://cdn.santis.net.br/config/logo-santis.svg" class="w-12 h-12 relative z-10 opacity-50" alt="Santis">
                     </div>
                     
                     <h3 class="text-3xl font-black Montserrat mb-4 uppercase tracking-tighter">

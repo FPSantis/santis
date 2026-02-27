@@ -23,8 +23,14 @@
     <link rel="stylesheet" href="{{ ASSETS_URL }}/vendor/fonts/iconify-icons.css" />
     <link rel="stylesheet" href="{{ ASSETS_URL }}/vendor/fonts/flag-icons.css" />
     
+    <link rel="stylesheet" href="{{ ASSETS_URL }}/vendor/css/core.css">
     <link rel="stylesheet" href="{{ ASSETS_URL }}/vendor/css/theme.css">
+    
+    <!-- Core CSS -->
+    <link rel="stylesheet" href="{{ ASSETS_URL }}/vendor/libs/perfect-scrollbar/perfect-scrollbar.css" />
 
+    <script src="{{ ASSETS_URL }}/vendor/libs/jquery/jquery.js"></script>
+    <script src="{{ ASSETS_URL }}/vendor/libs/popper/popper.js"></script>
     <script src="{{ ASSETS_URL }}/vendor/js/helpers.js"></script>
     <script src="{{ ASSETS_URL }}/vendor/js/template-customizer.js"></script>
     <script src="{{ ASSETS_URL }}/js/config.js"></script>
@@ -71,6 +77,9 @@
     </div>
 
     <!-- Core JS -->
+    <script src="{{ ASSETS_URL }}/vendor/libs/perfect-scrollbar/perfect-scrollbar.js"></script>
+    <script src="{{ ASSETS_URL }}/vendor/js/bootstrap.js"></script>
+    <script src="{{ ASSETS_URL }}/vendor/js/menu.js"></script>
     <script src="{{ ASSETS_URL }}/vendor/js/theme.js"></script>
     
     <!-- API Auth/JWT Sec Layer -->
@@ -88,6 +97,16 @@
 
     <!-- Main JS -->
     <script src="{{ ASSETS_URL }}/js/main.js"></script>
+    <script>
+      window.onerror = function(msg, url, lineNo, columnNo, error) {
+        console.error('Santis CMS Global Error:', msg, url, lineNo, error);
+        // Alert only in development or if critical
+        if (window.location.hostname === 'localhost' || window.location.hostname.includes('ddev')) {
+           // alert('Erro JS Detectado: ' + msg);
+        }
+        return false;
+      };
+    </script>
     
     {% block page_js %}{% endblock %}
   </body>

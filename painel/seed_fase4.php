@@ -54,7 +54,7 @@ try {
     
     $types = [
         [
-            'Serviços e Frentes',
+            'Serviços',
             'services',
             'Módulo para gerenciar os pilares (Otimização e Painel)',
             json_encode([
@@ -71,7 +71,7 @@ try {
             ], JSON_UNESCAPED_UNICODE)
         ],
         [
-            'Parceiros de Stack',
+            'Parceiros',
             'partners',
             'Stack de Tecnologia e Integradores',
             json_encode([

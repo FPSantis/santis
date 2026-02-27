@@ -169,7 +169,7 @@ function updateFillers() {
         if (slotsNeeded === 2) {
             const filler = `
                 <div class="filler-card filler-2-cols glass-card group cursor-pointer" onclick="document.getElementById('radar').scrollIntoView({behavior:'smooth'})">
-                    <img src="assets/img/hero-santis.png" alt="Scanner">
+                    <img src="https://cdn.santis.net.br/config/hero-santis.png" alt="Scanner">
                     <div class="relative z-10">
                         <div class="badge-highlight mb-4">Ferramenta Santis</div>
                         <h3 class="text-4xl font-black Montserrat uppercase tracking-tighter mb-4">Realize uma <span class="text-[#00F2FF]">Varredura Profissional</span> em seu site agora.</h3>

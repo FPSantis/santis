@@ -7,6 +7,15 @@ Options -Indexes
     Deny from all
 </FilesMatch>
 
+# Redirecionar acesso direto à raiz do CDN para o subdomínio www correspondente
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    # Se o host começar com cdn. e capturar o restante do domínio
+    RewriteCond %{HTTP_HOST} ^cdn\.(.+)$ [NC]
+    # Redirecionar estritamente quando o caminho requisitado for VAZIO ou apenas a raiz / para o PHP
+    RewriteRule ^$ /index.php [L]
+</IfModule>
+
 # Configuração de Cache para Mídias (Aumento de Performance)
 <IfModule mod_expires.c>
     ExpiresActive On

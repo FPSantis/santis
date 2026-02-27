@@ -3,9 +3,9 @@
 {% block content %}
 <div class="card">
   <div class="card-header d-flex justify-content-between align-items-center">
-    <h5 class="mb-0">Gerenciador de Tipos de Conteúdo</h5>
-    <a href="/types/create" class="btn btn-primary">
-      <i class="icon-base bx bx-plus me-1"></i> Criar Novo Tipo
+    <h5 class="mb-0">Gerenciador de Módulos</h5>
+    <a href="/modulos/create" class="btn btn-primary">
+      <i class="icon-base bx bx-plus me-1"></i> Criar Novo Módulo
     </a>
   </div>
   <div class="card-body">
@@ -23,7 +23,7 @@
         </thead>
         <tbody class="table-border-bottom-0" id="typesTableBody">
           <tr>
-            <td colspan="6" class="text-center py-4">Carregando tipos de conteúdo...</td>
+            <td colspan="6" class="text-center py-4">Carregando módulos...</td>
           </tr>
         </tbody>
       </table>
@@ -38,6 +38,12 @@ document.addEventListener('DOMContentLoaded', function() {
     const token = localStorage.getItem('santis_jwt');
     const tbody = document.getElementById('typesTableBody');
 
+    if (!token) {
+        tbody.innerHTML = '<tr><td colspan="6" class="text-center py-4 text-warning">Sessão expirada. Redirecionando...</td></tr>';
+        setTimeout(() => window.location.href = '/login', 1000);
+        return;
+    }
+
     fetch('/api/secure/types', {
         method: 'GET',
         headers: {
@@ -45,41 +51,73 @@ document.addEventListener('DOMContentLoaded', function() {
             'Accept': 'application/json'
         }
     })
-    .then(r => r.json())
-    .then(data => {
-        if(data.success && data.data.length > 0) {
-            tbody.innerHTML = ''; 
-            
-            data.data.forEach(type => {
-                let schemaCount = type.schema ? Object.keys(type.schema).length : 0;
-                let statusBadge = type.is_active 
-                    ? '<span class="badge bg-label-success">Ativo</span>'
-                    : '<span class="badge bg-label-secondary">Inativo</span>';
-                
-                let formatedDate = new Date(type.created_at).toLocaleDateString('pt-BR');
-
-                tbody.innerHTML += `
-                  <tr>
-                    <td><strong>${type.name}</strong><br><small class="text-muted">${type.description || 'Sem descrição'}</small></td>
-                    <td><span class="badge bg-label-primary">/api/secure/entries/${type.slug}</span></td>
-                    <td>${schemaCount} campos definidos</td>
-                    <td>${statusBadge}</td>
-                    <td>${formatedDate}</td>
-                    <td>
-                      <button type="button" class="btn btn-sm btn-icon btn-text-secondary" title="Editar"><i class="bx bx-edit"></i></button>
-                      <button type="button" class="btn btn-sm btn-icon btn-text-danger" title="Apagar"><i class="bx bx-trash"></i></button>
-                    </td>
-                  </tr>
-                `;
-            });
-            
-        } else {
-            tbody.innerHTML = '<tr><td colspan="6" class="text-center py-4 text-muted">Nenhum Tipo de Conteúdo customizado cadastrado no Santis CMS.</td></tr>';
-        }
+    .then(r => {
+        if (!r.ok) throw new Error('Falha na resposta da API (Status ' + r.status + ')');
+        return r.json();
     })
-    .catch(error => {
-        console.error('Erro:', error);
-        tbody.innerHTML = '<tr><td colspan="6" class="text-center py-4 text-danger">Erro de Conexão com a API Base.</td></tr>';
+    .then(data => {
+        if(!data.success) {
+            tbody.innerHTML = `<tr><td colspan="6" class="text-center py-4 text-danger">Erro: ${data.message}</td></tr>`;
+            return;
+        }
+
+        const modules = data.data || [];
+        if (modules.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="6" class="text-center py-4 text-muted">Nenhum Módulo cadastrado.</td></tr>';
+            return;
+        }
+
+        tbody.innerHTML = ''; 
+        modules.forEach(m => {
+            // Conta campos de forma segura
+            let schema = m.schema || [];
+            let qtty = Array.isArray(schema) ? schema.length : (schema.fields ? schema.fields.length : 0);
+            
+            let status = m.is_active 
+                ? '<span class="badge bg-label-success">Ativo</span>'
+                : '<span class="badge bg-label-secondary">Inativo</span>';
+            
+            let date = '--';
+            if (m.created_at) {
+                try { date = new Date(m.created_at).toLocaleDateString('pt-BR'); } catch(e) {}
+            }
+
+            tbody.innerHTML += `
+              <tr>
+                <td><strong>${m.name}</strong><br><small class="text-muted">${m.description || ''}</small></td>
+                <td><span class="badge bg-label-primary">/api/v1/entries/${m.slug}</span></td>
+                <td>${qtty} campos</td>
+                <td>${status}</td>
+                <td>${date}</td>
+                <td>
+                  <a href="/modulos/${m.id}/edit" class="btn btn-sm btn-icon btn-text-secondary" title="Editar"><i class="bx bx-edit"></i></a>
+                  <button type="button" class="btn btn-sm btn-icon btn-text-danger btn-delete" data-id="${m.id}" title="Apagar"><i class="bx bx-trash"></i></button>
+                </td>
+              </tr>
+            `;
+        });
+
+        // Delete Listener
+        document.querySelectorAll('.btn-delete').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const id = this.getAttribute('data-id');
+                if (confirm('Deseja realmente apagar este módulo e TODOS os seus registros?')) {
+                    fetch('/api/secure/types/' + id, {
+                        method: 'DELETE',
+                        headers: { 'Authorization': 'Bearer ' + token }
+                    })
+                    .then(r => r.json())
+                    .then(res => {
+                        if (res.success) window.location.reload();
+                        else alert('Erro ao apagar: ' + res.message);
+                    });
+                }
+            });
+        });
+    })
+    .catch(err => {
+        console.error(err);
+        tbody.innerHTML = `<tr><td colspan="6" class="text-center py-4 text-danger">Erro de Conexão: ${err.message}</td></tr>`;
     });
 });
 </script>

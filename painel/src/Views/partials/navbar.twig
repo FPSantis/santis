@@ -1,10 +1,22 @@
 <nav class="layout-navbar container-xxl navbar-detached navbar navbar-expand-xl align-items-center bg-navbar-theme" id="layout-navbar">
+  <!-- Mobile menu toggle -->
   <div class="layout-menu-toggle navbar-nav align-items-xl-center me-4 me-xl-0 d-xl-none">
     <a class="nav-item nav-link px-0 me-xl-6" href="javascript:void(0)">
       <i class="icon-base bx bx-menu icon-md"></i>
     </a>
   </div>
 
+  <!-- Page Title (left side) -->
+  <div class="d-flex align-items-center flex-grow-1 gap-2 me-4" id="navbar-page-context" style="min-width: 0; overflow: visible;">
+    {% if page_icon %}
+    <i class="icon-base bx {{ page_icon }} text-primary flex-shrink-0" style="font-size:1.35rem;"></i>
+    {% endif %}
+    {% if page_title %}
+    <span class="fw-bold" style="font-size:1rem; white-space:nowrap;">{{ page_title }}</span>
+    {% endif %}
+  </div>
+
+  <!-- Right: User avatar -->
   <div class="navbar-nav-right d-flex align-items-center justify-content-end" id="navbar-collapse">
     <ul class="navbar-nav flex-row align-items-center ms-auto">
       <!-- User -->

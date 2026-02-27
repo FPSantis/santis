@@ -100,4 +100,58 @@ class EntryController
             return Response::error('Engine Falhou na Criação da Entrada: ' . $e->getMessage(), 500);
         }
     }
+
+    /**
+     * Busca uma entrada específica
+     */
+    public function show(string $typeSlug, int $id)
+    {
+        $tenantId = 1;
+        try {
+            $entry = Entry::find($id, $tenantId);
+            if (!$entry) {
+                return Response::error('Entrada não encontrada.', 404);
+            }
+            return Response::json(true, $entry);
+        } catch (Exception $e) {
+            return Response::error('Erro ao buscar entrada: ' . $e->getMessage(), 500);
+        }
+    }
+
+    /**
+     * Atualiza uma entrada
+     */
+    public function update(string $typeSlug, int $id)
+    {
+        $tenantId = 1;
+        $request = new Request();
+        
+        $data = [
+            'title' => $request->input('title'),
+            'slug' => strtolower($request->input('slug')),
+            'status' => $request->input('status') ?? 'published',
+            'content_data' => $request->input('content_data')
+        ];
+
+        try {
+            Entry::update($id, $tenantId, $data);
+            return Response::json(true, null, 'Entrada atualizada com sucesso.');
+        } catch (Exception $e) {
+            return Response::error('Erro ao atualizar entrada: ' . $e->getMessage(), 500);
+        }
+    }
+
+    /**
+     * Remove uma entrada
+     */
+    public function delete(string $typeSlug, int $id)
+    {
+        $tenantId = 1;
+        try {
+            Entry::delete($id, $tenantId);
+            return Response::json(true, null, 'Entrada removida com sucesso.');
+        } catch (Exception $e) {
+            return Response::error('Erro ao remover entrada: ' . $e->getMessage(), 500);
+        }
+    }
 }

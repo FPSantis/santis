@@ -5,7 +5,7 @@
   <div class="col-12 col-lg-8">
     <div class="card mb-4">
       <div class="card-header d-flex justify-content-between align-items-center">
-        <h5 class="mb-0">Criar Novo Tipo de Conteúdo (Módulo)</h5>
+        <h5 class="mb-0">Editar Módulo</h5>
       </div>
       <div class="card-body">
         <form id="builderForm">
@@ -19,33 +19,39 @@
               <label class="form-label" for="typeSlug">Endereço da API (Slug)</label>
               <input type="text" id="typeSlug" class="form-control bg-light" placeholder="Slug automático" required readonly />
             </div>
+            <div class="col-md-12">
+              <label class="form-label" for="typeIcon">Ícone (Boxicons class)</label>
+              <div class="input-group input-group-merge">
+                <span class="input-group-text"><i id="iconPreview" class="bx bx-collection"></i></span>
+                <input type="text" id="typeIcon" class="form-control" placeholder="Ex: bx-briefcase" value="bx-collection" />
+              </div>
+            </div>
             <div class="col-12">
               <label class="form-label" for="typeDesc">Descrição do Módulo</label>
-              <textarea id="typeDesc" class="form-control" rows="2" placeholder="Descreva para os redatores a finalidade deste módulo"></textarea>
+              <textarea id="typeDesc" class="form-control" rows="2" placeholder="Descreva a finalidade deste módulo"></textarea>
             </div>
           </div>
           
           <hr class="my-4" />
           
           <div class="d-flex justify-content-between align-items-center mb-3">
-            <h6 class="mb-0">2. Construtor de Campos (Schema Builder)</h6>
+            <h6 class="mb-0">2. Construtor de Campos</h6>
             <button type="button" id="addFieldBtn" class="btn btn-sm btn-outline-primary">
               <i class="bx bx-plus me-1"></i> Adicionar Campo
             </button>
           </div>
           
-          <!-- Container de Campos Dinâmicos -->
           <div id="fieldsContainer" class="d-flex flex-column gap-3 mb-4">
              <div class="text-center text-muted p-4 border border-dashed rounded" id="emptyState">
-                 Nenhum campo customizado adicionado. O sistema sempre cria ID, Data e Tenant automaticamente.
+                 Nenhum campo customizado adicionado.
              </div>
           </div>
           
           <div class="mt-4">
             <button type="submit" class="btn btn-primary" id="saveBtn">
-              <i class="bx bx-save me-1"></i> Registrar Módulo no Banco
+              <i class="bx bx-save me-1"></i> Salvar Alterações
             </button>
-            <a href="/types" class="btn btn-label-secondary">Cancelar</a>
+            <a href="/modulos" class="btn btn-label-secondary">Cancelar</a>
           </div>
         </form>
       </div>
@@ -55,12 +61,9 @@
   <div class="col-12 col-lg-4">
     <div class="card bg-primary text-white mb-4">
       <div class="card-body">
-        <h5 class="card-title text-white">Como Funciona o EAV Headless?</h5>
+        <h5 class="card-title text-white">Headless CMS Engine</h5>
         <p class="card-text">
-          Cada Tipo de Conteúdo que você cria aqui gera automaticamente uma nova sub-rota em nossa API (ex: <code>/api/secure/entries/PRODUTOS</code>).
-        </p>
-        <p class="card-text">
-          Os "Campos" projetados aqui dirão ao sistema o que desenhar na tela de formulário quando o redator for criar uma nova "Entrada" neste módulo. Em vez de quebras de tabelas MySQL, geramos um JSON rápido que a sua Landing Page consome instantaneamente!
+          Cada Módulo que você cria gera automaticamente uma nova sub-rota em nossa API (ex: <code>/api/v1/entries/SLUG</code>).
         </p>
       </div>
     </div>
@@ -71,179 +74,166 @@
 {% block page_js %}
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    
-    // Auto-gerador de SLUG
+    // Definir Elementos explicitamente
     const nameInput = document.getElementById('typeName');
     const slugInput = document.getElementById('typeSlug');
-    
-    nameInput.addEventListener('input', function() {
-        slugInput.value = this.value
-            .toLowerCase()
-            .replace(/[^\w\s-]/g, '')
-            .replace(/[\s_-]+/g, '-')
-            .replace(/^-+|-+$/g, '');
-    });
-
-    // FIELD BUILDER LOGIC
+    const iconInput = document.getElementById('typeIcon');
+    const iconPreview = document.getElementById('iconPreview');
+    const typeDesc = document.getElementById('typeDesc');
     const fieldsContainer = document.getElementById('fieldsContainer');
     const emptyState = document.getElementById('emptyState');
     const addFieldBtn = document.getElementById('addFieldBtn');
-    
-    let fieldCount = 0;
+    const builderForm = document.getElementById('builderForm');
+    const saveBtn = document.getElementById('saveBtn');
 
-    addFieldBtn.addEventListener('click', function() {
-        if(emptyState) { emptyState.style.display = 'none'; }
-        
+    let fieldCount = 0;
+    const typeId = '{{ type_id|default('') }}';
+    const isEdit = typeId !== '';
+    const token = localStorage.getItem('santis_jwt');
+
+    // Auto-slug
+    if (nameInput) {
+        nameInput.addEventListener('input', function() {
+            if (!isEdit) {
+                slugInput.value = this.value.toLowerCase()
+                    .normalize('NFD').replace(/[\u0300-\u036f]/g, "")
+                    .replace(/[^\w\s-]/g, '').replace(/[\s_-]+/g, '-').replace(/^-+|-+$/g, '');
+            }
+        });
+    }
+
+    // Icon Preview
+    if (iconInput) {
+        iconInput.addEventListener('input', function() {
+            iconPreview.className = 'bx ' + (this.value || 'bx-collection');
+        });
+    }
+
+    // Se for EDIT, carrega do Banco
+    if (isEdit) {
+        fetch('/api/secure/types/' + typeId, {
+            headers: { 'Authorization': 'Bearer ' + token }
+        })
+        .then(r => r.json())
+        .then(data => {
+            if (data.success) {
+                const t = data.data;
+                nameInput.value = t.name || '';
+                slugInput.value = t.slug || '';
+                iconInput.value = t.icon || 'bx-collection';
+                iconPreview.className = 'bx ' + (t.icon || 'bx-collection');
+                typeDesc.value = t.description || '';
+                
+                const schema = t.schema || [];
+                if (Array.isArray(schema) && schema.length > 0) {
+                    if (emptyState) emptyState.style.display = 'none';
+                    schema.forEach(f => addFieldWithData(f));
+                }
+            }
+        });
+    }
+
+    function addFieldWithData(f = null) {
         fieldCount++;
-        const fieldHtml = `
-            <div class="card shadow-none border builder-field" data-id="${fieldCount}">
+        const id = fieldCount;
+        const html = `
+            <div class="card shadow-none border builder-field" data-id="${id}">
                 <div class="card-body p-3">
                     <div class="d-flex justify-content-between align-items-center mb-2 pb-2 border-bottom">
-                        <span class="badge bg-label-dark"><i class="bx bx-menu cursor-move me-1"></i> Campo #${fieldCount}</span>
-                        <button type="button" class="btn btn-sm btn-icon btn-text-danger btn-remove-field" onclick="this.closest('.builder-field').remove(); checkEmpty()">
+                        <span class="badge bg-label-dark">#${id}</span>
+                        <button type="button" class="btn btn-sm btn-icon btn-text-danger" onclick="this.closest('.builder-field').remove(); window.checkEmpty()">
                             <i class="bx bx-trash"></i>
                         </button>
                     </div>
                     <div class="row g-2">
                         <div class="col-md-4">
-                            <label class="form-label" style="font-size: 11px;">Rótulo de Exibição (Label)</label>
-                            <input type="text" class="form-control form-control-sm field-label" placeholder="Ex: Título da Aba" required>
+                            <label class="form-label small">Rótulo</label>
+                            <input type="text" class="form-control form-control-sm f-label" value="${f?f.label:''}" required>
                         </div>
                         <div class="col-md-3">
-                            <label class="form-label" style="font-size: 11px;">Nome Técnico (Key)</label>
-                            <input type="text" class="form-control form-control-sm field-key bg-light" placeholder="ex: tag_titulo" required readonly>
+                            <label class="form-label small">Chave (Key)</label>
+                            <input type="text" class="form-control form-control-sm f-key ${f?'bg-light':''}" value="${f?f.key:''}" ${f?'readonly':''} required>
                         </div>
                         <div class="col-md-3">
-                            <label class="form-label" style="font-size: 11px;">Tipo do Dado (Input)</label>
-                            <select class="form-select form-select-sm field-type">
-                                <option value="text">Texto Curto</option>
-                                <option value="textarea">Texto Longo</option>
-                                <option value="richtext">Editor Rico (WYSIWYG)</option>
-                                <option value="image">Upload de Imagem</option>
-                                <option value="date">Seletor de Data</option>
-                                <option value="boolean">Verdadeiro/Falso (Toggle)</option>
+                            <label class="form-label small">Tipo</label>
+                            <select class="form-select form-select-sm f-type">
+                                <option value="text" ${f&&f.type==='text'?'selected':''}>Texto</option>
+                                <option value="textarea" ${f&&f.type==='textarea'?'selected':''}>Texto Longo</option>
+                                <option value="richtext" ${f&&f.type==='richtext'?'selected':''}>Editor Rico</option>
+                                <option value="image" ${f&&f.type==='image'?'selected':''}>Imagem</option>
+                                <option value="date" ${f&&f.type==='date'?'selected':''}>Data</option>
+                                <option value="boolean" ${f&&f.type==='boolean'?'selected':''}>Toggle</option>
+                                <option value="url" ${f&&f.type==='url'?'selected':''}>URL</option>
                             </select>
                         </div>
-                        <div class="col-md-2 mt-4 d-flex align-items-center">
+                        <div class="col-md-2 mt-4">
                             <div class="form-check form-switch mt-1">
-                                <input class="form-check-input field-required" type="checkbox" id="req_${fieldCount}">
-                                <label class="form-check-label" style="font-size: 11px;" for="req_${fieldCount}">Obrigatório</label>
+                                <input class="form-check-input f-req" type="checkbox" ${f&&f.required?'checked':''}>
+                                <label class="form-check-label small">Obrigatório</label>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
         `;
+        fieldsContainer.insertAdjacentHTML('beforeend', html);
         
-        fieldsContainer.insertAdjacentHTML('beforeend', fieldHtml);
+        let card = fieldsContainer.lastElementChild;
+        let lInp = card.querySelector('.f-label');
+        let kInp = card.querySelector('.f-key');
         
-        // Auto-key binding para os recém nascidos
-        let newCard = fieldsContainer.lastElementChild;
-        let labelInput = newCard.querySelector('.field-label');
-        let keyInput = newCard.querySelector('.field-key');
-        
-        labelInput.addEventListener('input', function() {
-            keyInput.value = this.value
-                .toLowerCase()
-                .replace(/[^\w\s-]/g, '')
-                .replace(/[\s-]+/g, '_')
-                .replace(/^-+|-+$/g, '');
-        });
+        if (!f) {
+            lInp.addEventListener('input', function() {
+                kInp.value = this.value.toLowerCase()
+                    .normalize('NFD').replace(/[\u0300-\u036f]/g, "")
+                    .replace(/[^\w\s-]/g, '').replace(/[\s-]+/g, '_').replace(/^-+|-+$/g, '');
+            });
+        }
+    }
+
+    addFieldBtn.addEventListener('click', () => {
+        if(emptyState) emptyState.style.display = 'none';
+        addFieldWithData();
     });
 
-    // Helper Expor pro window para chamar de clicks embutidos
-    window.checkEmpty = function() {
-        if(fieldsContainer.querySelectorAll('.builder-field').length === 0) {
-            if(emptyState) { emptyState.style.display = 'block'; }
+    window.checkEmpty = () => {
+        if (fieldsContainer.querySelectorAll('.builder-field').length === 0) {
+            if(emptyState) emptyState.style.display = 'block';
         }
     };
 
-    // SUBMIT E TRANSFORMAÇÃO EM JSON
-    const form = document.getElementById('builderForm');
-    
-    form.addEventListener('submit', function(e) {
+    builderForm.addEventListener('submit', function(e) {
         e.preventDefault();
+        saveBtn.disabled = true;
         
-        const btn = document.getElementById('saveBtn');
-        let oldText = btn.innerHTML;
-        btn.innerHTML = '<i class="bx bx-loader-alt bx-spin me-1"></i> Registrando...';
-        btn.disabled = true;
-
-        // 1. Compila o Header
-        const payload = {
-            name: nameInput.value,
-            slug: slugInput.value,
-            description: document.getElementById('typeDesc').value,
-            is_active: 1,
-            schema: []
-        };
-        
-        // 2. Compila os Campos (Lógica EAV Engine)
-        const fields = fieldsContainer.querySelectorAll('.builder-field');
-        
-        // Chaves nativas proibidas de serem criadas pelo usuário
-        const forbiddenKeys = ['id', 'tenant_id', 'created_at', 'updated_at', 'is_active', 'content_type_id'];
-
-        let abort = false;
-        
-        fields.forEach((f, idx) => {
-            let k = f.querySelector('.field-key').value;
-            
-            if(forbiddenKeys.includes(k)) {
-                alert(`A palavra Chave '${k}' é restrita ao núcleo do sistema. Por favor escolha outro nome.`);
-                abort = true;
-                return;
-            }
-            
-            payload.schema.push({
+        const schema = [];
+        fieldsContainer.querySelectorAll('.builder-field').forEach((f, idx) => {
+            schema.push({
                 order: idx + 1,
-                label: f.querySelector('.field-label').value,
-                key: k,
-                type: f.querySelector('.field-type').value,
-                required: f.querySelector('.field-required').checked
+                label: f.querySelector('.f-label').value,
+                key: f.querySelector('.f-key').value,
+                type: f.querySelector('.f-type').value,
+                required: f.querySelector('.f-req').checked
             });
         });
 
-        if(abort) {
-            btn.innerHTML = oldText;
-            btn.disabled = false;
-            return;
-        }
-
-        // 3. Serializa como String JSON Final para o Payload da API Rest
-        // Na vdd a Request API nossa converte JSON nativo
-        let jsonPayload = {
-            name: payload.name,
-            slug: payload.slug,
-            description: payload.description,
-            is_active: payload.is_active,
-            schema: JSON.stringify(payload.schema) // Transformado em string blindada pra BD
+        const payload = {
+            name: nameInput.value,
+            slug: slugInput.value,
+            icon: iconInput.value,
+            description: typeDesc.value,
+            schema: schema
         };
 
-        const token = localStorage.getItem('santis_jwt');
-
-        fetch('/api/secure/types', {
-            method: 'POST',
-            headers: { 
-                'Authorization': 'Bearer ' + token,
-                'Content-Type': 'application/json' 
-            },
-            body: JSON.stringify(jsonPayload)
+        fetch(isEdit ? '/api/secure/types/'+typeId : '/api/secure/types', {
+            method: isEdit ? 'PUT' : 'POST',
+            headers: { 'Authorization': 'Bearer '+token, 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
         })
         .then(r => r.json())
-        .then(data => {
-            if(data.success) {
-                window.location.href = '/types'; // Redirect Index List
-            } else {
-                alert('Erro do Controlador: ' + data.message);
-                btn.innerHTML = oldText;
-                btn.disabled = false;
-            }
-        })
-        .catch(err => {
-            alert('Falha na comunicação.');
-            btn.innerHTML = oldText;
-            btn.disabled = false;
+        .then(res => {
+            if (res.success) window.location.href = '/modulos';
+            else { alert(res.message); saveBtn.disabled = false; }
         });
     });
 });
